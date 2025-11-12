@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1638</width>
+    <height>980</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <item>
+     <layout class="QVBoxLayout" name="ControlLayout">
+      <item>
+       <layout class="QHBoxLayout" name="MainControlLayout">
+        <item>
+         <widget class="QPushButton" name="btnMenu">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="Resource.qrc">
+            <normaloff>:/:/icons/store.png</normaloff>:/:/icons/store.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnOrder">
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="Resource.qrc">
+            <normaloff>:/:/icons/bag.png</normaloff>:/:/icons/bag.png</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="ButtonLayout">
+        <item>
+         <widget class="QPushButton" name="ToanBo">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Toàn Bộ</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="DoAn">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Đồ Ăn</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="ThucUong">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Thức Uống</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="DoGiaDung">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Đồ Gia Dụng</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="SearchLayout">
+        <item>
+         <widget class="QLineEdit" name="SearchText">
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="placeholderText">
+           <string>Nhập tên sản phẩm cần tìm…</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="BtnSearch">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Tìm</string>
+          </property>
+          <property name="icon">
+           <iconset resource="Resource.qrc">
+            <normaloff>:/:/icons/loupe.png</normaloff>:/:/icons/loupe.png</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTableView" name="tableView">
+        <attribute name="horizontalHeaderCascadingSectionResizes">
+         <bool>false</bool>
+        </attribute>
+        <attribute name="verticalHeaderDefaultSectionSize">
+         <number>50</number>
+        </attribute>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1638</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="dockMenu">
+   <property name="minimumSize">
+    <size>
+     <width>300</width>
+     <height>900</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFeature::NoDockWidgetFeatures</set>
+   </property>
+   <property name="dockLocation">
+    <enum>Qt::DockWidgetArea::LeftDockWidgetArea</enum>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="Menu">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <widget class="QPushButton" name="ThongKe">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Thống Kê Lợi Nhuận</string>
+       </property>
+       <property name="icon">
+        <iconset resource="Resource.qrc">
+         <normaloff>:/:/icons/report.png</normaloff>:/:/icons/report.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="ThemHang">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Thêm Hàng Vào Kho</string>
+       </property>
+       <property name="icon">
+        <iconset resource="Resource.qrc">
+         <normaloff>:/:/icons/add-product.png</normaloff>:/:/icons/add-product.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="KhachHang">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Khách Hàng</string>
+       </property>
+       <property name="icon">
+        <iconset resource="Resource.qrc">
+         <normaloff>:/:/icons/rating.png</normaloff>:/:/icons/rating.png</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockOrder">
+   <property name="minimumSize">
+    <size>
+     <width>500</width>
+     <height>900</height>
+    </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFeature::NoDockWidgetFeatures</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="Order">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QStackedWidget" name="stackedWidgeOrder">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="page">
+        <widget class="QTableView" name="tableViewOrder">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>160</y>
+           <width>311</width>
+           <height>351</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="TotalBefore">
+         <property name="geometry">
+          <rect>
+           <x>60</x>
+           <y>650</y>
+           <width>281</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Tổng tiền thanh toán:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="TotalAfter">
+         <property name="geometry">
+          <rect>
+           <x>60</x>
+           <y>540</y>
+           <width>261</width>
+           <height>51</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Tổng tiền ban đầu: </string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="ExportOrder">
+         <property name="geometry">
+          <rect>
+           <x>320</x>
+           <y>810</y>
+           <width>131</width>
+           <height>51</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Xuất Hóa Đơn</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="txtSearchCustomer">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>60</y>
+           <width>351</width>
+           <height>28</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Tên Khách Hàng</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="lblTenKhach">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>120</y>
+           <width>251</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Khách Lẻ</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="btnDungDiem">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>600</y>
+           <width>281</width>
+           <height>29</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Dùng 100.000 điểm (Giảm 2%)</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="page_3"/>
+       <widget class="QWidget" name="page_2">
+        <widget class="QPushButton" name="btnCash">
+         <property name="geometry">
+          <rect>
+           <x>89</x>
+           <y>198</y>
+           <width>191</width>
+           <height>81</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Thanh Toán Bằng Tiền Mặt</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="btnCard">
+         <property name="geometry">
+          <rect>
+           <x>99</x>
+           <y>318</y>
+           <width>181</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Thanh Toán Bằng Thẻ</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="btnExport">
+         <property name="geometry">
+          <rect>
+           <x>90</x>
+           <y>450</y>
+           <width>241</width>
+           <height>91</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Thanh Toán</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="btnBack">
+         <property name="geometry">
+          <rect>
+           <x>89</x>
+           <y>608</y>
+           <width>251</width>
+           <height>81</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Quay Lại</string>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </widget>
+ <resources>
+  <include location="Resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>
