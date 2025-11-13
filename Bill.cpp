@@ -119,3 +119,4 @@ Payment* Bill::getPayment() const
 {
     return payment;
 }
+

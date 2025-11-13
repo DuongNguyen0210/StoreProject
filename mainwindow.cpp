@@ -94,6 +94,12 @@ void MainWindow::updateHoaDonView()
 
 void MainWindow::resetHoaDon()
 {
+    std::vector<BillItem> billitems = currentBill->getItems();
+    for(size_t i = 0; i < billitems.size(); i++)
+    {
+        Product* p = store.findProductByName(billitems[i].getProduct()->getName());
+        p->setQuantity(p->getQuantity() + billitems[i].getQuantity());
+    }
     delete currentBill;
     currentBill = new Bill(nullptr);
     updateHoaDonView();
@@ -232,6 +238,10 @@ void MainWindow::on_btnOrder_clicked()
     ui->dockMenu->hide();
     bool v = ui->dockOrder->isVisible();
     ui->dockOrder->setVisible(!v);
+    ui->stackedWidgeOrder->setCurrentIndex(0);
+    resetHoaDon();
+    loadProductsFromStore(curTableProduct);
+    updateHoaDonView();
 }
 
 void MainWindow::onSanPhamDoubleClicked(const QModelIndex &index)
@@ -253,11 +263,6 @@ void MainWindow::onSanPhamDoubleClicked(const QModelIndex &index)
         QMessageBox::warning(this, "Hết hàng", e.what());
         return;
     }
-    catch (const std::exception& e)
-    {
-        QMessageBox::warning(this, "Lỗi", e.what());
-        return;
-    }
     updateHoaDonView();
 }
 
@@ -265,16 +270,8 @@ void MainWindow::onRemoveSanPhamDoubleClicked(const QModelIndex &index)
 {
     QString name = modelHoaDon->item(index.row(), 0)->text();
     Product* p = store.findProductByName(name);
-    try
-    {
-        currentBill->removeItem(p, 1);
-        loadProductsFromStore(curTableProduct);
-    }
-    catch (const OutOfStockException& e)
-    {
-        QMessageBox::warning(this, "Không còn sản phẩm này", e.what());
-        return;
-    }
+    currentBill->removeItem(p, 1);
+    loadProductsFromStore(curTableProduct);
     updateHoaDonView();
 
 }
@@ -293,6 +290,7 @@ void MainWindow::onTimKhachPressed()
     {
         currentBill->setCustomer(c);
         ui->lblTenKhach->setText(c->getName());
+        ui->lblDiemKhach->setText(QString("Điểm : %1").arg(c->getPoints()));
         if (c->getPoints() >= 100000)
             ui->btnDungDiem->setEnabled(true);
         else
@@ -360,6 +358,4 @@ void MainWindow::finalizeThanhToan(const QString& paymentMethod)
     }
 
     QMessageBox::information(this, "Thành công", QString("Đã thanh toán %1 bằng %2").arg(finalTotal).arg(paymentMethod));
-
-    resetHoaDon();
 }
