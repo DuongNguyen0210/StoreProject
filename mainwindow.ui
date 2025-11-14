@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1638</width>
-    <height>980</height>
+    <width>1440</width>
+    <height>950</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,9 +19,9 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_4">
     <item>
-     <layout class="QVBoxLayout" name="ControlLayout">
+     <layout class="QVBoxLayout" name="GiaoDienChinh">
       <item>
-       <layout class="QHBoxLayout" name="MainControlLayout">
+       <layout class="QHBoxLayout" name="NutDieuKien">
         <item>
          <widget class="QPushButton" name="btnMenu">
           <property name="sizePolicy">
@@ -68,7 +68,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="ButtonLayout">
+       <layout class="QHBoxLayout" name="NutTimKiem">
         <item>
          <widget class="QPushButton" name="ToanBo">
           <property name="sizePolicy">
@@ -160,7 +160,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="SearchLayout">
+       <layout class="QHBoxLayout" name="TimKiemSanPham">
         <item>
          <widget class="QLineEdit" name="SearchText">
           <property name="minimumSize">
@@ -210,6 +210,12 @@
         <attribute name="horizontalHeaderCascadingSectionResizes">
          <bool>false</bool>
         </attribute>
+        <attribute name="horizontalHeaderMinimumSectionSize">
+         <number>50</number>
+        </attribute>
+        <attribute name="verticalHeaderMinimumSectionSize">
+         <number>50</number>
+        </attribute>
         <attribute name="verticalHeaderDefaultSectionSize">
          <number>50</number>
         </attribute>
@@ -224,7 +230,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1638</width>
+     <width>1440</width>
      <height>25</height>
     </rect>
    </property>
@@ -318,14 +324,14 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="Order">
+   <widget class="QWidget" name="HoaDon">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QStackedWidget" name="stackedWidgeOrder">
        <property name="currentIndex">
         <number>0</number>
        </property>
-       <widget class="QWidget" name="page">
+       <widget class="QWidget" name="ChuanBiHoaDon">
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
           <layout class="QVBoxLayout" name="MainOrder">
@@ -333,6 +339,12 @@
             <layout class="QVBoxLayout" name="Customer">
              <item>
               <widget class="QLineEdit" name="txtSearchCustomer">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>50</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -359,14 +371,20 @@
             </layout>
            </item>
            <item>
-            <widget class="QTableView" name="tableViewOrder">
-             <attribute name="verticalHeaderDefaultSectionSize">
-              <number>50</number>
-             </attribute>
-            </widget>
-           </item>
-           <item>
             <layout class="QVBoxLayout" name="ifOrder">
+             <item>
+              <widget class="QTableView" name="tableViewOrder">
+               <attribute name="horizontalHeaderMinimumSectionSize">
+                <number>50</number>
+               </attribute>
+               <attribute name="verticalHeaderMinimumSectionSize">
+                <number>50</number>
+               </attribute>
+               <attribute name="verticalHeaderDefaultSectionSize">
+                <number>50</number>
+               </attribute>
+              </widget>
+             </item>
              <item>
               <widget class="QLabel" name="TotalBefore">
                <property name="text">
@@ -390,6 +408,12 @@
                <property name="enabled">
                 <bool>false</bool>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>50</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Dùng 100.000 điểm (Giảm 2%)</string>
                </property>
@@ -397,6 +421,12 @@
              </item>
              <item>
               <widget class="QPushButton" name="ExportOrder">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>50</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Xuất Hóa Đơn</string>
                </property>
@@ -408,61 +438,98 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="page_3"/>
-       <widget class="QWidget" name="page_2">
-        <widget class="QPushButton" name="btnCash">
-         <property name="geometry">
-          <rect>
-           <x>89</x>
-           <y>198</y>
-           <width>191</width>
-           <height>81</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Thanh Toán Bằng Tiền Mặt</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="btnCard">
-         <property name="geometry">
-          <rect>
-           <x>99</x>
-           <y>318</y>
-           <width>181</width>
-           <height>61</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Thanh Toán Bằng Thẻ</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="btnExport">
-         <property name="geometry">
-          <rect>
-           <x>90</x>
-           <y>450</y>
-           <width>241</width>
-           <height>91</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Thanh Toán</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="btnBack">
-         <property name="geometry">
-          <rect>
-           <x>89</x>
-           <y>608</y>
-           <width>251</width>
-           <height>81</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Quay Lại</string>
-         </property>
-        </widget>
+       <widget class="QWidget" name="ThanhToan">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QTableView" name="tableLastBill"/>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="information">
+           <item>
+            <widget class="QLabel" name="TotalBefore_2">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="TotalAfter_2">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="method">
+           <item>
+            <widget class="QPushButton" name="btnCard">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Thanh Toán Bằng Thẻ</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnCash">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Thanh Toán Bằng Tiền Mặt</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="btnBackOrDone">
+           <item>
+            <widget class="QPushButton" name="btnBack">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Quay Lại</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnExport">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Thanh Toán</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
        </widget>
+       <widget class="QWidget" name="page_2"/>
       </widget>
      </item>
     </layout>

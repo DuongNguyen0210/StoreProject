@@ -17,6 +17,7 @@ private:
     std::vector<BillItem> items;
     Payment* payment;
     double discountPercent;
+    bool check;
 
     static int nextId;
     static QString generateId();
@@ -37,6 +38,9 @@ public:
     double getTotal() const;
 
     bool applyPointsDiscount(int pointsRequired);
+
+    void setCheck(const bool x);
+    bool getCheck();
 
     void setPayment(Payment* p);
     Payment* getPayment() const;

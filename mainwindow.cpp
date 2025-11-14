@@ -53,6 +53,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->btnBack, &QPushButton::clicked, this, &MainWindow::onQuayLaiClicked);
     connect(ui->btnCash, &QPushButton::clicked, this, &MainWindow::onThanhToanTienMatClicked);
     connect(ui->btnCard, &QPushButton::clicked, this, &MainWindow::onThanhToanTheClicked);
+    connect(ui->btnExport, &QPushButton::clicked, this, &MainWindow::onThanhToanClicked);
 }
 
 MainWindow::~MainWindow()
@@ -72,6 +73,17 @@ void MainWindow::setupHoaDonTable()
     ui->tableViewOrder->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
+void MainWindow::setupLastBill()
+{
+    modelLastBill = new QStandardItemModel(this);
+    modelLastBill->setColumnCount(3);
+    modelLastBill->setHeaderData(0, Qt::Horizontal, "Tên SP");
+    modelLastBill->setHeaderData(1, Qt::Horizontal, "SL");
+    modelLastBill->setHeaderData(2, Qt::Horizontal, "Thành tiền");
+    ui->tableLastBill->setModel(modelLastBill);
+    ui->tableLastBill->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+}
+
 void MainWindow::updateHoaDonView()
 {
     modelHoaDon->removeRows(0, modelHoaDon->rowCount());
@@ -88,26 +100,57 @@ void MainWindow::updateHoaDonView()
 
     double subTotal = currentBill->getSubTotal();
     double finalTotal = currentBill->getTotal();
+    if(currentBill->getCustomer())
+    {
+        ui->lblTenKhach->setText(currentBill->getCustomer()->getName());
+        ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(currentBill->getCustomer()->getPoints()));
+    }
     ui->TotalBefore->setText(QString("Tổng tiền ban đầu: %1").arg(subTotal));
     ui->TotalAfter->setText(QString("Tổng tiền thanh toán: %1").arg(finalTotal));
 }
 
+void MainWindow::updateLastBillView()
+{
+    modelLastBill->removeRows(0, modelLastBill->rowCount());
+    const auto& items = currentBill->getItems();
+    qDebug() << "size of items: " << items.size();
+    for (const BillItem& item : items)
+    {
+        QList<QStandardItem*> row;
+        row << new QStandardItem(item.getProduct()->getName());
+        row << new QStandardItem(QString::number(item.getQuantity()));
+        row << new QStandardItem(QString::number(item.getLineTotal()));
+        modelLastBill->appendRow(row);
+    }
+
+    double subTotal = currentBill->getSubTotal();
+    double finalTotal = currentBill->getTotal();
+    ui->TotalBefore_2->setText(QString("Tổng tiền ban đầu: %1").arg(subTotal));
+    ui->TotalAfter_2->setText(QString("Tổng tiền thanh toán: %1").arg(finalTotal));
+}
+
 void MainWindow::resetHoaDon()
 {
+    ui->txtSearchCustomer->clear();
+    ui->btnDungDiem->setEnabled(false);
+    ui->stackedWidgeOrder->setCurrentIndex(0);
+    ui->lblTenKhach->setText("Khách lẻ");
+    ui->lblDiemKhach->setText(nullptr);
+    ui->TotalBefore->setText(nullptr);
+    ui->TotalAfter->setText(nullptr);
     std::vector<BillItem> billitems = currentBill->getItems();
     for(size_t i = 0; i < billitems.size(); i++)
     {
         Product* p = store.findProductByName(billitems[i].getProduct()->getName());
         p->setQuantity(p->getQuantity() + billitems[i].getQuantity());
     }
+    Customer *c = currentBill->getCustomer();
+    if(c && currentBill->getCheck())
+        c->setPoints(c->getPoints() + 100000);
+
     delete currentBill;
     currentBill = new Bill(nullptr);
     updateHoaDonView();
-
-    ui->lblTenKhach->setText("Khách lẻ");
-    ui->txtSearchCustomer->clear();
-    ui->btnDungDiem->setEnabled(false);
-    ui->stackedWidgeOrder->setCurrentIndex(0);
 }
 
 
@@ -168,7 +211,7 @@ void MainWindow::loadProductsFromStore(int typeFilter)
 void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
 {
     QString kw = keyword.trimmed();
-    if (kw.isEmpty() == 0)
+    if (kw.isEmpty())
     {
         loadProductsFromStore(0);
         return;
@@ -246,8 +289,11 @@ void MainWindow::on_btnOrder_clicked()
 
 void MainWindow::onSanPhamDoubleClicked(const QModelIndex &index)
 {
-    bool v = ui->dockOrder->isVisible();
-    if(!v)
+    bool v1 = ui->dockOrder->isVisible();
+    auto v2 = ui->stackedWidgeOrder->currentIndex();
+    if(!v1)
+        return;
+    if(v2 == 1)
         return;
     QString id = model->item(index.row(), 0)->text();
     Product* p = store.findProductById(id);
@@ -290,7 +336,7 @@ void MainWindow::onTimKhachPressed()
     {
         currentBill->setCustomer(c);
         ui->lblTenKhach->setText(c->getName());
-        ui->lblDiemKhach->setText(QString("Điểm : %1").arg(c->getPoints()));
+        ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));
         if (c->getPoints() >= 100000)
             ui->btnDungDiem->setEnabled(true);
         else
@@ -307,6 +353,7 @@ void MainWindow::onTimKhachPressed()
 void MainWindow::onDungDiemClicked()
 {
     bool success = currentBill->applyPointsDiscount(100000);
+    currentBill->setCheck(true);
     if (success)
     {
         updateHoaDonView();
@@ -325,6 +372,8 @@ void MainWindow::onXuatHoaDonClicked()
         return;
     }
     ui->stackedWidgeOrder->setCurrentIndex(1);
+    setupLastBill();
+    updateLastBillView();
 }
 
 void MainWindow::onQuayLaiClicked()
@@ -336,13 +385,26 @@ void MainWindow::onQuayLaiClicked()
 void MainWindow::onThanhToanTienMatClicked()
 {
     currentBill->setPayment(new CashPayment());
-    finalizeThanhToan("Tiền mặt");
+    QMessageBox::information(this, "Thông Báo: ", "Đã Chọn phương thức thanh toán là tiền mặt");
 }
 
 void MainWindow::onThanhToanTheClicked()
 {
     currentBill->setPayment(new CardPayment());
-    finalizeThanhToan("Thẻ");
+    QMessageBox::information(this, "Thông Báo: ", "Đã Chọn phương thức thanh toán là quẹt thẻ");
+}
+
+void MainWindow::onThanhToanClicked()
+{
+    if(currentBill->getPayment() == nullptr)
+    {
+        QMessageBox::information(this, "Thông Báo: ", "Vui lòng chọn phương thức thanh toán trước khi thanh toán");
+        return;
+    }
+    finalizeThanhToan(currentBill->getPayment()->getMethodName());
+    ui->stackedWidgeOrder->setCurrentIndex(0);
+    resetHoaDon();
+    updateHoaDonView();
 }
 
 void MainWindow::finalizeThanhToan(const QString& paymentMethod)
@@ -356,6 +418,7 @@ void MainWindow::finalizeThanhToan(const QString& paymentMethod)
         int pointsToAdd = static_cast<int>(finalTotal * 0.10);
         c->addPoints(pointsToAdd);
     }
-
-    QMessageBox::information(this, "Thành công", QString("Đã thanh toán %1 bằng %2").arg(finalTotal).arg(paymentMethod));
+    delete currentBill;
+    currentBill = new Bill(nullptr);
+    QMessageBox::information(this, "Thành công", QString("Đã thanh toán %1 đồng bằng %2").arg(finalTotal).arg(paymentMethod));
 }

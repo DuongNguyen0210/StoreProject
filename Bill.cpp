@@ -12,7 +12,7 @@ QString Bill::generateId()
 }
 
 Bill::Bill(Customer* customer, const QString& id)
-    : customer(customer), payment(nullptr), discountPercent(0.0)
+    : customer(customer), payment(nullptr), discountPercent(0.0), check(false)
 {
     if (id.isEmpty())
         this->id = generateId();
@@ -119,4 +119,16 @@ Payment* Bill::getPayment() const
 {
     return payment;
 }
+
+void Bill::setCheck(const bool x)
+{
+    check = x;
+}
+
+bool Bill::getCheck()
+{
+    return check;
+}
+
+
 

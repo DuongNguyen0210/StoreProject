@@ -1,10 +1,9 @@
 #include "Manager.h"
 
-Manager::Manager(const QString& id, // Đã đổi
-                 const QString& name) // Đã đổi
-    : User(id, name) {
-}
+Manager::Manager(const QString& id, const QString& name)
+    : User(id, name) {}
 
-QString Manager::getRole() const { // Đã đổi
+QString Manager::getRole() const
+{
     return "Manager";
 }

@@ -1,76 +1,54 @@
 #include "Payment.h"
-#include <QDebug> // Dùng qDebug cho Qt
 
 Payment::Payment(double amount)
-    : amount(amount) {
-}
+    : amount(amount) {}
 
 Payment::~Payment() = default;
 
-double Payment::getAmount() const {
+double Payment::getAmount() const
+{
     return amount;
 }
 
-void Payment::setAmount(double a) {
+void Payment::setAmount(double a)
+{
     amount = a;
 }
 
-void Payment::printInfo() const {
-    qDebug() << "Payment[Amount=" << amount << "]";
-}
+CashPayment::CashPayment(double amount, double cashGiven)
+    : Payment(amount), cashGiven(cashGiven) {}
 
-// CashPayment
-
-CashPayment::CashPayment(double amount,
-                         double cashGiven)
-    : Payment(amount),
-    cashGiven(cashGiven) {
-}
-
-double CashPayment::getCashGiven() const {
+double CashPayment::getCashGiven() const
+{
     return cashGiven;
 }
 
-double CashPayment::getChange() const {
+double CashPayment::getChange() const
+{
     return cashGiven - amount;
 }
 
-QString CashPayment::getMethodName() const { // Đã đổi
-    return "Cash";
+QString CashPayment::getMethodName() const
+{
+    return "Tiền Mặt";
 }
 
-void CashPayment::printInfo() const {
-    qDebug() << "CashPayment[Amount=" << amount
-             << ", CashGiven=" << cashGiven
-             << ", Change=" << getChange()
-             << "]";
-}
 
-// CardPayment
+CardPayment::CardPayment(double amount, const QString& cardNumber, const QString& bankName)
+    : Payment(amount), cardNumber(cardNumber), bankName(bankName) {}
 
-CardPayment::CardPayment(double amount,
-                         const QString& cardNumber, // Đã đổi
-                         const QString& bankName)   // Đã đổi
-    : Payment(amount),
-    cardNumber(cardNumber),
-    bankName(bankName) {
-}
-
-const QString& CardPayment::getCardNumber() const { // Đã đổi
+const QString& CardPayment::getCardNumber() const
+{
     return cardNumber;
 }
 
-const QString& CardPayment::getBankName() const { // Đã đổi
+const QString& CardPayment::getBankName() const
+{
     return bankName;
 }
 
-QString CardPayment::getMethodName() const { // Đã đổi
-    return "Card";
+QString CardPayment::getMethodName() const
+{
+    return "Thẻ";
 }
 
-void CardPayment::printInfo() const {
-    qDebug() << "CardPayment[Amount=" << amount
-             << ", CardNumber=" << cardNumber
-             << ", Bank=" << bankName
-             << "]";
-}
