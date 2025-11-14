@@ -2,14 +2,13 @@
 #define MANAGER_H
 
 #include "User.h"
-#include <QString> // Thêm vào
+#include <QString>
 
-class Manager : public User {
+class Manager : public User
+{
 public:
-    Manager(const QString& id = "", // Đã đổi
-            const QString& name = ""); // Đã đổi
-
-    QString getRole() const override; // Đã đổi
+    Manager(const QString& id = "", const QString& name = "");
+    QString getRole() const override;
 };
 
 #endif

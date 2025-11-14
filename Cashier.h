@@ -2,14 +2,13 @@
 #define CASHIER_H
 
 #include "User.h"
-#include <QString> // Thêm vào
+#include <QString>
 
-class Cashier : public User {
+class Cashier : public User
+{
 public:
-    Cashier(const QString& id = "", // Đã đổi
-            const QString& name = ""); // Đã đổi
-
-    QString getRole() const override; // Đã đổi
+    Cashier(const QString& id = "", const QString& name = "");
+    QString getRole() const override;
 };
 
 #endif

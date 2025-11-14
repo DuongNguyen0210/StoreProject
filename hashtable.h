@@ -37,8 +37,8 @@ private:
     {
         QString s = normalizeKey(rawKey);
         size_t h = 0;
-        for (QChar c : s)
-            h = (h * 131ULL + c.unicode()) % MOD;
+        for (QChar c : qAsConst(s))
+            h = (h * 256ULL + c.unicode()) % MOD;
         return h;
     }
 

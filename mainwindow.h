@@ -21,6 +21,15 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+private:
+    Ui::MainWindow *ui;
+    QStandardItemModel *model;
+    int curTableProduct;
+    Store store;
+    Bill *currentBill;
+    QStandardItemModel *modelHoaDon;
+    QStandardItemModel *modelLastBill;
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -42,6 +51,8 @@ private slots:
     void onQuayLaiClicked();
     void onThanhToanTienMatClicked();
     void onThanhToanTheClicked();
+    void onThanhToanClicked();
+
 
 private:
     void setupTable();
@@ -53,13 +64,8 @@ private:
     void resetHoaDon();
     void finalizeThanhToan(const QString& paymentMethod);
 
-private:
-    Ui::MainWindow *ui;
-    QStandardItemModel *model;
-    int curTableProduct;
-    Store store;
-    Bill *currentBill;
-    QStandardItemModel *modelHoaDon;
+    void setupLastBill();
+    void updateLastBillView();
 };
 
 #endif
