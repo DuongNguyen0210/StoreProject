@@ -28,18 +28,12 @@ class MainWindow : public QMainWindow
 
 private:
     Ui::MainWindow *ui;
-    QStandardItemModel *model;
+    QStandardItemModel *modelTable;
     int curTableProduct;
     Store store;
     Bill *currentBill;
     QStandardItemModel *modelHoaDon;
     QStandardItemModel *modelLastBill;
-
-    QGridLayout* productsLayout = nullptr;
-    static constexpr int PRODUCT_COLUMNS = 4;
-    void clearProductsGrid();
-    void addProductCard(Product* p);
-    QString getProductTypeName(Product* p) const;
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -54,7 +48,7 @@ private slots:
     void on_btnMenu_clicked();
     void on_btnOrder_clicked();
 
-    void onAddSanPham(Product *p);
+    void onAddSanPham(const QModelIndex &index);
     void onRemoveSanPhamDoubleClicked(const QModelIndex &index);
     void onTimKhachPressed();
     void onDungDiemClicked();
@@ -70,16 +64,17 @@ private slots:
 
 private:
     void setupTable();
+    void setupHoaDonTable();
+    void setupLastBill();
+
+    void updateHoaDonView();
+    void updateLastBillView();
+
     void loadProductsFromStore(int typeFilter);
     void loadProductsFromStoreWithKeyWord(const QString &keyword);
 
-    void setupHoaDonTable();
-    void updateHoaDonView();
     void resetHoaDon();
     void finalizeThanhToan(const QString& paymentMethod);
-
-    void setupLastBill();
-    void updateLastBillView();
 };
 
 #endif
