@@ -37,7 +37,7 @@ private:
     {
         QString s = normalizeKey(rawKey);
         size_t h = 0;
-        for (QChar c : qAsConst(s))
+        for (QChar c : std::as_const(s))
             h = (h * 256ULL + c.unicode()) % MOD;
         return h;
     }
@@ -100,10 +100,7 @@ public:
 
     bool insert(const QString& key, const V& value)
     {
-        QString norm = normalizeKey(key);
-        int idx = indexForKey(key);
-
-        Node* cur = buckets[idx];
+        int idx = indexForKey(normalizeKey(key));
         buckets[idx] = new Node(key, value, buckets[idx]);
         ++count;
         return true;

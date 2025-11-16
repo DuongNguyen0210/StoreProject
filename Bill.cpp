@@ -58,17 +58,17 @@ void Bill::addItem(Product* p, int quantity)
     items.emplace_back(p, quantity, p->calcFinalPrice());
 }
 
-void Bill::removeItem(Product* p, int quantity)
+void Bill::removeItem(Product* p)
 {
-    p->setQuantity(p->getQuantity() + quantity);
     for(size_t i = 0; i < items.size(); i++)
+    {
         if(items[i].getProduct()->getId() == p->getId())
         {
-            items[i].setQuantity(items[i].getQuantity() - quantity);
-            if(items[i].getQuantity() == 0)
-                items.erase(items.begin() + i);
+            p->setQuantity(p->getQuantity() + items[i].getQuantity());
+            items.erase(items.begin() + i);
             return;
         }
+    }
 }
 
 const std::vector<BillItem>& Bill::getItems() const
@@ -129,6 +129,3 @@ bool Bill::getCheck()
 {
     return check;
 }
-
-
-
