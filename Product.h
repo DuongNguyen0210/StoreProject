@@ -13,12 +13,13 @@ protected:
     QString name;
     double basePrice;
     int quantity;
+    QString imageFile;
 
     static int nextId;
     static QString generateId();
 
 public:
-    Product(const QString& id = "", const QString& name = "", double basePrice = 0.0, int quantity = 0);
+    Product(const QString& id = "", const QString& name = "", double basePrice = 0.0, int quantity = 0, const QString& imageFile = "");
 
     virtual ~Product();
 
@@ -26,6 +27,7 @@ public:
     const QString& getName() const;
     double getBasePrice() const;
     int getQuantity() const;
+    const QString& getImageFile() const;
 
     void setId(const QString& i);
     void setName(const QString& n);

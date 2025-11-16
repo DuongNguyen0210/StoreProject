@@ -52,12 +52,6 @@ public:
         productByName.forEachInKeyGroup(name, f);
     }
 
-    template<typename Func>
-    void forEachProductByKey(const QString& key, Func func) const
-    {
-        productByName.forEachInKeyGroup(key, func);
-    }
-
     void addCustomer(Customer* c);
     Customer* findCustomerByName(const QString& name) const;
     Customer* findCustomerById(const QString& id) const;

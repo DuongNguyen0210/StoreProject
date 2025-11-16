@@ -4,8 +4,7 @@
 
 using namespace std;
 
-Beverage::Beverage(const QString& id, const QString& name, double basePrice, int quantity, double volume)
-    : Product(id, name, basePrice, quantity), volume(volume) {}
+Beverage::Beverage(const QString& id, const QString& name, double basePrice, int quantity, const QString& imageFile, double volume) : Product(id, name, basePrice, quantity, imageFile), volume(volume) {}
 
 double Beverage::getVolume() const
 {

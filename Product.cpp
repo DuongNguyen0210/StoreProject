@@ -10,8 +10,8 @@ QString Product::generateId()
     return id;
 }
 
-Product::Product(const QString& id, const QString& name, double basePrice, int quantity)
-    : basePrice(basePrice), quantity(quantity)
+Product::Product(const QString& id, const QString& name, double basePrice, int quantity, const QString& imageFile)
+    : basePrice(basePrice), quantity(quantity), imageFile(imageFile) // <-- THÊM ", imageFile(imageFile)"
 {
     if (id.isEmpty())
         this->id = generateId();
@@ -60,5 +60,10 @@ void Product::setBasePrice(double p)
 void Product::setQuantity(int q)
 {
     quantity = q;
+}
+
+const QString& Product::getImageFile() const
+{
+    return imageFile;
 }
 

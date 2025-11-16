@@ -7,6 +7,7 @@
 #include <QPropertyAnimation>
 #include <QMessageBox>
 #include <QDebug>
+#include <QInputDialog>
 
 #include <qstring.h>
 #include <qlineedit.h>
@@ -14,20 +15,34 @@
 #include <qlabel.h>
 #include <qtableview.h>
 
+#include <QGridLayout>
+#include <QVBoxLayout>
+#include <QFrame>
+#include <QSize>
+
 #include "BillItem.h"
 #include "Exceptions.h"
 #include "Payment.h"
 #include "Customer.h"
 
+#include "addProductToStore.h"
+#include "ThongKe.h"
+#include "AddCustomerToStore.h"
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), model(nullptr), curTableProduct(0)
 {
     ui->setupUi(this);
 
-    setupTable();
-    store.addProduct(new Food("", "Bánh mì", 10000, 50, "01/01/2026"));
-    store.addProduct(new Food("", "Xúc xích", 12000, 40, "15/01/2026"));
-    store.addProduct(new Beverage("", "Coca-Cola", 15000, 30, 330));
-    store.addProduct(new HouseholdItem("", "Nước rửa chén", 30000, 20, 12));
+    productsLayout = new QGridLayout(ui->scrollProducts->widget());
+    productsLayout->setContentsMargins(12, 12, 12, 12);
+    productsLayout->setHorizontalSpacing(16);
+    productsLayout->setVerticalSpacing(16);
+
+    store.addProduct(new Food("", "Bánh mì", 10000, 50, "banhmi.png", "01/01/2026"));
+    store.addProduct(new Food("", "Xúc xích", 12000, 40, "xucxich.png", "15/01/2026"));
+    store.addProduct(new Beverage("", "Coca-Cola", 15000, 30, "coca.png", 330));
+    store.addProduct(new HouseholdItem("", "Nước rửa chén", 30000, 20, "nuocruachen.png", 12));
+    store.addProduct(new Food("", "Kẹo Cao Su", 50000, 10, "keocaosu.png", "15/01/2026"));
 
     store.addCustomer(new Customer("C1", "Khách Vip", "0905123456", 110000));
     store.addCustomer(new Customer("C2", "Khách Thường", "0905654321", 10000));
@@ -43,7 +58,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->stackedWidgeOrder->setCurrentIndex(curTableProduct);
 
-    connect(ui->tableView, &QTableView::doubleClicked, this, &MainWindow::onSanPhamDoubleClicked);
     connect(ui->tableViewOrder, &QTableView::doubleClicked, this, &MainWindow::onRemoveSanPhamDoubleClicked);
 
     connect(ui->txtSearchCustomer, &QLineEdit::returnPressed, this, &MainWindow::onTimKhachPressed);
@@ -113,7 +127,7 @@ void MainWindow::updateLastBillView()
 {
     modelLastBill->removeRows(0, modelLastBill->rowCount());
     const auto& items = currentBill->getItems();
-    qDebug() << "size of items: " << items.size();
+    //qDebug() << "size of items: " << items.size();
     for (const BillItem& item : items)
     {
         QList<QStandardItem*> row;
@@ -154,59 +168,168 @@ void MainWindow::resetHoaDon()
 }
 
 
-void MainWindow::setupTable()
+QString MainWindow::getProductTypeName(Product* p) const
 {
-    model = new QStandardItemModel(this);
-    model->setColumnCount(8);
-    model->setHeaderData(0, Qt::Horizontal, "Mã");
-    model->setHeaderData(1, Qt::Horizontal, "Tên sản phẩm");
-    model->setHeaderData(2, Qt::Horizontal, "Loại");
-    model->setHeaderData(3, Qt::Horizontal, "Giá");
-    model->setHeaderData(4, Qt::Horizontal, "Số lượng");
-    model->setHeaderData(5, Qt::Horizontal, "Thể tích");
-    model->setHeaderData(6, Qt::Horizontal, "Hạn sử dụng");
-    model->setHeaderData(7, Qt::Horizontal, "Thời hạn bảo hành (tháng)");
-    ui->tableView->setModel(model);
-    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->tableView->horizontalHeader()->setStretchLastSection(true);
-    ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    if (dynamic_cast<Food*>(p)) return "Đồ ăn";
+    if (dynamic_cast<Beverage*>(p)) return "Thức uống";
+    if (dynamic_cast<HouseholdItem*>(p)) return "Đồ gia dụng";
+    return "Khác";
 }
+
+void MainWindow::clearProductsGrid()
+{
+    if (!productsLayout) return;
+
+    QLayoutItem* item = nullptr;
+    // xóa hết widget (card) cũ khỏi grid
+    while ((item = productsLayout->takeAt(0)) != nullptr)
+    {
+        if (QWidget* w = item->widget())
+            w->deleteLater();
+        delete item;
+    }
+}
+
+static QString getProductImagePath(Product* p)
+{
+    if (!p) return {};
+
+    QString fileName = p->getImageFile();
+    qDebug() << "Loading image for" << p->getName() << "-> FileName:" << fileName;
+
+    if (fileName.isEmpty())
+        return {};
+    return ":/icons/" + fileName;
+}
+void MainWindow::addProductCard(Product* p)
+{
+    if (!p || !productsLayout) return;
+
+    const int index = productsLayout->count();
+    const int row = index / PRODUCT_COLUMNS;
+    const int col = index % PRODUCT_COLUMNS;
+
+    QFrame* card = new QFrame(ui->scrollProducts->widget());
+    card->setObjectName("productCard");
+    card->setFixedSize(220, 260);
+    card->setStyleSheet(
+        "QFrame#productCard {"
+        "  border-radius: 16px;"
+        "  background: #ffffff;"
+        "}"
+        "QLabel#productName { color: #222222; }"
+        "QLabel#productPrice { color: #222222; }"
+        "QLabel#productType { color: #888888; font-size: 11px; }"
+        "QPushButton#btnAddProduct {"
+        "  border-radius: 14px;"
+        "  padding: 4px 12px;"
+        "  background: #0078ff;"
+        "  color: white;"
+        "  border: none;"
+        "}"
+        "QPushButton#btnAddProduct:hover {"
+        "  background: #005ccc;"
+        "}"
+        );
+
+    QVBoxLayout* v = new QVBoxLayout(card);
+    v->setContentsMargins(10, 10, 10, 10);
+    v->setSpacing(6);
+
+    QLabel* imageLabel = new QLabel(card);
+    imageLabel->setMinimumHeight(110);
+    imageLabel->setAlignment(Qt::AlignCenter);
+    imageLabel->setStyleSheet(
+        "background: #f5f5f5;"
+        "border-radius: 12px;"
+        "color: #aaaaaa;"
+        );
+
+    QString imgPath = getProductImagePath(p);
+    if (!imgPath.isEmpty())
+    {
+        QPixmap pix(imgPath);
+        if (!pix.isNull())
+        {
+            QSize targetSize(200, 110);
+            QPixmap scaledPix = pix.scaled(targetSize, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+            imageLabel->setPixmap(scaledPix);
+        }
+        else
+            imageLabel->setText("Ảnh");
+    }
+    else
+        imageLabel->setText("Ảnh");
+
+    QLabel* nameLabel = new QLabel(p->getName(), card);
+    nameLabel->setObjectName("productName");
+    nameLabel->setWordWrap(true);
+    QFont nameFont = nameLabel->font();
+    nameFont.setPointSize(nameFont.pointSize() + 1);
+    nameFont.setBold(true);
+    nameLabel->setFont(nameFont);
+
+    QLabel* typeLabel = new QLabel(getProductTypeName(p), card);
+    typeLabel->setObjectName("productType");
+
+    QLabel* stockLabel = new QLabel(QString("Còn lại: %1").arg(p->getQuantity()), card);
+    stockLabel->setObjectName("productStock");
+    stockLabel->setStyleSheet("color: #008800; font-size: 10px; font-weight: bold;");
+
+    QLabel* priceLabel = new QLabel(QString::number(p->calcFinalPrice()) + " đ", card);
+    priceLabel->setObjectName("productPrice");
+    QFont priceFont = priceLabel->font();
+    priceFont.setBold(true);
+    priceLabel->setFont(priceFont);
+
+    QHBoxLayout* bottomRow = new QHBoxLayout();
+    bottomRow->addWidget(priceLabel);
+    bottomRow->addStretch();
+
+    QPushButton* btnAdd = new QPushButton("+ Thêm", card);
+    btnAdd->setObjectName("btnAddProduct");
+    btnAdd->setCursor(Qt::PointingHandCursor);
+    bottomRow->addWidget(btnAdd);
+
+    v->addWidget(imageLabel);
+    v->addSpacing(6);
+    v->addWidget(nameLabel);
+    v->addWidget(typeLabel);
+    v->addWidget(stockLabel);
+    v->addStretch();
+    v->addLayout(bottomRow);
+
+    productsLayout->addWidget(card, row, col);
+
+    connect(btnAdd, &QPushButton::clicked, this, [this, p]() {this->onAddSanPham(p);});
+}
+
+
 
 void MainWindow::loadProductsFromStore(int typeFilter)
 {
-    model->removeRows(0, model->rowCount());
+    clearProductsGrid();
     store.forEachProduct([&](const QString&, Product* p)
-                         {
-                             if (!p) return;
-                             bool ok = false;
-                             Food* f = dynamic_cast<Food*>(p);
-                             Beverage* b = dynamic_cast<Beverage*>(p);
-                             HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
-                             if (typeFilter == 0) ok = true;
-                             else if (typeFilter == 1 && f) ok = true;
-                             else if (typeFilter == 2 && b) ok = true;
-                             else if (typeFilter == 3 && h) ok = true;
-                             if (!ok) return;
+                        {
+                            if (!p)
+                                return;
+                            bool ok = false;
+                            Food* f = dynamic_cast<Food*>(p);
+                            Beverage* b = dynamic_cast<Beverage*>(p);
+                            HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
+                            if (typeFilter == 0) ok = true;
+                            else if (typeFilter == 1 && f)
+                               ok = true;
+                            else if (typeFilter == 2 && b)
+                               ok = true;
+                            else if (typeFilter == 3 && h)
+                               ok = true;
+                            if (!ok) return;
 
-                             QList<QStandardItem*> row;
-                             row << new QStandardItem(p->getId());
-                             row << new QStandardItem(p->getName());
-                             QString typeName;
-                             if (f) typeName = "Đồ ăn";
-                             else if (b) typeName = "Thức uống";
-                             else if (h) typeName = "Đồ gia dụng";
-                             else typeName = "Khác";
-                             row << new QStandardItem(typeName);
-                             row << new QStandardItem(QString::number(p->calcFinalPrice()));
-                             row << new QStandardItem(QString::number(p->getQuantity()));
-                             row << new QStandardItem(b ? QString::number(b->getVolume()) : "");
-                             row << new QStandardItem(f ? f->getExpiryDate() : "");
-                             row << new QStandardItem(h ? QString::number(h->getWarrantyMonths()) : "");
-                             model->appendRow(row);
-                         });
+                            addProductCard(p);
+                        });
 }
+
 
 void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
 {
@@ -216,31 +339,17 @@ void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
         loadProductsFromStore(0);
         return;
     }
-    model->removeRows(0, model->rowCount());
-    store.forEachProductByKey(kw,
+    clearProductsGrid();
+
+    store.forEachProductByName(kw,
                               [&](const QString&, Product* p)
                               {
-                                  if (!p) return;
-                                  Food* f = dynamic_cast<Food*>(p);
-                                  Beverage* b = dynamic_cast<Beverage*>(p);
-                                  HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
-                                  QList<QStandardItem*> row;
-                                  row << new QStandardItem(p->getId());
-                                  row << new QStandardItem(p->getName());
-                                  QString typeName;
-                                  if (f) typeName = "Đồ ăn";
-                                  else if (b) typeName = "Thức uống";
-                                  else if (h) typeName = "Đồ gia dụng";
-                                  else typeName = "Khác";
-                                  row << new QStandardItem(typeName);
-                                  row << new QStandardItem(QString::number(p->getQuantity()));
-                                  row << new QStandardItem(QString::number(p->calcFinalPrice()));
-                                  row << new QStandardItem(b ? QString::number(b->getVolume()) : "");
-                                  row << new QStandardItem(f ? f->getExpiryDate() : "");
-                                  row << new QStandardItem(h ? QString::number(h->getWarrantyMonths()) : "");
-                                  model->appendRow(row);
+                                if (!p)
+                                   return;
+                                addProductCard(p);
                               });
 }
+
 
 void MainWindow::on_ToanBo_clicked()
 {
@@ -287,39 +396,38 @@ void MainWindow::on_btnOrder_clicked()
     updateHoaDonView();
 }
 
-void MainWindow::onSanPhamDoubleClicked(const QModelIndex &index)
+void MainWindow::onAddSanPham(Product *p)
 {
-    bool v1 = ui->dockOrder->isVisible();
     auto v2 = ui->stackedWidgeOrder->currentIndex();
-    if(!v1)
-        return;
     if(v2 == 1)
         return;
-    QString id = model->item(index.row(), 0)->text();
-    Product* p = store.findProductById(id);
-    if (!p)
-        return;
-    try
+
+    int maxStock = p->getQuantity();
+    if (maxStock <= 0)
     {
-        currentBill->addItem(p, 1);
+        QMessageBox::warning(this, "Hết hàng", "Sản phẩm này đã hết hàng.");
+        return;
+    }
+
+    bool ok;
+    int quantityToAdd = QInputDialog::getInt(this, "Nhập số lượng", QString("%1:").arg(p->getName()), 1, 1, maxStock, 1, &ok);
+    if(ok)
+    {
+        currentBill->addItem(p, quantityToAdd);
+        ui->dockOrder->show();
+        ui->stackedWidgeOrder->setCurrentIndex(0);
         loadProductsFromStore(curTableProduct);
+        updateHoaDonView();
     }
-    catch (const OutOfStockException& e)
-    {
-        QMessageBox::warning(this, "Hết hàng", e.what());
-        return;
-    }
-    updateHoaDonView();
 }
 
 void MainWindow::onRemoveSanPhamDoubleClicked(const QModelIndex &index)
 {
     QString name = modelHoaDon->item(index.row(), 0)->text();
     Product* p = store.findProductByName(name);
-    currentBill->removeItem(p, 1);
+    currentBill->removeItem(p);
     loadProductsFromStore(curTableProduct);
     updateHoaDonView();
-
 }
 
 void MainWindow::onTimKhachPressed()
@@ -422,3 +530,37 @@ void MainWindow::finalizeThanhToan(const QString& paymentMethod)
     currentBill = new Bill(nullptr);
     QMessageBox::information(this, "Thành công", QString("Đã thanh toán %1 đồng bằng %2").arg(finalTotal).arg(paymentMethod));
 }
+
+void MainWindow::on_ThemHang_clicked()
+{
+    AddStockDialog dialog(&store, this);
+
+    int result = dialog.exec();
+
+    if (result == QDialog::Accepted)
+    {
+        QString productId = dialog.getSelectedProductId();
+        int quantityToAdd = dialog.getQuantity();
+
+        Product* p = store.findProductById(productId);
+        if (p)
+        {
+            p->setQuantity(p->getQuantity() + quantityToAdd);
+            loadProductsFromStore(curTableProduct);
+        }
+    }
+}
+
+void MainWindow::on_ThongKe_clicked()
+{
+    double totalRevenue = store.getTotalRevenue();
+    ThongKe dialog(totalRevenue, this);
+    dialog.exec();
+}
+
+void MainWindow::on_KhachHang_clicked()
+{
+    CustomerDialog dialog(&store, this);
+    dialog.exec();
+}
+
