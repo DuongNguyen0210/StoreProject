@@ -3,12 +3,17 @@
 
 #include <QMainWindow>
 #include <QStandardItemModel>
+#include <QGridLayout>
 
 #include "Store.h"
 #include "Food.h"
 #include "Beverage.h"
 #include "HouseholdItem.h"
 #include "Bill.h"
+
+#include "addProductToStore.h"
+#include "ThongKe.h"
+#include "AddCustomerToStore.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -30,6 +35,12 @@ private:
     QStandardItemModel *modelHoaDon;
     QStandardItemModel *modelLastBill;
 
+    QGridLayout* productsLayout = nullptr;
+    static constexpr int PRODUCT_COLUMNS = 4;
+    void clearProductsGrid();
+    void addProductCard(Product* p);
+    QString getProductTypeName(Product* p) const;
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -43,7 +54,7 @@ private slots:
     void on_btnMenu_clicked();
     void on_btnOrder_clicked();
 
-    void onSanPhamDoubleClicked(const QModelIndex &index);
+    void onAddSanPham(Product *p);
     void onRemoveSanPhamDoubleClicked(const QModelIndex &index);
     void onTimKhachPressed();
     void onDungDiemClicked();
@@ -53,6 +64,9 @@ private slots:
     void onThanhToanTheClicked();
     void onThanhToanClicked();
 
+    void on_ThemHang_clicked();
+    void on_ThongKe_clicked();
+    void on_KhachHang_clicked();
 
 private:
     void setupTable();

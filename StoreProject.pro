@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    AddCustomerToStore.cpp \
     Beverage.cpp \
     Bill.cpp \
     BillItem.cpp \
@@ -20,11 +21,14 @@ SOURCES += \
     Payment.cpp \
     Product.cpp \
     Store.cpp \
+    ThongKe.cpp \
     User.cpp \
+    addProductToStore.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
+    AddCustomerToStore.h \
     Beverage.h \
     Bill.h \
     BillItem.h \
@@ -37,11 +41,16 @@ HEADERS += \
     Payment.h \
     Product.h \
     Store.h \
+    ThongKe.h \
     User.h \
+    addProductToStore.h \
     hashtable.h \
     mainwindow.h
 
 FORMS += \
+    AddCustomerToStore.ui \
+    ThongKe.ui \
+    addProductToStore.ui \
     mainwindow.ui
 
 # Default rules for deployment.
@@ -51,3 +60,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Resource.qrc
+
+DISTFILES += \
+    ../Store/Icon/banhmi.png

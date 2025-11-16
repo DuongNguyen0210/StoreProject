@@ -31,7 +31,7 @@ public:
     void setCustomer(Customer* c);
 
     void addItem(Product* p, int quantity);
-    void removeItem(Product* p, int quantity);
+    void removeItem(Product* p);
     const std::vector<BillItem>& getItems() const;
 
     double getSubTotal() const;
