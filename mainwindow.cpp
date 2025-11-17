@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     setupTable();
     setupHoaDonTable();
-
+    ui->frameMenu->hide();
     connect(ui->ToanBo, &QPushButton::clicked, this, [this]() {
         ui->ToanBo->setChecked(true);
         ui->DoAn->setChecked(false);
@@ -67,6 +67,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         on_DoGiaDung_clicked();
     });
 
+    connect(ui->btnToggleMenu, &QPushButton::clicked, this, &MainWindow::onToggleMenuClicked);
+    connect(ui->btnCancelOrder, &QPushButton::clicked, this, &MainWindow::onCancelOrderClicked);
+
+    connect(ui->tableViewProduct, &QTableView::doubleClicked, this, &MainWindow::onAddSanPham);
+    connect(ui->SearchText, &QLineEdit::returnPressed, this, &MainWindow::on_BtnSearch_clicked);
+    connect(ui->tableViewOrder, &QTableView::doubleClicked, this, &MainWindow::onRemoveSanPhamDoubleClicked);
+
+    connect(ui->txtSearchCustomer, &QLineEdit::returnPressed, this, &MainWindow::onTimKhachPressed);
+    connect(ui->btnDungDiem, &QPushButton::clicked, this, &MainWindow::onDungDiemClicked);
+    connect(ui->ExportOrder, &QPushButton::clicked, this, &MainWindow::onXuatHoaDonClicked);
+
+    connect(ui->btnBack, &QPushButton::clicked, this, &MainWindow::onQuayLaiClicked);
+    connect(ui->btnCash, &QPushButton::clicked, this, &MainWindow::onThanhToanTienMatClicked);
+    connect(ui->btnCard, &QPushButton::clicked, this, &MainWindow::onThanhToanTheClicked);
+    connect(ui->btnExport, &QPushButton::clicked, this, &MainWindow::onThanhToanClicked);
+
     store.addProduct(new Food("", "Bánh mì", 10000, 50, "01/01/2026"));
     store.addProduct(new Food("", "Xúc xích", 12000, 40, "15/01/2026"));
     store.addProduct(new Beverage("", "Coca-Cola", 15000, 30, "01/01/2026", 330));
@@ -82,19 +98,32 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
     ui->stackedWidgeOrder->setCurrentIndex(curTableProduct);
+}
 
-    connect(ui->tableViewProduct, &QTableView::doubleClicked, this, &MainWindow::onAddSanPham);
-    connect(ui->SearchText, &QLineEdit::returnPressed, this, &MainWindow::on_BtnSearch_clicked);
-    connect(ui->tableViewOrder, &QTableView::doubleClicked, this, &MainWindow::onRemoveSanPhamDoubleClicked);
+void MainWindow::onToggleMenuClicked()
+{
+    bool isVisible = ui->frameMenu->isVisible();
+    ui->frameMenu->setVisible(!isVisible);
+}
 
-    connect(ui->txtSearchCustomer, &QLineEdit::returnPressed, this, &MainWindow::onTimKhachPressed);
-    connect(ui->btnDungDiem, &QPushButton::clicked, this, &MainWindow::onDungDiemClicked);
-    connect(ui->ExportOrder, &QPushButton::clicked, this, &MainWindow::onXuatHoaDonClicked);
+void MainWindow::onCancelOrderClicked()
+{
+    if (currentBill->getCustomer() == nullptr &&  currentBill->getItems().empty())
+    {
+        QMessageBox::information(this, "Thông báo", "Hóa đơn đang trống.");
+        return;
+    }
 
-    connect(ui->btnBack, &QPushButton::clicked, this, &MainWindow::onQuayLaiClicked);
-    connect(ui->btnCash, &QPushButton::clicked, this, &MainWindow::onThanhToanTienMatClicked);
-    connect(ui->btnCard, &QPushButton::clicked, this, &MainWindow::onThanhToanTheClicked);
-    connect(ui->btnExport, &QPushButton::clicked, this, &MainWindow::onThanhToanClicked);
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Xác nhận hủy",
+                                  "Bạn có chắc muốn hủy hóa đơn này?\nTất cả sản phẩm sẽ được trả về kho.",
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes)
+    {
+        resetHoaDon();
+        QMessageBox::information(this, "Thành công", "Đã hủy hóa đơn và trả hàng về kho.");
+    }
 }
 
 MainWindow::~MainWindow()

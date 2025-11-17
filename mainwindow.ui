@@ -49,7 +49,7 @@
        </size>
       </property>
       <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
+       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayoutMenu">
        <property name="spacing">
@@ -73,17 +73,17 @@
           <string>CỬA HÀNG TẠP HÓA</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
        <item>
         <spacer name="spacer1">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeType">
-          <enum>QSizePolicy::Fixed</enum>
+          <enum>QSizePolicy::Policy::Fixed</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -147,7 +147,7 @@
        <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -163,7 +163,7 @@
     <item>
      <widget class="QFrame" name="frameCenter">
       <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
+       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayoutCenter">
        <property name="spacing">
@@ -182,10 +182,29 @@
         <number>15</number>
        </property>
        <item>
-        <layout class="QHBoxLayout" name="layoutSearch">
+        <layout class="QHBoxLayout" name="layoutTopBar">
          <property name="spacing">
           <number>10</number>
          </property>
+         <item>
+          <widget class="QPushButton" name="btnToggleMenu">
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>45</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>45</width>
+             <height>45</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>☰</string>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QLineEdit" name="SearchText">
            <property name="minimumSize">
@@ -195,7 +214,7 @@
             </size>
            </property>
            <property name="placeholderText">
-            <string>🔍 Tìm kiếm sản phẩm...</string>
+            <string>Tìm kiếm sản phẩm...</string>
            </property>
           </widget>
          </item>
@@ -297,6 +316,15 @@
          <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
+         <attribute name="horizontalHeaderMinimumSectionSize">
+          <number>50</number>
+         </attribute>
+         <attribute name="verticalHeaderMinimumSectionSize">
+          <number>50</number>
+         </attribute>
+         <attribute name="verticalHeaderDefaultSectionSize">
+          <number>50</number>
+         </attribute>
         </widget>
        </item>
       </layout>
@@ -317,7 +345,7 @@
        </size>
       </property>
       <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
+       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayoutOrder">
        <property name="spacing">
@@ -336,27 +364,84 @@
         <number>15</number>
        </property>
        <item>
+        <layout class="QHBoxLayout" name="layoutOrderHeader">
+         <item>
+          <widget class="QLabel" name="lblOrderTitle">
+           <property name="text">
+            <string>HÓA ĐƠN</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnCancelOrder">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>45</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>150</width>
+             <height>45</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Hủy Hóa Đơn</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QStackedWidget" name="stackedWidgeOrder">
          <property name="currentIndex">
           <number>0</number>
          </property>
          <widget class="QWidget" name="ChuanBiHoaDon">
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <property name="spacing">
-            <number>10</number>
-           </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <widget class="QLineEdit" name="txtSearchCustomer">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>45</height>
-              </size>
-             </property>
-             <property name="placeholderText">
-              <string>👤 Tìm khách hàng (Tên/SĐT)...</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QLineEdit" name="txtSearchCustomer">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>45</height>
+                </size>
+               </property>
+               <property name="placeholderText">
+                <string>Tên khách hàng</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="txtSearchPhoneCustomer">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>45</height>
+                </size>
+               </property>
+               <property name="placeholderText">
+                <string>Số điện thoại</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <layout class="QHBoxLayout" name="layoutCustomerInfo">
@@ -381,6 +466,15 @@
              <property name="alternatingRowColors">
               <bool>true</bool>
              </property>
+             <attribute name="horizontalHeaderMinimumSectionSize">
+              <number>50</number>
+             </attribute>
+             <attribute name="verticalHeaderMinimumSectionSize">
+              <number>50</number>
+             </attribute>
+             <attribute name="verticalHeaderDefaultSectionSize">
+              <number>50</number>
+             </attribute>
             </widget>
            </item>
            <item>
@@ -398,33 +492,37 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="btnDungDiem">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>45</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Dùng 100.000 điểm (Giảm 2%)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="ExportOrder">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>45</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Xuất Hóa Đơn</string>
-             </property>
-            </widget>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <widget class="QPushButton" name="btnDungDiem">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>45</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Dùng 100.000 điểm (Giảm 2%)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="ExportOrder">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>45</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Xuất Hóa Đơn</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -438,6 +536,15 @@
              <property name="alternatingRowColors">
               <bool>true</bool>
              </property>
+             <attribute name="horizontalHeaderMinimumSectionSize">
+              <number>50</number>
+             </attribute>
+             <attribute name="verticalHeaderMinimumSectionSize">
+              <number>50</number>
+             </attribute>
+             <attribute name="verticalHeaderDefaultSectionSize">
+              <number>50</number>
+             </attribute>
             </widget>
            </item>
            <item>

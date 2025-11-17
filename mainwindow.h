@@ -60,6 +60,9 @@ private slots:
     void on_ThongKe_clicked();
     void on_KhachHang_clicked();
 
+    void onToggleMenuClicked();
+    void onCancelOrderClicked();
+
 private:
     void setupTable();
     void setupHoaDonTable();
