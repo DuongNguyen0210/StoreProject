@@ -2,10 +2,10 @@
 #define STORE_H
 
 #include <QString>
+#include <vector>
 #include "HashTable.h"
 #include "Bill.h"
 #include <functional>
-
 
 class Product;
 class Customer;
@@ -26,6 +26,8 @@ private:
 
     HashTable<User*> userByName;
     HashTable<User*> userById;
+
+    std::vector<Bill*> billHistory;  // Thêm lịch sử hóa đơn
 
     static QString normalizeName(const QString& s);
 
@@ -75,6 +77,10 @@ public:
     {
         userById.forEach(f);
     }
+
+    // Các hàm cho billHistory
+    void addBillToHistory(Bill* bill);
+    const std::vector<Bill*>& getBillHistory() const;
 };
 
 #endif

@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "Manager.h"
 
 #include <QHeaderView>
 #include <QStandardItem>
@@ -24,17 +25,22 @@
 #include "Exceptions.h"
 #include "Payment.h"
 #include "Customer.h"
+#include "HashTable.h"
 
 #include "AddProductToStore.h"
 #include "ThongKe.h"
 #include "AddCustomerToStore.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), modelTable(nullptr), curTableProduct(0)
+MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::MainWindow), modelTable(nullptr),
+    curTableProduct(0), store(storePtr), currentUser(user)
 {
     ui->setupUi(this);
     setupTable();
     setupHoaDonTable();
     ui->frameMenu->hide();
+
+    // Tất cả các connect giữ nguyên...
     connect(ui->ToanBo, &QPushButton::clicked, this, [this]() {
         ui->ToanBo->setChecked(true);
         ui->DoAn->setChecked(false);
@@ -69,36 +75,62 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(ui->btnToggleMenu, &QPushButton::clicked, this, &MainWindow::onToggleMenuClicked);
     connect(ui->btnCancelOrder, &QPushButton::clicked, this, &MainWindow::onCancelOrderClicked);
-
     connect(ui->tableViewProduct, &QTableView::doubleClicked, this, &MainWindow::onAddSanPham);
     connect(ui->SearchText, &QLineEdit::returnPressed, this, &MainWindow::on_BtnSearch_clicked);
     connect(ui->tableViewOrder, &QTableView::doubleClicked, this, &MainWindow::onRemoveSanPhamDoubleClicked);
-
     connect(ui->txtSearchCustomer, &QLineEdit::returnPressed, this, &MainWindow::onTimKhachPressed);
     connect(ui->btnDungDiem, &QPushButton::clicked, this, &MainWindow::onDungDiemClicked);
     connect(ui->ExportOrder, &QPushButton::clicked, this, &MainWindow::onXuatHoaDonClicked);
-
     connect(ui->btnBack, &QPushButton::clicked, this, &MainWindow::onQuayLaiClicked);
     connect(ui->btnCash, &QPushButton::clicked, this, &MainWindow::onThanhToanTienMatClicked);
     connect(ui->btnCard, &QPushButton::clicked, this, &MainWindow::onThanhToanTheClicked);
     connect(ui->btnExport, &QPushButton::clicked, this, &MainWindow::onThanhToanClicked);
 
-    store.addProduct(new Food("", "Bánh mì", 10000, 50, "01/01/2026"));
-    store.addProduct(new Food("", "Xúc xích", 12000, 40, "15/01/2026"));
-    store.addProduct(new Beverage("", "Coca-Cola", 15000, 30, "01/01/2026", 330));
-    store.addProduct(new HouseholdItem("", "Nước rửa chén", 30000, 20, 12));
-    store.addProduct(new Food("", "Kẹo Cao Su", 50000, 10, "15/01/2026"));
+    // Thêm sản phẩm mẫu (nếu chưa có)
+    if (store->findProductByName("Bánh mì") == nullptr)
+    {
+        store->addProduct(new Food("", "Bánh mì", 10000, 50, "01/01/2026"));
+        store->addProduct(new Food("", "Xúc xích", 12000, 40, "15/01/2026"));
+        store->addProduct(new Beverage("", "Coca-Cola", 15000, 30, "01/01/2026", 330));
+        store->addProduct(new HouseholdItem("", "Nước rửa chén", 30000, 20, 12));
+        store->addProduct(new Food("", "Kẹo Cao Su", 50000, 10, "15/01/2026"));
+    }
 
-    store.addCustomer(new Customer("C1", "Khách Vip", "0905123456", 110000));
-    store.addCustomer(new Customer("C2", "Khách Thường", "0905654321", 10000));
+    // Thêm khách hàng mẫu (nếu chưa có)
+    if (store->findCustomerByPhone("0905123456") == nullptr)
+    {
+        store->addCustomer(new Customer("C1", "Khách Vip", "0905123456", 110000));
+        store->addCustomer(new Customer("C2", "Khách Thường", "0905654321", 10000));
+    }
 
     loadProductsFromStore(0);
 
-    currentBill = new Bill(nullptr);
-
+    // Tạo hóa đơn mới với người tạo là currentUser
+    currentBill = new Bill(nullptr, "", currentUser);
 
     ui->stackedWidgeOrder->setCurrentIndex(curTableProduct);
+
+    // Áp dụng phân quyền (Task 5)
+    applyPermissions();
 }
+
+void MainWindow::applyPermissions()
+{
+    // Kiểm tra xem user có phải là Manager không
+    bool isAdmin = (dynamic_cast<Manager*>(currentUser) != nullptr);
+
+    // Ẩn/hiện các nút quản lý
+    ui->ThemHang->setVisible(isAdmin);
+    ui->ThongKe->setVisible(isAdmin);
+    ui->KhachHang->setVisible(isAdmin);
+
+    // Hiển thị thông tin user đăng nhập
+    QString userInfo = QString("%1 (%2)")
+                           .arg(currentUser->getName())
+                           .arg(isAdmin ? "Quản lý" : "Nhân viên");
+    ui->lblStoreName->setText(QString("CỬA HÀNG TẠP HÓA\n%1").arg(userInfo));
+}
+
 
 void MainWindow::onToggleMenuClicked()
 {
@@ -110,7 +142,9 @@ void MainWindow::onCancelOrderClicked()
 {
     if (currentBill->getCustomer() == nullptr &&  currentBill->getItems().empty())
     {
-        QMessageBox::information(this, "Thông báo", "Hóa đơn đang trống.");
+        ui->txtSearchCustomer->clear();
+        ui->txtSearchPhoneCustomer->clear();
+        ui->lblTenKhach->setText("Khách Lẻ");
         return;
     }
 
@@ -221,31 +255,34 @@ void MainWindow::updateLastBillView()
 void MainWindow::resetHoaDon()
 {
     ui->txtSearchCustomer->clear();
+    ui->txtSearchPhoneCustomer->clear();
     ui->btnDungDiem->setEnabled(false);
     ui->stackedWidgeOrder->setCurrentIndex(0);
     ui->lblTenKhach->setText("Khách lẻ");
     ui->lblDiemKhach->setText(nullptr);
     ui->TotalBefore->setText(nullptr);
     ui->TotalAfter->setText(nullptr);
+
     std::vector<BillItem> billitems = currentBill->getItems();
     for(size_t i = 0; i < billitems.size(); i++)
     {
-        Product* p = store.findProductByName(billitems[i].getProduct()->getName());
+        Product* p = store->findProductByName(billitems[i].getProduct()->getName());
         p->setQuantity(p->getQuantity() + billitems[i].getQuantity());
     }
+
     Customer *c = currentBill->getCustomer();
     if(c && currentBill->getCheck())
         c->setPoints(c->getPoints() + 100000);
 
     delete currentBill;
-    currentBill = new Bill(nullptr);
+    currentBill = new Bill(nullptr, "", currentUser);  // Tạo bill mới với currentUser
     updateHoaDonView();
 }
 
 void MainWindow::loadProductsFromStore(int typeFilter)
 {
     modelTable->removeRows(0, modelTable->rowCount());
-    store.forEachProduct([&](const QString&, Product* p)
+    store->forEachProduct([&](const QString&, Product* p)
                         {
                             if (!p) return;
                             bool ok = false;
@@ -293,7 +330,7 @@ void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
     }
     modelTable->removeRows(0, modelTable->rowCount());
     qDebug() << kw << '\n';
-    store.forEachProductByName(kw, [&](const QString&, Product* p)
+    store->forEachProductByName(kw, [&](const QString&, Product* p)
                                 {
                                     if (!p)
                                        return;
@@ -359,7 +396,7 @@ void MainWindow::onAddSanPham(const QModelIndex &index)
         return;
     QString Id = modelTable->item(index.row(), 0)->text();
     qDebug() << Id << '\n';
-    Product* p = store.findProductById(Id);
+    Product* p = store->findProductById(Id);
 
     int maxStock = p->getQuantity();
     if (maxStock <= 0)
@@ -381,7 +418,7 @@ void MainWindow::onAddSanPham(const QModelIndex &index)
 void MainWindow::onRemoveSanPhamDoubleClicked(const QModelIndex &index)
 {
     QString name = modelHoaDon->item(index.row(), 0)->text();
-    Product* p = store.findProductByName(name);
+    Product* p = store->findProductByName(name);
     currentBill->removeItem(p);
     loadProductsFromStore(curTableProduct);
     updateHoaDonView();
@@ -389,30 +426,39 @@ void MainWindow::onRemoveSanPhamDoubleClicked(const QModelIndex &index)
 
 void MainWindow::onTimKhachPressed()
 {
-    QString key = ui->txtSearchCustomer->text().trimmed();
-    if (key.isEmpty())
+    qDebug() << 1 << '\n';
+    QString phone = ui->txtSearchPhoneCustomer->text().trimmed();
+    QString name = ui->txtSearchCustomer->text().trimmed();
+    if (phone.isEmpty() || name.isEmpty())
         return;
 
-    Customer* c = store.findCustomerByName(key);
+    Customer* c = store->findCustomerByPhone(phone);
     if (c == nullptr)
-        c = store.findCustomerByPhone(key);
-
-    if (c)
-    {
-        currentBill->setCustomer(c);
-        ui->lblTenKhach->setText(c->getName());
-        ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));
-        if (c->getPoints() >= 100000)
-            ui->btnDungDiem->setEnabled(true);
-        else
-            ui->btnDungDiem->setEnabled(false);
-    }
-    else
     {
         currentBill->setCustomer(nullptr);
         ui->lblTenKhach->setText("Không tìm thấy!");
+        ui->lblDiemKhach->setText("");
         ui->btnDungDiem->setEnabled(false);
+        return;
     }
+
+    if (c->getName().toLower() != name.toLower())
+    {
+        currentBill->setCustomer(nullptr);
+        ui->lblTenKhach->setText("Thông tin không khớp!");
+        ui->lblDiemKhach->setText("");
+        ui->btnDungDiem->setEnabled(false);
+        return;
+    }
+
+    currentBill->setCustomer(c);
+    ui->lblTenKhach->setText(c->getName());
+    ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));
+
+    if (c->getPoints() >= 100000)
+        ui->btnDungDiem->setEnabled(true);
+    else
+        ui->btnDungDiem->setEnabled(false);
 }
 
 void MainWindow::onDungDiemClicked()
@@ -474,7 +520,7 @@ void MainWindow::onThanhToanClicked()
 void MainWindow::finalizeThanhToan(const QString& paymentMethod)
 {
     double finalTotal = currentBill->getTotal();
-    store.addRevenue(finalTotal);
+    store->addRevenue(finalTotal);
 
     Customer* c = currentBill->getCustomer();
     if (c != nullptr)
@@ -482,9 +528,15 @@ void MainWindow::finalizeThanhToan(const QString& paymentMethod)
         int pointsToAdd = static_cast<int>(finalTotal * 0.10);
         c->addPoints(pointsToAdd);
     }
-    delete currentBill;
-    currentBill = new Bill(nullptr);
-    QMessageBox::information(this, "Thành công", QString("Đã thanh toán %1 đồng bằng %2").arg(finalTotal).arg(paymentMethod));
+
+    // TASK 4: Thêm hóa đơn vào lịch sử thay vì xóa
+    store->addBillToHistory(currentBill);
+
+    // Tạo hóa đơn mới
+    currentBill = new Bill(nullptr, "", currentUser);
+
+    QMessageBox::information(this, "Thành công",
+                             QString("Đã thanh toán %1 đồng bằng %2").arg(finalTotal).arg(paymentMethod));
 }
 
 void MainWindow::on_ThemHang_clicked()
@@ -502,18 +554,18 @@ void MainWindow::on_ThemHang_clicked()
         if (type == "Đồ ăn")
         {
             QString expiry = dialog.getExpiryDate();
-            store.addProduct(new Food("", name, price, quantity, expiry));
+            store->addProduct(new Food("", name, price, quantity, expiry));
         }
         else if (type == "Thức uống")
         {
             QString expiry = dialog.getExpiryDate();
             double volume = dialog.getVolume();
-            store.addProduct(new Beverage("", name, price, quantity, expiry, volume));
+            store->addProduct(new Beverage("", name, price, quantity, expiry, volume));
         }
         else if (type == "Đồ gia dụng")
         {
             int warranty = dialog.getWarranty();
-            store.addProduct(new HouseholdItem("", name, price, quantity, warranty));
+            store->addProduct(new HouseholdItem("", name, price, quantity, warranty));
         }
         loadProductsFromStore(curTableProduct);
     }
@@ -521,14 +573,13 @@ void MainWindow::on_ThemHang_clicked()
 
 void MainWindow::on_ThongKe_clicked()
 {
-    double totalRevenue = store.getTotalRevenue();
-    ThongKe dialog(totalRevenue, this);
+    ThongKe dialog(store, this);
     dialog.exec();
 }
 
 void MainWindow::on_KhachHang_clicked()
 {
-    CustomerDialog dialog(&store, this);
+    CustomerDialog dialog(store, this);
     dialog.exec();
 }
 

@@ -10,6 +10,7 @@
 #include "Beverage.h"
 #include "HouseholdItem.h"
 #include "Bill.h"
+#include "User.h"
 
 #include "AddProductToStore.h"
 #include "ThongKe.h"
@@ -30,13 +31,14 @@ private:
     Ui::MainWindow *ui;
     QStandardItemModel *modelTable;
     int curTableProduct;
-    Store store;
+    Store* store;  // Thay đổi thành pointer
     Bill *currentBill;
     QStandardItemModel *modelHoaDon;
     QStandardItemModel *modelLastBill;
+    User* currentUser;  // Thêm user hiện tại (Task 5)
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(User* user, Store* store, QWidget *parent = nullptr);  // Cập nhật constructor
     ~MainWindow();
 
 private slots:
@@ -76,6 +78,8 @@ private:
 
     void resetHoaDon();
     void finalizeThanhToan(const QString& paymentMethod);
+
+    void applyPermissions();  // Thêm hàm phân quyền (Task 5)
 };
 
 #endif

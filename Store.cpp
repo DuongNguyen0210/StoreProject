@@ -11,7 +11,6 @@
 #include <typeinfo>
 #include <qstring.h>
 
-
 static QString toLowerCopy(const QString& s)
 {
     return s.toLower();
@@ -40,6 +39,11 @@ Store::~Store() {
     userById.forEach([](const QString&, User* u) {
         delete u;
     });
+    // Xóa billHistory
+    for (Bill* bill : billHistory) {
+        delete bill;
+    }
+    billHistory.clear();
 }
 
 const QString& Store::getName() const {
@@ -195,4 +199,17 @@ void Store::addRevenue(double amount)
 double Store::getTotalRevenue() const
 {
     return totalRevenue;
+}
+
+void Store::addBillToHistory(Bill* bill)
+{
+    if (bill)
+    {
+        billHistory.push_back(bill);
+    }
+}
+
+const std::vector<Bill*>& Store::getBillHistory() const
+{
+    return billHistory;
 }

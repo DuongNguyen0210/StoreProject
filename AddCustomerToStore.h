@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QStandardItemModel>
+#include <QTimer>
 #include "Store.h"
 
 namespace Ui {
