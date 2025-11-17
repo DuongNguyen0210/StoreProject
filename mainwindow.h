@@ -11,7 +11,7 @@
 #include "HouseholdItem.h"
 #include "Bill.h"
 
-#include "addProductToStore.h"
+#include "AddProductToStore.h"
 #include "ThongKe.h"
 #include "AddCustomerToStore.h"
 

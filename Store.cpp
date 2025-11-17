@@ -46,11 +46,13 @@ const QString& Store::getName() const {
     return name;
 }
 
-void Store::setName(const QString& n) {
+void Store::setName(const QString& n)
+{
     name = n;
 }
 
-void Store::addProduct(Product* p) {
+void Store::addProduct(Product* p)
+{
     if (!p) return;
 
     if (productById.containsKey(p->getId()))
@@ -60,31 +62,32 @@ void Store::addProduct(Product* p) {
     }
 
     Product* existingProductToMerge = nullptr;
-    productByName.forEachInKeyGroup(p->getName(), [&](const QString&, Product* exist) {
-        if (existingProductToMerge)
-            return;
+    productByName.forEachInKeyGroup(p->getName(), [&](const QString&, Product* exist)
+                                    {
+                                        if (existingProductToMerge)
+                                            return;
 
-        if (typeid(*exist) != typeid(*p))
-            return;
-        if (auto f1 = dynamic_cast<Food*>(exist))
-        {
-            auto f2 = dynamic_cast<Food*>(p);
-            if (f2 && f1->getBasePrice() == f2->getBasePrice() && f1->getExpiryDate() == f2->getExpiryDate())
-                existingProductToMerge = exist;
-        }
-        else if (auto b1 = dynamic_cast<Beverage*>(exist))
-        {
-            auto b2 = dynamic_cast<Beverage*>(p);
-            if (b2 && b1->getBasePrice() == b2->getBasePrice() && b1->getVolume() == b2->getVolume())
-                existingProductToMerge = exist;
-        }
-        else if (auto h1 = dynamic_cast<HouseholdItem*>(exist))
-        {
-            auto h2 = dynamic_cast<HouseholdItem*>(p);
-            if (h2 && h1->getBasePrice() == h2->getBasePrice() && h1->getWarrantyMonths() == h2->getWarrantyMonths())
-                existingProductToMerge = exist;
-        }
-    });
+                                        if (typeid(*exist) != typeid(*p))
+                                            return;
+                                        if (auto f1 = dynamic_cast<Food*>(exist))
+                                        {
+                                            auto f2 = dynamic_cast<Food*>(p);
+                                            if (f2 && f1->getBasePrice() == f2->getBasePrice() && f1->getExpiryDate() == f2->getExpiryDate())
+                                                existingProductToMerge = exist;
+                                        }
+                                        else if (auto b1 = dynamic_cast<Beverage*>(exist))
+                                        {
+                                            auto b2 = dynamic_cast<Beverage*>(p);
+                                            if (b2 && b1->getBasePrice() == b2->getBasePrice() && b1->getVolume() == b2->getVolume() && b1->getExpiryDate() == b2->getExpiryDate())
+                                                existingProductToMerge = exist;
+                                        }
+                                        else if (auto h1 = dynamic_cast<HouseholdItem*>(exist))
+                                        {
+                                            auto h2 = dynamic_cast<HouseholdItem*>(p);
+                                            if (h2 && h1->getBasePrice() == h2->getBasePrice() && h1->getWarrantyMonths() == h2->getWarrantyMonths())
+                                                existingProductToMerge = exist;
+                                        }
+                                    });
 
     if (existingProductToMerge)
     {

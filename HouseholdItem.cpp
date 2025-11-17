@@ -3,8 +3,8 @@
 
 using namespace std;
 
-HouseholdItem::HouseholdItem(const QString &id, const QString &name, double basePrice, int quantity, const QString& imageFile, int warrantyMonths)
-    : Product(id, name, basePrice, quantity, imageFile), warrantyMonths(warrantyMonths) {}
+HouseholdItem::HouseholdItem(const QString &id, const QString &name, double basePrice, int quantity, int warrantyMonths)
+    : Product(id, name, basePrice, quantity), warrantyMonths(warrantyMonths) {}
 
 int HouseholdItem::getWarrantyMonths() const
 {

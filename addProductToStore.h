@@ -2,26 +2,37 @@
 #define ADDPRODUCTTOSTORE_H
 
 #include <QDialog>
-#include "Store.h"
+#include <QString>
 
-namespace Ui {
-class AddStockDialog;
+namespace Ui
+{
+    class AddProductToStore;
 }
 
-class AddStockDialog : public QDialog
+class AddProductToStore : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit AddStockDialog(Store* store, QWidget *parent = nullptr);
-    ~AddStockDialog();
+    explicit AddProductToStore(QWidget *parent = nullptr);
+    ~AddProductToStore();
 
-    QString getSelectedProductId() const;
+    QString getProductType() const;
+    QString getName() const;
+    double getPrice() const;
     int getQuantity() const;
 
+    QString getExpiryDate() const;
+    double getVolume() const;
+    int getWarranty() const;
+
+private slots:
+    void on_Type_currentIndexChanged();
+    void setFieldsForType(int typeIndex);
+    void validateForm();
+
 private:
-    Ui::AddStockDialog *ui;
-    Store* m_store;
+    Ui::AddProductToStore *ui;
 };
 
 #endif

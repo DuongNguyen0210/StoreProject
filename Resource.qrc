@@ -6,12 +6,5 @@
         <file>rating.png</file>
         <file>report.png</file>
         <file>add-product.png</file>
-        <file>banhmi.png</file>
-        <file>nuocruachen.png</file>
-        <file>xucxich.png</file>
-        <file>coca.png</file>
-        <file>keocaosu.png</file>
     </qresource>
-    <qresource prefix="/"/>
-    <qresource prefix="/icon"/>
 </RCC>

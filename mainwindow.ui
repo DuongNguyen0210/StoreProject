@@ -14,7 +14,7 @@
    <string>Cửa hàng tạp hóa</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="Resource.qrc">
     <normaloff>:/icons/store.png</normaloff>:/icons/store.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -26,7 +26,7 @@
      <widget class="QTableView" name="tableViewProduct"/>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="NutDieuKhienChinh">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QPushButton" name="btnMenu">
         <property name="sizePolicy">
@@ -48,7 +48,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="Resource.qrc">
           <normaloff>:/icons/store.png</normaloff>:/icons/store.png</iconset>
         </property>
        </widget>
@@ -65,7 +65,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="Resource.qrc">
           <normaloff>:/icons/bag.png</normaloff>:/icons/bag.png</iconset>
         </property>
        </widget>
@@ -73,7 +73,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="NutTimKiem">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
        <widget class="QPushButton" name="ToanBo">
         <property name="sizePolicy">
@@ -165,7 +165,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="TimKiemSanPham">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
        <widget class="QLineEdit" name="SearchText">
         <property name="minimumSize">
@@ -203,7 +203,7 @@
          <string>Tìm</string>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="Resource.qrc">
           <normaloff>:/icons/loupe.png</normaloff>:/icons/loupe.png</iconset>
         </property>
        </widget>
@@ -231,7 +231,7 @@
     </size>
    </property>
    <property name="windowIcon">
-    <iconset>
+    <iconset resource="Resource.qrc">
      <normaloff>:/icons/store.png</normaloff>:/icons/store.png</iconset>
    </property>
    <property name="styleSheet">
@@ -260,7 +260,7 @@
         <string>Thống Kê Lợi Nhuận</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="Resource.qrc">
          <normaloff>:/icons/report.png</normaloff>:/icons/report.png</iconset>
        </property>
       </widget>
@@ -277,7 +277,7 @@
         <string>Thêm Hàng Vào Kho</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="Resource.qrc">
          <normaloff>:/icons/add-product.png</normaloff>:/icons/add-product.png</iconset>
        </property>
       </widget>
@@ -294,7 +294,7 @@
         <string>Khách Hàng</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="Resource.qrc">
          <normaloff>:/icons/rating.png</normaloff>:/icons/rating.png</iconset>
        </property>
       </widget>
@@ -310,7 +310,7 @@
     </size>
    </property>
    <property name="windowIcon">
-    <iconset>
+    <iconset resource="Resource.qrc">
      <normaloff>:/icons/bag.png</normaloff>:/icons/bag.png</iconset>
    </property>
    <property name="features">
@@ -531,6 +531,8 @@
    </widget>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="Resource.qrc"/>
+ </resources>
  <connections/>
 </ui>
