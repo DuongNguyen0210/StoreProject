@@ -1,5 +1,6 @@
 #include "Bill.h"
 #include "Customer.h"
+#include "User.h"
 #include "Exceptions.h"
 #include <sstream>
 
@@ -11,13 +12,16 @@ QString Bill::generateId()
     return id;
 }
 
-Bill::Bill(Customer* customer, const QString& id)
-    : customer(customer), payment(nullptr), discountPercent(0.0), check(false)
+Bill::Bill(Customer* customer, const QString& id, User* createdBy)
+    : customer(customer), payment(nullptr), discountPercent(0.0), check(false), createdBy(createdBy)
 {
     if (id.isEmpty())
         this->id = generateId();
     else
         this->id = id;
+
+    // Lưu thời gian tạo hóa đơn
+    createdDate = QDateTime::currentDateTime();
 }
 
 Bill::~Bill()
@@ -106,7 +110,6 @@ bool Bill::applyPointsDiscount(int pointsRequired)
     return true;
 }
 
-
 void Bill::setPayment(Payment* p)
 {
     delete payment;
@@ -128,4 +131,19 @@ void Bill::setCheck(const bool x)
 bool Bill::getCheck()
 {
     return check;
+}
+
+const QDateTime& Bill::getCreatedDate() const
+{
+    return createdDate;
+}
+
+User* Bill::getCreatedBy() const
+{
+    return createdBy;
+}
+
+void Bill::setCreatedBy(User* user)
+{
+    createdBy = user;
 }

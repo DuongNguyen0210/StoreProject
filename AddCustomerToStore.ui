@@ -44,17 +44,20 @@
       <item row="1" column="1">
        <widget class="QLineEdit" name="txtPhone"/>
       </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_Message">
+        <property name="styleSheet">
+         <string notr="true">color: red; font-weight: bold;</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
       <item row="3" column="1">
        <widget class="QPushButton" name="btnAddCustomer">
         <property name="text">
          <string>Thêm</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string/>
         </property>
        </widget>
       </item>

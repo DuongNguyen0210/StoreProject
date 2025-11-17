@@ -10,6 +10,10 @@ CustomerDialog::CustomerDialog(Store* store, QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Ẩn label lỗi ban đầu
+    ui->label_Message->setVisible(false);
+    ui->label_Message->setText("");
+
     setupTable();
     loadCustomers();
 }
@@ -53,22 +57,79 @@ void CustomerDialog::on_btnAddCustomer_clicked()
     QString name = ui->txtName->text().trimmed();
     QString phone = ui->txtPhone->text().trimmed();
 
+    ui->label_Message->setVisible(false);
+
     if (name.isEmpty() || phone.isEmpty())
     {
-        ui->label_3->setText(QString("Vui lòng nhập đầy đủ thông tin!"));
+        ui->label_Message->setText("Vui lòng nhập đầy đủ thông tin!");
+        ui->label_Message->setVisible(true);
+        return;
+    }
+
+    bool isValidName = true;
+    for (QChar c : std::as_const(name))
+    {
+        if (c.isDigit())
+        {
+            isValidName = false;
+            break;
+        }
+    }
+
+    bool isValidPhone = true;
+    for (QChar c : std::as_const(phone))
+    {
+        if (!c.isDigit())
+        {
+            isValidPhone = false;
+            break;
+        }
+    }
+
+    if (!isValidName)
+    {
+        ui->label_Message->setText("Tên khách hàng chỉ được chứa chữ");
+        ui->label_Message->setVisible(true);
+        return;
+    }
+
+    if (!isValidPhone)
+    {
+        ui->label_Message->setText("Số điện thoại chỉ được chứa chữ số!");
+        ui->label_Message->setVisible(true);
+        return;
+    }
+
+    if (phone.length() < 10 || phone.length() > 11)
+    {
+        ui->label_Message->setText("Số điện thoại phải có 10-11 chữ số!");
+        ui->label_Message->setVisible(true);
         return;
     }
 
     if (m_store->findCustomerByPhone(phone))
     {
-        ui->label_3->setText(QString("Số điện thoại này đã tồn tại!"));
+        ui->label_Message->setText("Số điện thoại này đã tồn tại trong hệ thống!");
+        ui->label_Message->setVisible(true);
         return;
     }
 
     Customer* c = new Customer("", name, phone, 0);
     m_store->addCustomer(c);
-    ui->label_3->setText(QString("Đã thêm khách hàng thành công!"));
+
+    ui->label_Message->setText("✓ Đã thêm khách hàng thành công!");
+    ui->label_Message->setStyleSheet("color: green; font-weight: bold; background-color: #99FF99;");
+
+    ui->label_Message->setVisible(true);
+
     loadCustomers();
+
     ui->txtName->clear();
     ui->txtPhone->clear();
+
+    QTimer::singleShot(3000, this, [this]() {
+        ui->label_Message->setText("");
+        ui->label_Message->setStyleSheet("");
+        ui->label_Message->setVisible(false);
+    });
 }

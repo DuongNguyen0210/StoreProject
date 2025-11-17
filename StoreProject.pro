@@ -24,6 +24,8 @@ SOURCES += \
     Store.cpp \
     ThongKe.cpp \
     User.cpp \
+    billdetaildialog.cpp \
+    logindialog.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -44,13 +46,17 @@ HEADERS += \
     Store.h \
     ThongKe.h \
     User.h \
+    billdetaildialog.h \
     hashtable.h \
+    logindialog.h \
     mainwindow.h
 
 FORMS += \
     AddCustomerToStore.ui \
     AddProductToStore.ui \
     ThongKe.ui \
+    billdetaildialog.ui \
+    logindialog.ui \
     mainwindow.ui
 
 # Default rules for deployment.

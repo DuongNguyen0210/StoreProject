@@ -1,7 +1,7 @@
 #include "Cashier.h"
 
-Cashier::Cashier(const QString& id, const QString& name)
-    : User(id, name) {}
+Cashier::Cashier(const QString& id, const QString& name, const QString& password)
+    : User(id, name, password) {}
 
 QString Cashier::getRole() const
 {
