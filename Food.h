@@ -12,7 +12,7 @@ private:
     QString expiryDate;
 
 public:
-    Food(const QString& id = "", const QString& name = "", double basePrice = 0.0, int quantity = 0, const QString& imageFile = "", const QString& expiryDate = "");
+    Food(const QString& id = "", const QString& name = "", double basePrice = 0.0, int quantity = 0, const QString& expiryDate = "");
 
     const QString& getExpiryDate() const;
     void setExpiryDate(const QString& d);

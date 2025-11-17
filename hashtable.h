@@ -38,7 +38,7 @@ private:
         QString s = normalizeKey(rawKey);
         size_t h = 0;
         for (QChar c : std::as_const(s))
-            h = (h * 256ULL + c.unicode()) % MOD;
+            h = (h * 311ULL + c.unicode()) % MOD;
         return h;
     }
 
@@ -199,7 +199,7 @@ public:
     void forEachInKeyGroup(const QString& key, Func func) const
     {
         QString norm = normalizeKey(key);
-        int idx = indexForKey(key);
+        int idx = indexForKey(norm);
         Node* cur = buckets[idx];
         while (cur)
         {

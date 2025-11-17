@@ -4,7 +4,18 @@
 
 using namespace std;
 
-Beverage::Beverage(const QString& id, const QString& name, double basePrice, int quantity, const QString& imageFile, double volume) : Product(id, name, basePrice, quantity, imageFile), volume(volume) {}
+Beverage::Beverage(const QString& id, const QString& name, double basePrice, int quantity, QString expiryDate, double volume)
+    : Product(id, name, basePrice, quantity), expiryDate(expiryDate), volume(volume) {}
+
+const QString& Beverage::getExpiryDate() const
+{
+    return expiryDate;
+}
+
+void Beverage::setExpiryDate(const QString& d)
+{
+    expiryDate = d;
+}
 
 double Beverage::getVolume() const
 {

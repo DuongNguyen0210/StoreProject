@@ -3,7 +3,8 @@
 #include <QString>
 using namespace std;
 
-Food::Food(const QString& id, const QString& name, double basePrice, int quantity, const QString& imageFile, const QString& expiryDate) : Product(id, name, basePrice, quantity, imageFile), expiryDate(expiryDate) {}
+Food::Food(const QString& id, const QString& name, double basePrice, int quantity, const QString& expiryDate)
+    : Product(id, name, basePrice, quantity), expiryDate(expiryDate) {}
 
 const QString& Food::getExpiryDate() const
 {

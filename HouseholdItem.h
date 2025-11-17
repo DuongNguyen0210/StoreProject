@@ -11,7 +11,7 @@ private:
     int warrantyMonths;
 
 public:
-    HouseholdItem(const QString& id = "", const QString& name = "", double basePrice = 0.0, int quantity = 0, const QString& imageFile = "", int warrantyMonths = 0);
+    HouseholdItem(const QString& id = "", const QString& name = "", double basePrice = 0.0, int quantity = 0, int warrantyMonths = 0);
 
     int getWarrantyMonths() const;
     void setWarrantyMonths(int m);

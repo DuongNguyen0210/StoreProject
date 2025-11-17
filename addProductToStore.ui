@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>AddStockDialog</class>
- <widget class="QDialog" name="AddStockDialog">
+ <class>AddProductToStore</class>
+ <widget class="QDialog" name="AddProductToStore">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>303</width>
-    <height>195</height>
+    <width>714</width>
+    <height>576</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,24 +21,74 @@
    <item row="0" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Chọn sản phẩm</string>
+      <string>Chọn loại sản phẩm</string>
      </property>
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QComboBox" name="comboProducts"/>
+    <widget class="QComboBox" name="Type"/>
    </item>
    <item row="1" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Tên sản phẩm</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="Name"/>
+   </item>
+   <item row="2" column="0">
     <widget class="QLabel" name="label_2">
      <property name="text">
       <string>Số lượng thêm</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QSpinBox" name="spinQuantity"/>
-   </item>
    <item row="2" column="1">
+    <widget class="QSpinBox" name="Quantity"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Giá tiền</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QDoubleSpinBox" name="Price"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Thể tích</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QDoubleSpinBox" name="Volume"/>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>Hạn sử dụng</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>Thời hạn bảo hành</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QSpinBox" name="Warranty"/>
+   </item>
+   <item row="5" column="1">
+    <widget class="QDateEdit" name="dateEdit"/>
+   </item>
+   <item row="7" column="1">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Orientation::Horizontal</enum>
@@ -57,7 +107,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>AddStockDialog</receiver>
+   <receiver>AddProductToStore</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -73,7 +123,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>AddStockDialog</receiver>
+   <receiver>AddProductToStore</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

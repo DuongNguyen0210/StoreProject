@@ -25,7 +25,7 @@
 #include "Payment.h"
 #include "Customer.h"
 
-#include "addProductToStore.h"
+#include "AddProductToStore.h"
 #include "ThongKe.h"
 #include "AddCustomerToStore.h"
 
@@ -35,11 +35,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setupTable();
     setupHoaDonTable();
 
-    store.addProduct(new Food("", "Bánh mì", 10000, 50, "banhmi.png", "01/01/2026"));
-    store.addProduct(new Food("", "Xúc xích", 12000, 40, "xucxich.png", "15/01/2026"));
-    store.addProduct(new Beverage("", "Coca-Cola", 15000, 30, "coca.png", 330));
-    store.addProduct(new HouseholdItem("", "Nước rửa chén", 30000, 20, "nuocruachen.png", 12));
-    store.addProduct(new Food("", "Kẹo Cao Su", 50000, 10, "keocaosu.png", "15/01/2026"));
+    store.addProduct(new Food("", "Bánh mì", 10000, 50, "01/01/2026"));
+    store.addProduct(new Food("", "Xúc xích", 12000, 40, "15/01/2026"));
+    store.addProduct(new Beverage("", "Coca-Cola", 15000, 30, "01/01/2026", 330));
+    store.addProduct(new HouseholdItem("", "Nước rửa chén", 30000, 20, 12));
+    store.addProduct(new Food("", "Kẹo Cao Su", 50000, 10, "15/01/2026"));
 
     store.addCustomer(new Customer("C1", "Khách Vip", "0905123456", 110000));
     store.addCustomer(new Customer("C2", "Khách Thường", "0905654321", 10000));
@@ -188,34 +188,40 @@ void MainWindow::loadProductsFromStore(int typeFilter)
 {
     modelTable->removeRows(0, modelTable->rowCount());
     store.forEachProduct([&](const QString&, Product* p)
-                         {
-                             if (!p) return;
-                             bool ok = false;
-                             Food* f = dynamic_cast<Food*>(p);
-                             Beverage* b = dynamic_cast<Beverage*>(p);
-                             HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
-                             if (typeFilter == 0) ok = true;
-                             else if (typeFilter == 1 && f) ok = true;
-                             else if (typeFilter == 2 && b) ok = true;
-                             else if (typeFilter == 3 && h) ok = true;
-                             if (!ok) return;
+                        {
+                            if (!p) return;
+                            bool ok = false;
+                            Food* f = dynamic_cast<Food*>(p);
+                            Beverage* b = dynamic_cast<Beverage*>(p);
+                            HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
+                            if (typeFilter == 0) ok = true;
+                            else if (typeFilter == 1 && f) ok = true;
+                            else if (typeFilter == 2 && b) ok = true;
+                            else if (typeFilter == 3 && h) ok = true;
+                            if (!ok) return;
 
-                             QList<QStandardItem*> row;
-                             row << new QStandardItem(p->getId());
-                             row << new QStandardItem(p->getName());
-                             QString typeName;
-                             if (f) typeName = "Đồ ăn";
-                             else if (b) typeName = "Thức uống";
-                             else if (h) typeName = "Đồ gia dụng";
-                             else typeName = "Khác";
-                             row << new QStandardItem(typeName);
-                             row << new QStandardItem(QString::number(p->calcFinalPrice()));
-                             row << new QStandardItem(QString::number(p->getQuantity()));
-                             row << new QStandardItem(b ? QString::number(b->getVolume()) : "");
-                             row << new QStandardItem(f ? f->getExpiryDate() : "");
-                             row << new QStandardItem(h ? QString::number(h->getWarrantyMonths()) : "");
-                             modelTable->appendRow(row);
-                         });
+                            QList<QStandardItem*> row;
+                            row << new QStandardItem(p->getId());
+                            row << new QStandardItem(p->getName());
+                            QString typeName;
+                            if (f) typeName = "Đồ ăn";
+                            else if (b) typeName = "Thức uống";
+                            else if (h) typeName = "Đồ gia dụng";
+                            else typeName = "Khác";
+                            row << new QStandardItem(typeName);
+                            row << new QStandardItem(QString::number(p->calcFinalPrice()));
+                            row << new QStandardItem(QString::number(p->getQuantity()));
+                            row << new QStandardItem(b ? QString::number(b->getVolume()) : "");
+
+                            if(f)
+                            row << new QStandardItem(f->getExpiryDate());
+                            else if(b)
+                            row << new QStandardItem(b->getExpiryDate());
+                            else
+                            row << new QStandardItem("");
+                            row << new QStandardItem(h ? QString::number(h->getWarrantyMonths()) : "");
+                            modelTable->appendRow(row);
+                        });
 }
 
 
@@ -227,30 +233,35 @@ void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
         loadProductsFromStore(0);
         return;
     }
-    store.forEachProductByName(kw,
-                               [&](const QString&, Product* p)
-                               {
-                                   if (!p)
+    modelTable->removeRows(0, modelTable->rowCount());
+    qDebug() << kw << '\n';
+    store.forEachProductByName(kw, [&](const QString&, Product* p)
+                                {
+                                    if (!p)
                                        return;
-                                   Food* f = dynamic_cast<Food*>(p);
-                                   Beverage* b = dynamic_cast<Beverage*>(p);
-                                   HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
-                                   QList<QStandardItem*> row;
-                                   row << new QStandardItem(p->getId());
-                                   row << new QStandardItem(p->getName());
-                                   QString typeName;
-                                   if (f) typeName = "Đồ ăn";
-                                   else if(b) typeName = "Thức uống";
-                                   else if (h) typeName = "Đồ gia dụng";
-                                   else typeName = "Khác";
-                                   row << new QStandardItem(typeName);
-                                   row << new QStandardItem(QString::number(p->getQuantity()));
-                                   row << new QStandardItem(QString::number(p->calcFinalPrice()));
-                                   row << new QStandardItem(b ? QString::number(b->getVolume()) : "");
-                                   row << new QStandardItem(f ? f->getExpiryDate() : "");
-                                   row << new QStandardItem(h ? QString::number(h->getWarrantyMonths()) : "");
-                                   modelTable->appendRow(row);
-                               });
+                                    Food* f = dynamic_cast<Food*>(p);
+                                    Beverage* b = dynamic_cast<Beverage*>(p);
+                                    HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
+                                    QList<QStandardItem*> row;
+                                    row << new QStandardItem(p->getId());
+                                    row << new QStandardItem(p->getName());
+                                    QString typeName;
+                                    if (f) typeName = "Đồ ăn";
+                                    else if(b) typeName = "Thức uống";
+                                    else if (h) typeName = "Đồ gia dụng";
+                                    row << new QStandardItem(typeName);
+                                    row << new QStandardItem(QString::number(p->calcFinalPrice()));
+                                    row << new QStandardItem(QString::number(p->getQuantity()));
+                                    row << new QStandardItem(b ? QString::number(b->getVolume()) : "");
+                                    if(f)
+                                       row << new QStandardItem(f->getExpiryDate());
+                                    else if(b)
+                                       row << new QStandardItem(b->getExpiryDate());
+                                    else
+                                       row << new QStandardItem("");
+                                    row << new QStandardItem(h ? QString::number(h->getWarrantyMonths()) : "");
+                                    modelTable->appendRow(row);
+                                });
 }
 
 
@@ -280,6 +291,7 @@ void MainWindow::on_DoGiaDung_clicked()
 }
 void MainWindow::on_BtnSearch_clicked()
 {
+    qDebug() << 1 << '\n';
     ui->dockMenu->hide();
     loadProductsFromStoreWithKeyWord(ui->SearchText->text());
 }
@@ -394,7 +406,6 @@ void MainWindow::onQuayLaiClicked()
     ui->stackedWidgeOrder->setCurrentIndex(0);
 }
 
-
 void MainWindow::onThanhToanTienMatClicked()
 {
     currentBill->setPayment(new CashPayment());
@@ -438,21 +449,33 @@ void MainWindow::finalizeThanhToan(const QString& paymentMethod)
 
 void MainWindow::on_ThemHang_clicked()
 {
-    AddStockDialog dialog(&store, this);
-
+    AddProductToStore dialog(this);
     int result = dialog.exec();
 
     if (result == QDialog::Accepted)
     {
-        QString productId = dialog.getSelectedProductId();
-        int quantityToAdd = dialog.getQuantity();
+        QString type = dialog.getProductType();
+        QString name = dialog.getName();
+        double price = dialog.getPrice();
+        int quantity = dialog.getQuantity();
 
-        Product* p = store.findProductById(productId);
-        if (p)
+        if (type == "Đồ ăn")
         {
-            p->setQuantity(p->getQuantity() + quantityToAdd);
-            loadProductsFromStore(curTableProduct);
+            QString expiry = dialog.getExpiryDate();
+            store.addProduct(new Food("", name, price, quantity, expiry));
         }
+        else if (type == "Thức uống")
+        {
+            QString expiry = dialog.getExpiryDate();
+            double volume = dialog.getVolume();
+            store.addProduct(new Beverage("", name, price, quantity, expiry, volume));
+        }
+        else if (type == "Đồ gia dụng")
+        {
+            int warranty = dialog.getWarranty();
+            store.addProduct(new HouseholdItem("", name, price, quantity, warranty));
+        }
+        loadProductsFromStore(curTableProduct);
     }
 }
 

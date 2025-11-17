@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     AddCustomerToStore.cpp \
+    AddProductToStore.cpp \
     Beverage.cpp \
     Bill.cpp \
     BillItem.cpp \
@@ -23,12 +24,12 @@ SOURCES += \
     Store.cpp \
     ThongKe.cpp \
     User.cpp \
-    addProductToStore.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     AddCustomerToStore.h \
+    AddProductToStore.h \
     Beverage.h \
     Bill.h \
     BillItem.h \
@@ -43,14 +44,13 @@ HEADERS += \
     Store.h \
     ThongKe.h \
     User.h \
-    addProductToStore.h \
     hashtable.h \
     mainwindow.h
 
 FORMS += \
     AddCustomerToStore.ui \
+    AddProductToStore.ui \
     ThongKe.ui \
-    addProductToStore.ui \
     mainwindow.ui
 
 # Default rules for deployment.
