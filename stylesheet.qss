@@ -1,0 +1,685 @@
+/* ═══════════════════════════════════════════════════════════════════
+   🎨 LIGHT MODE STYLESHEET - POS SYSTEM
+   Thiết kế hiện đại, sáng, tối giản - Inspired by Dribbble Design
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ───────────────────────────────────────────────────────────────────
+   🎨 COLOR PALETTE (Theo thiết kế của bạn)
+   ─────────────────────────────────────────────────────────────────── */
+/*
+  --bg-primary: #FFFFFF         (Nền trắng chính)
+  --bg-secondary: #F8F9FA       (Nền xám nhạt)
+  --bg-tertiary: #F1F3F5        (Nền xám vừa)
+  --accent: #2D71FB             (Royal Blue - Màu nhấn chính)
+  --accent-hover: #1C5FE0       (Royal Blue đậm hơn khi hover)
+  --success: #1C8370            (Elf Green)
+  --danger: #FC4A4A             (Coral Red)
+  --text-primary: #212529       (Chữ đen chính)
+  --text-secondary: #6C757D     (Chữ xám)
+  --border: #DEE2E6             (Viền xám nhạt)
+  --shadow: rgba(0,0,0,0.08)    (Bóng nhẹ)
+*/
+
+/* ═══════════════════════════════════════════════════════════════════
+   🖥️ GLOBAL STYLES
+   ═══════════════════════════════════════════════════════════════════ */
+
+* {
+    font-family: "Urbanist", "Segoe UI", "Roboto", "Arial", sans-serif;
+    font-size: 14px;
+}
+
+QMainWindow {
+    background-color: #F8F9FA;
+}
+
+QWidget {
+    background-color: #FFFFFF;
+    color: #212529;
+}
+
+QDialog {
+    background-color: #FFFFFF;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   📦 FRAMES (3 Cột chính)
+   ═══════════════════════════════════════════════════════════════════ */
+
+QFrame#frameMenu {
+    background-color: #FFFFFF;
+    border-right: 1px solid #DEE2E6;
+}
+
+QFrame#frameCenter {
+    background-color: #F8F9FA;
+}
+
+QFrame#frameOrder {
+    background-color: #FFFFFF;
+    border-left: 1px solid #DEE2E6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   🔘 BUTTONS (Tất cả các loại nút)
+   ═══════════════════════════════════════════════════════════════════ */
+
+QPushButton {
+    background-color: #FFFFFF;
+    color: #495057;
+    border: 2px solid #DEE2E6;
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-weight: 500;
+    text-align: center;
+}
+
+QPushButton:hover {
+    background-color: #F8F9FA;
+    border-color: #2D71FB;
+    color: #2D71FB;
+}
+
+QPushButton:pressed {
+    background-color: #E9ECEF;
+    border-color: #1C5FE0;
+}
+
+QPushButton:disabled {
+    background-color: #F1F3F5;
+    color: #ADB5BD;
+    border-color: #DEE2E6;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   NÚT BỘ LỌC (Toàn Bộ, Đồ Ăn, Thức Uống, Đồ Gia Dụng)
+   ─────────────────────────────────────────────────────────────────── */
+
+QPushButton#ToanBo,
+QPushButton#DoAn,
+QPushButton#ThucUong,
+QPushButton#DoGiaDung {
+    background-color: #FFFFFF;
+    border: 2px solid #E9ECEF;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: 600;
+    color: #6C757D;
+}
+
+QPushButton#ToanBo:hover,
+QPushButton#DoAn:hover,
+QPushButton#ThucUong:hover,
+QPushButton#DoGiaDung:hover {
+    background-color: #F8F9FA;
+    border-color: #2D71FB;
+    color: #2D71FB;
+}
+
+/* TRẠNG THÁI :CHECKED (Khi được chọn) */
+QPushButton#ToanBo:checked,
+QPushButton#DoAn:checked,
+QPushButton#ThucUong:checked,
+QPushButton#DoGiaDung:checked {
+    background-color: #2D71FB;
+    border-color: #2D71FB;
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   NÚT CHÍNH (Thêm Hàng, Khách Hàng, Thống Kê, v.v.)
+   ─────────────────────────────────────────────────────────────────── */
+
+QPushButton#ThemHang,
+QPushButton#KhachHang,
+QPushButton#ThongKe,
+QPushButton#ExportOrder,
+QPushButton#btnExport {
+    background-color: #2D71FB;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+QPushButton#ThemHang:hover,
+QPushButton#KhachHang:hover,
+QPushButton#ThongKe:hover,
+QPushButton#ExportOrder:hover,
+QPushButton#btnExport:hover {
+    background-color: #1C5FE0;
+}
+
+QPushButton#ThemHang:pressed,
+QPushButton#KhachHang:pressed,
+QPushButton#ThongKe:pressed,
+QPushButton#ExportOrder:pressed,
+QPushButton#btnExport:pressed {
+    background-color: #0D4FC7;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   NÚT PHỤ (Quay Lại, Dùng Điểm)
+   ─────────────────────────────────────────────────────────────────── */
+
+QPushButton#btnBack,
+QPushButton#btnDungDiem {
+    background-color: #FFFFFF;
+    border: 2px solid #DEE2E6;
+    color: #495057;
+}
+
+QPushButton#btnBack:hover,
+QPushButton#btnDungDiem:hover {
+    background-color: #F8F9FA;
+    border-color: #2D71FB;
+    color: #2D71FB;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   NÚT THANH TOÁN (Tiền Mặt, Thẻ)
+   ─────────────────────────────────────────────────────────────────── */
+
+QPushButton#btnCash {
+    background-color: #1C8370;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+}
+
+QPushButton#btnCash:hover {
+    background-color: #157260;
+}
+
+QPushButton#btnCard {
+    background-color: #FC4A4A;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+}
+
+QPushButton#btnCard:hover {
+    background-color: #E63B3B;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   📝 LINE EDIT (Thanh tìm kiếm, Input)
+   ═══════════════════════════════════════════════════════════════════ */
+
+QLineEdit {
+    background-color: #F8F9FA;
+    color: #212529;
+    border: 2px solid #E9ECEF;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+}
+
+QLineEdit:focus {
+    border-color: #2D71FB;
+    background-color: #FFFFFF;
+}
+
+QLineEdit:hover {
+    border-color: #CED4DA;
+}
+
+QLineEdit::placeholder {
+    color: #ADB5BD;
+}
+
+/* Thanh tìm kiếm chính */
+QLineEdit#SearchText,
+QLineEdit#txtSearchCustomer {
+    background-color: #F8F9FA;
+    border: 2px solid #E9ECEF;
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 15px;
+}
+
+QLineEdit#SearchText:focus,
+QLineEdit#txtSearchCustomer:focus {
+    border-color: #2D71FB;
+    background-color: #FFFFFF;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   📊 TABLE VIEW (Bảng sản phẩm, Hóa đơn)
+   ═══════════════════════════════════════════════════════════════════ */
+
+QTableView {
+    background-color: #FFFFFF;
+    alternate-background-color: #F8F9FA;
+    color: #212529;
+    border: 1px solid #DEE2E6;
+    border-radius: 12px;
+    gridline-color: #E9ECEF;
+    selection-background-color: #2D71FB;
+    selection-color: #FFFFFF;
+}
+
+QTableView::item {
+    padding: 10px;
+    border: none;
+}
+
+QTableView::item:hover {
+    background-color: #E7F1FF;
+}
+
+QTableView::item:selected {
+    background-color: #2D71FB;
+    color: #FFFFFF;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   HEADER (Tiêu đề cột)
+   ─────────────────────────────────────────────────────────────────── */
+
+QHeaderView::section {
+    background-color: #F8F9FA;
+    color: #495057;
+    padding: 12px 8px;
+    border: none;
+    border-right: 1px solid #E9ECEF;
+    border-bottom: 2px solid #2D71FB;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+QHeaderView::section:hover {
+    background-color: #E9ECEF;
+}
+
+QHeaderView::section:first {
+    border-top-left-radius: 12px;
+}
+
+QHeaderView::section:last {
+    border-top-right-radius: 12px;
+    border-right: none;
+}
+
+/* Vertical Header */
+QHeaderView::section:vertical {
+    border-right: none;
+    border-bottom: 1px solid #E9ECEF;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   🔢 SPINBOX & DOUBLESPINBOX
+   ═══════════════════════════════════════════════════════════════════ */
+
+QSpinBox,
+QDoubleSpinBox {
+    background-color: #F8F9FA;
+    color: #212529;
+    border: 2px solid #E9ECEF;
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-height: 30px;
+}
+
+QSpinBox:focus,
+QDoubleSpinBox:focus {
+    border-color: #2D71FB;
+    background-color: #FFFFFF;
+}
+
+QSpinBox:hover,
+QDoubleSpinBox:hover {
+    border-color: #CED4DA;
+}
+
+/* Nút tăng/giảm */
+QSpinBox::up-button,
+QDoubleSpinBox::up-button {
+    background-color: #E9ECEF;
+    border: none;
+    border-top-right-radius: 8px;
+    width: 20px;
+}
+
+QSpinBox::up-button:hover,
+QDoubleSpinBox::up-button:hover {
+    background-color: #CED4DA;
+}
+
+QSpinBox::down-button,
+QDoubleSpinBox::down-button {
+    background-color: #E9ECEF;
+    border: none;
+    border-bottom-right-radius: 8px;
+    width: 20px;
+}
+
+QSpinBox::down-button:hover,
+QDoubleSpinBox::down-button:hover {
+    background-color: #CED4DA;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   📅 DATE EDIT
+   ═══════════════════════════════════════════════════════════════════ */
+
+QDateEdit {
+    background-color: #F8F9FA;
+    color: #212529;
+    border: 2px solid #E9ECEF;
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-height: 30px;
+}
+
+QDateEdit:focus {
+    border-color: #2D71FB;
+    background-color: #FFFFFF;
+}
+
+QDateEdit:hover {
+    border-color: #CED4DA;
+}
+
+QDateEdit::drop-down {
+    background-color: #E9ECEF;
+    border: none;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    width: 20px;
+}
+
+QDateEdit::drop-down:hover {
+    background-color: #CED4DA;
+}
+
+/* Calendar Popup */
+QCalendarWidget {
+    background-color: #FFFFFF;
+    color: #212529;
+}
+
+QCalendarWidget QToolButton {
+    background-color: #F8F9FA;
+    color: #212529;
+    border-radius: 4px;
+}
+
+QCalendarWidget QToolButton:hover {
+    background-color: #E9ECEF;
+}
+
+QCalendarWidget QAbstractItemView {
+    background-color: #FFFFFF;
+    selection-background-color: #2D71FB;
+    selection-color: #FFFFFF;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   📋 COMBOBOX (Dropdown)
+   ═══════════════════════════════════════════════════════════════════ */
+
+QComboBox {
+    background-color: #F8F9FA;
+    color: #212529;
+    border: 2px solid #E9ECEF;
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-height: 30px;
+}
+
+QComboBox:focus {
+    border-color: #2D71FB;
+    background-color: #FFFFFF;
+}
+
+QComboBox:hover {
+    border-color: #CED4DA;
+}
+
+QComboBox::drop-down {
+    background-color: #E9ECEF;
+    border: none;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    width: 25px;
+}
+
+QComboBox::drop-down:hover {
+    background-color: #CED4DA;
+}
+
+/* Dropdown Menu */
+QComboBox QAbstractItemView {
+    background-color: #FFFFFF;
+    color: #212529;
+    border: 1px solid #DEE2E6;
+    selection-background-color: #2D71FB;
+    selection-color: #FFFFFF;
+    padding: 4px;
+}
+
+QComboBox QAbstractItemView::item {
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+QComboBox QAbstractItemView::item:hover {
+    background-color: #E7F1FF;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   📦 GROUPBOX
+   ═══════════════════════════════════════════════════════════════════ */
+
+QGroupBox {
+    background-color: #FFFFFF;
+    border: 2px solid #E9ECEF;
+    border-radius: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    font-weight: 600;
+    color: #212529;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 4px 12px;
+    background-color: #F8F9FA;
+    border-radius: 6px;
+    color: #2D71FB;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   🏷️ LABEL
+   ═══════════════════════════════════════════════════════════════════ */
+
+QLabel {
+    color: #212529;
+    background-color: transparent;
+    padding: 2px;
+}
+
+/* Label trong Form */
+QLabel[text*=":"] {
+    color: #6C757D;
+    font-weight: 500;
+}
+
+/* Label tiêu đề */
+QLabel#lblStoreName {
+    color: #2D71FB;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 10px;
+}
+
+/* Label tổng tiền */
+QLabel#TotalBefore,
+QLabel#TotalAfter,
+QLabel#TotalBefore_2,
+QLabel#TotalAfter_2 {
+    color: #495057;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 8px;
+}
+
+QLabel#TotalAfter,
+QLabel#TotalAfter_2 {
+    color: #1C8370;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* Label khách hàng */
+QLabel#lblTenKhach {
+    color: #2D71FB;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+QLabel#lblDiemKhach {
+    color: #FC4A4A;
+    font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   📜 SCROLLBAR (Thanh cuộn)
+   ═══════════════════════════════════════════════════════════════════ */
+
+QScrollBar:vertical {
+    background-color: #F8F9FA;
+    width: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #CED4DA;
+    border-radius: 6px;
+    min-height: 30px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #ADB5BD;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar:horizontal {
+    background-color: #F8F9FA;
+    height: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #CED4DA;
+    border-radius: 6px;
+    min-width: 30px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: #ADB5BD;
+}
+
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    width: 0px;
+}
+
+
+QDialogButtonBox QPushButton {
+    min-width: 80px;
+    min-height: 35px;
+}
+
+QDialogButtonBox QPushButton[text="OK"],
+QDialogButtonBox QPushButton[text="Ok"] {
+    background-color: #2D71FB;
+    color: #FFFFFF;
+    border: none;
+}
+
+QDialogButtonBox QPushButton[text="OK"]:hover,
+QDialogButtonBox QPushButton[text="Ok"]:hover {
+    background-color: #1C5FE0;
+}
+
+QDialogButtonBox QPushButton[text="Cancel"],
+QDialogButtonBox QPushButton[text="Hủy"] {
+    background-color: #FFFFFF;
+    color: #495057;
+    border: 2px solid #DEE2E6;
+}
+
+QDialogButtonBox QPushButton[text="Close"],
+QDialogButtonBox QPushButton[text="Đóng"] {
+    background-color: #FC4A4A;
+    color: #FFFFFF;
+    border: none;
+}
+
+
+QStackedWidget {
+    background-color: transparent;
+    border: none;
+}
+
+
+QMenuBar {
+    background-color: #FFFFFF;
+    color: #212529;
+    border-bottom: 1px solid #E9ECEF;
+}
+
+QMenuBar::item {
+    padding: 8px 12px;
+    background-color: transparent;
+}
+
+QMenuBar::item:selected {
+    background-color: #F8F9FA;
+}
+
+QMenuBar::item:pressed {
+    background-color: #2D71FB;
+    color: #FFFFFF;
+}
+
+QMenu {
+    background-color: #FFFFFF;
+    color: #212529;
+    border: 1px solid #DEE2E6;
+}
+
+QMenu::item {
+    padding: 8px 20px;
+}
+
+QMenu::item:selected {
+    background-color: #E7F1FF;
+}
+
+QStatusBar {
+    background-color: #FFFFFF;
+    color: #6C757D;
+    border-top: 1px solid #E9ECEF;
+}
+
+QToolTip {
+    background-color: #FFFFFF;
+    color: #212529;
+    border: 1px solid #2D71FB;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+}

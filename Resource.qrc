@@ -1,10 +1,14 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>loupe.png</file>
         <file>store.png</file>
         <file>bag.png</file>
-        <file>rating.png</file>
+        <file>loupe.png</file>
         <file>report.png</file>
         <file>add-product.png</file>
+        <file>rating.png</file>
+    </qresource>
+    
+    <qresource prefix="/styles">
+        <file>stylesheet.qss</file>
     </qresource>
 </RCC>

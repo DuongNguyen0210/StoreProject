@@ -35,6 +35,38 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setupTable();
     setupHoaDonTable();
 
+    connect(ui->ToanBo, &QPushButton::clicked, this, [this]() {
+        ui->ToanBo->setChecked(true);
+        ui->DoAn->setChecked(false);
+        ui->ThucUong->setChecked(false);
+        ui->DoGiaDung->setChecked(false);
+        on_ToanBo_clicked();
+    });
+
+    connect(ui->DoAn, &QPushButton::clicked, this, [this]() {
+        ui->ToanBo->setChecked(false);
+        ui->DoAn->setChecked(true);
+        ui->ThucUong->setChecked(false);
+        ui->DoGiaDung->setChecked(false);
+        on_DoAn_clicked();
+    });
+
+    connect(ui->ThucUong, &QPushButton::clicked, this, [this]() {
+        ui->ToanBo->setChecked(false);
+        ui->DoAn->setChecked(false);
+        ui->ThucUong->setChecked(true);
+        ui->DoGiaDung->setChecked(false);
+        on_ThucUong_clicked();
+    });
+
+    connect(ui->DoGiaDung, &QPushButton::clicked, this, [this]() {
+        ui->ToanBo->setChecked(false);
+        ui->DoAn->setChecked(false);
+        ui->ThucUong->setChecked(false);
+        ui->DoGiaDung->setChecked(true);
+        on_DoGiaDung_clicked();
+    });
+
     store.addProduct(new Food("", "Bánh mì", 10000, 50, "01/01/2026"));
     store.addProduct(new Food("", "Xúc xích", 12000, 40, "15/01/2026"));
     store.addProduct(new Beverage("", "Coca-Cola", 15000, 30, "01/01/2026", 330));
@@ -43,9 +75,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     store.addCustomer(new Customer("C1", "Khách Vip", "0905123456", 110000));
     store.addCustomer(new Customer("C2", "Khách Thường", "0905654321", 10000));
-
-    ui->dockMenu->hide();
-    ui->dockOrder->hide();
 
     loadProductsFromStore(0);
 
@@ -267,48 +296,31 @@ void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
 
 void MainWindow::on_ToanBo_clicked()
 {
-    ui->dockMenu->hide();
     loadProductsFromStore(0);
     curTableProduct = 0;
 }
+
 void MainWindow::on_DoAn_clicked()
 {
-    ui->dockMenu->hide();
     loadProductsFromStore(1);
     curTableProduct = 1;
 }
+
 void MainWindow::on_ThucUong_clicked()
 {
-    ui->dockMenu->hide();
     loadProductsFromStore(2);
     curTableProduct = 2;
 }
+
 void MainWindow::on_DoGiaDung_clicked()
 {
-    ui->dockMenu->hide();
     loadProductsFromStore(3);
     curTableProduct = 3;
 }
+
 void MainWindow::on_BtnSearch_clicked()
 {
-    qDebug() << 1 << '\n';
-    ui->dockMenu->hide();
     loadProductsFromStoreWithKeyWord(ui->SearchText->text());
-}
-void MainWindow::on_btnMenu_clicked()
-{
-    bool v = ui->dockMenu->isVisible();
-    ui->dockMenu->setVisible(!v);
-}
-void MainWindow::on_btnOrder_clicked()
-{
-    ui->dockMenu->hide();
-    bool v = ui->dockOrder->isVisible();
-    ui->dockOrder->setVisible(!v);
-    ui->stackedWidgeOrder->setCurrentIndex(0);
-    resetHoaDon();
-    loadProductsFromStore(curTableProduct);
-    updateHoaDonView();
 }
 
 void MainWindow::onAddSanPham(const QModelIndex &index)
@@ -331,7 +343,6 @@ void MainWindow::onAddSanPham(const QModelIndex &index)
     if(ok)
     {
         currentBill->addItem(p, quantityToAdd);
-        ui->dockOrder->show();
         ui->stackedWidgeOrder->setCurrentIndex(0);
         loadProductsFromStore(curTableProduct);
         updateHoaDonView();

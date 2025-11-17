@@ -45,8 +45,6 @@ private slots:
     void on_ThucUong_clicked();
     void on_DoGiaDung_clicked();
     void on_BtnSearch_clicked();
-    void on_btnMenu_clicked();
-    void on_btnOrder_clicked();
 
     void onAddSanPham(const QModelIndex &index);
     void onRemoveSanPhamDoubleClicked(const QModelIndex &index);
