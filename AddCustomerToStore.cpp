@@ -55,26 +55,20 @@ void CustomerDialog::on_btnAddCustomer_clicked()
 
     if (name.isEmpty() || phone.isEmpty())
     {
-        QMessageBox::warning(this, "Thiếu thông tin", "Vui lòng nhập cả tên và số điện thoại.");
+        ui->label_3->setText(QString("Vui lòng nhập đầy đủ thông tin!"));
         return;
     }
 
     if (m_store->findCustomerByPhone(phone))
     {
-        QMessageBox::critical(this, "Lỗi", "Đã tồn tại: Số điện thoại này đã được sử dụng.");
+        ui->label_3->setText(QString("Số điện thoại này đã tồn tại!"));
         return;
     }
-    try
-    {
-        Customer* c = new Customer("", name, phone, 0);
-        m_store->addCustomer(c);
 
-        loadCustomers();
-        ui->txtName->clear();
-        ui->txtPhone->clear();
-    }
-    catch (const DuplicateException& e)
-    {
-        QMessageBox::critical(this, "Lỗi", e.what());
-    }
+    Customer* c = new Customer("", name, phone, 0);
+    m_store->addCustomer(c);
+    ui->label_3->setText(QString("Đã thêm khách hàng thành công!"));
+    loadCustomers();
+    ui->txtName->clear();
+    ui->txtPhone->clear();
 }

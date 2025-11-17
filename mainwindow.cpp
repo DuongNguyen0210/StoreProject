@@ -34,25 +34,41 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     setupTable();
     setupHoaDonTable();
+    ui->frameMenu->hide();
+    connect(ui->ToanBo, &QPushButton::clicked, this, [this]() {
+        ui->ToanBo->setChecked(true);
+        ui->DoAn->setChecked(false);
+        ui->ThucUong->setChecked(false);
+        ui->DoGiaDung->setChecked(false);
+        on_ToanBo_clicked();
+    });
 
-    store.addProduct(new Food("", "Bánh mì", 10000, 50, "01/01/2026"));
-    store.addProduct(new Food("", "Xúc xích", 12000, 40, "15/01/2026"));
-    store.addProduct(new Beverage("", "Coca-Cola", 15000, 30, "01/01/2026", 330));
-    store.addProduct(new HouseholdItem("", "Nước rửa chén", 30000, 20, 12));
-    store.addProduct(new Food("", "Kẹo Cao Su", 50000, 10, "15/01/2026"));
+    connect(ui->DoAn, &QPushButton::clicked, this, [this]() {
+        ui->ToanBo->setChecked(false);
+        ui->DoAn->setChecked(true);
+        ui->ThucUong->setChecked(false);
+        ui->DoGiaDung->setChecked(false);
+        on_DoAn_clicked();
+    });
 
-    store.addCustomer(new Customer("C1", "Khách Vip", "0905123456", 110000));
-    store.addCustomer(new Customer("C2", "Khách Thường", "0905654321", 10000));
+    connect(ui->ThucUong, &QPushButton::clicked, this, [this]() {
+        ui->ToanBo->setChecked(false);
+        ui->DoAn->setChecked(false);
+        ui->ThucUong->setChecked(true);
+        ui->DoGiaDung->setChecked(false);
+        on_ThucUong_clicked();
+    });
 
-    ui->dockMenu->hide();
-    ui->dockOrder->hide();
+    connect(ui->DoGiaDung, &QPushButton::clicked, this, [this]() {
+        ui->ToanBo->setChecked(false);
+        ui->DoAn->setChecked(false);
+        ui->ThucUong->setChecked(false);
+        ui->DoGiaDung->setChecked(true);
+        on_DoGiaDung_clicked();
+    });
 
-    loadProductsFromStore(0);
-
-    currentBill = new Bill(nullptr);
-
-
-    ui->stackedWidgeOrder->setCurrentIndex(curTableProduct);
+    connect(ui->btnToggleMenu, &QPushButton::clicked, this, &MainWindow::onToggleMenuClicked);
+    connect(ui->btnCancelOrder, &QPushButton::clicked, this, &MainWindow::onCancelOrderClicked);
 
     connect(ui->tableViewProduct, &QTableView::doubleClicked, this, &MainWindow::onAddSanPham);
     connect(ui->SearchText, &QLineEdit::returnPressed, this, &MainWindow::on_BtnSearch_clicked);
@@ -66,6 +82,48 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->btnCash, &QPushButton::clicked, this, &MainWindow::onThanhToanTienMatClicked);
     connect(ui->btnCard, &QPushButton::clicked, this, &MainWindow::onThanhToanTheClicked);
     connect(ui->btnExport, &QPushButton::clicked, this, &MainWindow::onThanhToanClicked);
+
+    store.addProduct(new Food("", "Bánh mì", 10000, 50, "01/01/2026"));
+    store.addProduct(new Food("", "Xúc xích", 12000, 40, "15/01/2026"));
+    store.addProduct(new Beverage("", "Coca-Cola", 15000, 30, "01/01/2026", 330));
+    store.addProduct(new HouseholdItem("", "Nước rửa chén", 30000, 20, 12));
+    store.addProduct(new Food("", "Kẹo Cao Su", 50000, 10, "15/01/2026"));
+
+    store.addCustomer(new Customer("C1", "Khách Vip", "0905123456", 110000));
+    store.addCustomer(new Customer("C2", "Khách Thường", "0905654321", 10000));
+
+    loadProductsFromStore(0);
+
+    currentBill = new Bill(nullptr);
+
+
+    ui->stackedWidgeOrder->setCurrentIndex(curTableProduct);
+}
+
+void MainWindow::onToggleMenuClicked()
+{
+    bool isVisible = ui->frameMenu->isVisible();
+    ui->frameMenu->setVisible(!isVisible);
+}
+
+void MainWindow::onCancelOrderClicked()
+{
+    if (currentBill->getCustomer() == nullptr &&  currentBill->getItems().empty())
+    {
+        QMessageBox::information(this, "Thông báo", "Hóa đơn đang trống.");
+        return;
+    }
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Xác nhận hủy",
+                                  "Bạn có chắc muốn hủy hóa đơn này?\nTất cả sản phẩm sẽ được trả về kho.",
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes)
+    {
+        resetHoaDon();
+        QMessageBox::information(this, "Thành công", "Đã hủy hóa đơn và trả hàng về kho.");
+    }
 }
 
 MainWindow::~MainWindow()
@@ -267,48 +325,31 @@ void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
 
 void MainWindow::on_ToanBo_clicked()
 {
-    ui->dockMenu->hide();
     loadProductsFromStore(0);
     curTableProduct = 0;
 }
+
 void MainWindow::on_DoAn_clicked()
 {
-    ui->dockMenu->hide();
     loadProductsFromStore(1);
     curTableProduct = 1;
 }
+
 void MainWindow::on_ThucUong_clicked()
 {
-    ui->dockMenu->hide();
     loadProductsFromStore(2);
     curTableProduct = 2;
 }
+
 void MainWindow::on_DoGiaDung_clicked()
 {
-    ui->dockMenu->hide();
     loadProductsFromStore(3);
     curTableProduct = 3;
 }
+
 void MainWindow::on_BtnSearch_clicked()
 {
-    qDebug() << 1 << '\n';
-    ui->dockMenu->hide();
     loadProductsFromStoreWithKeyWord(ui->SearchText->text());
-}
-void MainWindow::on_btnMenu_clicked()
-{
-    bool v = ui->dockMenu->isVisible();
-    ui->dockMenu->setVisible(!v);
-}
-void MainWindow::on_btnOrder_clicked()
-{
-    ui->dockMenu->hide();
-    bool v = ui->dockOrder->isVisible();
-    ui->dockOrder->setVisible(!v);
-    ui->stackedWidgeOrder->setCurrentIndex(0);
-    resetHoaDon();
-    loadProductsFromStore(curTableProduct);
-    updateHoaDonView();
 }
 
 void MainWindow::onAddSanPham(const QModelIndex &index)
@@ -331,7 +372,6 @@ void MainWindow::onAddSanPham(const QModelIndex &index)
     if(ok)
     {
         currentBill->addItem(p, quantityToAdd);
-        ui->dockOrder->show();
         ui->stackedWidgeOrder->setCurrentIndex(0);
         loadProductsFromStore(curTableProduct);
         updateHoaDonView();
