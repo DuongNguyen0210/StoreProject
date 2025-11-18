@@ -58,12 +58,6 @@ void Store::addProduct(Product* p)
 {
     if (!p) return;
 
-    if (productById.containsKey(p->getId()))
-    {
-        throw DuplicateException("Product ID already exists: " + p->getId());
-        delete p;
-    }
-
     Product* existingProductToMerge = nullptr;
     productByName.forEachInKeyGroup(p->getName(), [&](const QString&, Product* exist)
                                     {

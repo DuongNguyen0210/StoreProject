@@ -27,7 +27,8 @@ SOURCES += \
     billdetaildialog.cpp \
     logindialog.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    storePersistence.cpp
 
 HEADERS += \
     AddCustomerToStore.h \
@@ -49,7 +50,8 @@ HEADERS += \
     billdetaildialog.h \
     hashtable.h \
     logindialog.h \
-    mainwindow.h
+    mainwindow.h \
+    storePersistence.h
 
 FORMS += \
     AddCustomerToStore.ui \
@@ -68,4 +70,5 @@ RESOURCES += \
     Resource.qrc
 
 DISTFILES += \
-    ../Store/Icon/banhmi.png
+    ../Store/Icon/banhmi.png \
+    build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/debug/store_data.txt

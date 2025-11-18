@@ -80,6 +80,19 @@ private:
     void finalizeThanhToan(const QString& paymentMethod);
 
     void applyPermissions();
+
+    using ProductComparator = std::function<bool(Product*, Product*)>;
+
+    static bool comparePriceAsc(Product* a, Product* b);  // Giá tăng
+    static bool comparePriceDesc(Product* a, Product* b); // Giá giảm
+    static bool compareExpiry(Product* a, Product* b);    // Hạn sử dụng
+    static bool compareDefault(Product* a, Product* b);   // Mặc định (theo ID)
+
+
+    static QDate getProductDate(Product* p);
+
+    // Biến lưu con trỏ hàm hiện tại đang dùng
+    ProductComparator currentComparator;
 };
 
 #endif

@@ -41,7 +41,6 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     setupHoaDonTable();
     ui->frameMenu->hide();
 
-    // Tất cả các connect giữ nguyên...
     connect(ui->ToanBo, &QPushButton::clicked, this, [this]() {
         ui->ToanBo->setChecked(true);
         ui->DoAn->setChecked(false);
@@ -88,20 +87,6 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     connect(ui->btnCard, &QPushButton::clicked, this, &MainWindow::onThanhToanTheClicked);
     connect(ui->btnExport, &QPushButton::clicked, this, &MainWindow::onThanhToanClicked);
 
-    if (store->findProductByName("Bánh mì") == nullptr)
-    {
-        store->addProduct(new Food("", "Bánh mì", 10000, 50, "01/01/2026"));
-        store->addProduct(new Food("", "Xúc xích", 12000, 40, "15/01/2026"));
-        store->addProduct(new Beverage("", "Coca-Cola", 15000, 30, "01/01/2026", 330));
-        store->addProduct(new HouseholdItem("", "Nước rửa chén", 30000, 20, 12));
-        store->addProduct(new Food("", "Kẹo Cao Su", 50000, 10, "15/01/2026"));
-    }
-    if (store->findCustomerByPhone("0905123456") == nullptr)
-    {
-        store->addCustomer(new Customer("C1", "Khách Vip", "0905123456", 110000));
-        store->addCustomer(new Customer("C2", "Khách Thường", "0905654321", 10000));
-    }
-
     loadProductsFromStore(0);
 
     currentBill = new Bill(nullptr, "", currentUser);
@@ -109,6 +94,17 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     ui->stackedWidgeOrder->setCurrentIndex(curTableProduct);
 
     applyPermissions();
+    QHeaderView* header = ui->tableViewProduct->horizontalHeader();
+    header->setMaximumSectionSize(500);
+    header->setMinimumSectionSize(100);
+    header->setStretchLastSection(true);
+    header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(1, QHeaderView::Interactive);
+    header->resizeSection(1, 300);
+    for (int i = 2; i <= 6; i++) {
+        header->setSectionResizeMode(i, QHeaderView::Stretch);
+    }
+
 }
 
 void MainWindow::applyPermissions()
@@ -174,8 +170,6 @@ void MainWindow::setupTable()
     ui->tableViewProduct->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableViewProduct->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableViewProduct->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->tableViewProduct->horizontalHeader()->setStretchLastSection(true);
-    ui->tableViewProduct->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 void MainWindow::setupHoaDonTable()
@@ -597,5 +591,43 @@ void MainWindow::on_KhachHang_clicked()
 {
     CustomerDialog dialog(store, this);
     dialog.exec();
+}
+
+
+QDate MainWindow::getProductDate(Product* p)
+{
+    QString dateStr;
+    if (auto f = dynamic_cast<Food*>(p)) dateStr = f->getExpiryDate();
+    else if (auto b = dynamic_cast<Beverage*>(p)) dateStr = b->getExpiryDate();
+
+    if (dateStr.isEmpty()) return QDate();
+    return QDate::fromString(dateStr, "dd/MM/yyyy");
+}
+
+bool MainWindow::comparePriceAsc(Product* a, Product* b)
+{
+    return a->calcFinalPrice() < b->calcFinalPrice();
+}
+
+bool MainWindow::comparePriceDesc(Product* a, Product* b)
+{
+    return a->calcFinalPrice() > b->calcFinalPrice();
+}
+
+bool MainWindow::compareExpiry(Product* a, Product* b)
+{
+    QDate d1 = getProductDate(a);
+    QDate d2 = getProductDate(b);
+
+    if (!d1.isValid() && !d2.isValid()) return compareDefault(a, b);
+    if (!d1.isValid()) return false;
+    if (!d2.isValid()) return true;
+
+    return d1 < d2;
+}
+
+bool MainWindow::compareDefault(Product* a, Product* b)
+{
+    return QString::compare(a->getId(), b->getId(), Qt::CaseInsensitive) < 0;
 }
 

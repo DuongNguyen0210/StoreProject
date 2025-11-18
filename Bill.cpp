@@ -12,7 +12,7 @@ QString Bill::generateId()
     return id;
 }
 
-Bill::Bill(Customer* customer, const QString& id, User* createdBy)
+Bill::Bill(Customer* customer, const QString& id, User* createdBy, const QDateTime& createdDate)
     : customer(customer), payment(nullptr), discountPercent(0.0), check(false), createdBy(createdBy)
 {
     if (id.isEmpty())
@@ -20,8 +20,10 @@ Bill::Bill(Customer* customer, const QString& id, User* createdBy)
     else
         this->id = id;
 
-    // Lưu thời gian tạo hóa đơn
-    createdDate = QDateTime::currentDateTime();
+    if (createdDate.isValid())
+        this->createdDate = createdDate;
+    else
+        this->createdDate = QDateTime::currentDateTime();
 }
 
 Bill::~Bill()
