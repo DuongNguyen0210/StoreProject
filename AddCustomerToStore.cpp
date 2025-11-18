@@ -66,14 +66,27 @@ void CustomerDialog::on_btnAddCustomer_clicked()
         return;
     }
 
-    bool isValidName = true;
+    if (name.length() < 2)
+    {
+        ui->label_Message->setText("Tên khách hàng phải có ít nhất 2 ký tự!");
+        ui->label_Message->setVisible(true);
+        return;
+    }
+
+    bool hasDigit = false;
     for (QChar c : std::as_const(name))
     {
         if (c.isDigit())
         {
-            isValidName = false;
+            hasDigit = true;
             break;
         }
+    }
+    if (hasDigit)
+    {
+        ui->label_Message->setText("Tên khách hàng không được chứa số!");
+        ui->label_Message->setVisible(true);
+        return;
     }
 
     bool isValidPhone = true;
@@ -84,13 +97,6 @@ void CustomerDialog::on_btnAddCustomer_clicked()
             isValidPhone = false;
             break;
         }
-    }
-
-    if (!isValidName)
-    {
-        ui->label_Message->setText("Tên khách hàng chỉ được chứa chữ");
-        ui->label_Message->setVisible(true);
-        return;
     }
 
     if (!isValidPhone)
@@ -107,6 +113,13 @@ void CustomerDialog::on_btnAddCustomer_clicked()
         return;
     }
 
+    if (!phone.startsWith('0'))
+    {
+        ui->label_Message->setText("Số điện thoại phải bắt đầu bằng số 0!");
+        ui->label_Message->setVisible(true);
+        return;
+    }
+
     if (m_store->findCustomerByPhone(phone))
     {
         ui->label_Message->setText("Số điện thoại này đã tồn tại trong hệ thống!");
@@ -114,22 +127,30 @@ void CustomerDialog::on_btnAddCustomer_clicked()
         return;
     }
 
-    Customer* c = new Customer("", name, phone, 0);
-    m_store->addCustomer(c);
+    try
+    {
+        Customer* c = new Customer("", name, phone, 0);
+        m_store->addCustomer(c);
 
-    ui->label_Message->setText("✓ Đã thêm khách hàng thành công!");
-    ui->label_Message->setStyleSheet("color: green; font-weight: bold; background-color: #99FF99;");
+        ui->label_Message->setText("✓ Đã thêm khách hàng thành công!");
+        ui->label_Message->setStyleSheet("color: #28a745; font-weight: bold; background-color: #D4EDDA; border: 1px solid #C3E6CB;");
+        ui->label_Message->setVisible(true);
 
-    ui->label_Message->setVisible(true);
+        loadCustomers();
 
-    loadCustomers();
+        ui->txtName->clear();
+        ui->txtPhone->clear();
+        ui->txtName->setFocus();
 
-    ui->txtName->clear();
-    ui->txtPhone->clear();
-
-    QTimer::singleShot(3000, this, [this]() {
-        ui->label_Message->setText("");
-        ui->label_Message->setStyleSheet("");
-        ui->label_Message->setVisible(false);
-    });
+        QTimer::singleShot(3000, this, [this]() {
+            ui->label_Message->setText("");
+            ui->label_Message->setStyleSheet("");
+            ui->label_Message->setVisible(false);
+        });
+    }
+    catch (const std::exception& e)
+    {
+        ui->label_Message->setText(QString("Lỗi: %1").arg(e.what()));
+        ui->label_Message->setVisible(true);
+    }
 }

@@ -80,6 +80,7 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     connect(ui->SearchText, &QLineEdit::returnPressed, this, &MainWindow::on_BtnSearch_clicked);
     connect(ui->tableViewOrder, &QTableView::doubleClicked, this, &MainWindow::onRemoveSanPhamDoubleClicked);
     connect(ui->txtSearchCustomer, &QLineEdit::returnPressed, this, &MainWindow::onTimKhachPressed);
+    connect(ui->txtSearchPhoneCustomer, &QLineEdit::returnPressed, this, &MainWindow::onTimKhachPressed);
     connect(ui->btnDungDiem, &QPushButton::clicked, this, &MainWindow::onDungDiemClicked);
     connect(ui->ExportOrder, &QPushButton::clicked, this, &MainWindow::onXuatHoaDonClicked);
     connect(ui->btnBack, &QPushButton::clicked, this, &MainWindow::onQuayLaiClicked);
@@ -443,7 +444,6 @@ void MainWindow::onRemoveSanPhamDoubleClicked(const QModelIndex &index)
 
 void MainWindow::onTimKhachPressed()
 {
-    qDebug() << 1 << '\n';
     QString phone = ui->txtSearchPhoneCustomer->text().trimmed();
     QString name = ui->txtSearchCustomer->text().trimmed();
     if (phone.isEmpty() || name.isEmpty())
@@ -454,6 +454,7 @@ void MainWindow::onTimKhachPressed()
     {
         currentBill->setCustomer(nullptr);
         ui->lblTenKhach->setText("Không tìm thấy!");
+        ui->lblTenKhach->setStyleSheet("color: red;");
         ui->lblDiemKhach->setText("");
         ui->btnDungDiem->setEnabled(false);
         return;
@@ -463,6 +464,7 @@ void MainWindow::onTimKhachPressed()
     {
         currentBill->setCustomer(nullptr);
         ui->lblTenKhach->setText("Thông tin không khớp!");
+        ui->lblTenKhach->setStyleSheet("color: red;");
         ui->lblDiemKhach->setText("");
         ui->btnDungDiem->setEnabled(false);
         return;
@@ -546,10 +548,7 @@ void MainWindow::finalizeThanhToan(const QString& paymentMethod)
         c->addPoints(pointsToAdd);
     }
 
-    // TASK 4: Thêm hóa đơn vào lịch sử thay vì xóa
     store->addBillToHistory(currentBill);
-
-    // Tạo hóa đơn mới
     currentBill = new Bill(nullptr, "", currentUser);
 
     QMessageBox::information(this, "Thành công",

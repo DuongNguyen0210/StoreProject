@@ -102,7 +102,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Thống Kê Lợi Nhuận</string>
+          <string>Lịch sử hóa đơn</string>
          </property>
          <property name="icon">
           <iconset resource="Resource.qrc">
