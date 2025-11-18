@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "Manager.h"
+#include "Cashier.h"
 
 #include <QHeaderView>
 #include <QStandardItem>
@@ -86,7 +87,6 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     connect(ui->btnCard, &QPushButton::clicked, this, &MainWindow::onThanhToanTheClicked);
     connect(ui->btnExport, &QPushButton::clicked, this, &MainWindow::onThanhToanClicked);
 
-    // Thêm sản phẩm mẫu (nếu chưa có)
     if (store->findProductByName("Bánh mì") == nullptr)
     {
         store->addProduct(new Food("", "Bánh mì", 10000, 50, "01/01/2026"));
@@ -95,8 +95,6 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
         store->addProduct(new HouseholdItem("", "Nước rửa chén", 30000, 20, 12));
         store->addProduct(new Food("", "Kẹo Cao Su", 50000, 10, "15/01/2026"));
     }
-
-    // Thêm khách hàng mẫu (nếu chưa có)
     if (store->findCustomerByPhone("0905123456") == nullptr)
     {
         store->addCustomer(new Customer("C1", "Khách Vip", "0905123456", 110000));
@@ -105,29 +103,22 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
 
     loadProductsFromStore(0);
 
-    // Tạo hóa đơn mới với người tạo là currentUser
     currentBill = new Bill(nullptr, "", currentUser);
 
     ui->stackedWidgeOrder->setCurrentIndex(curTableProduct);
 
-    // Áp dụng phân quyền (Task 5)
     applyPermissions();
 }
 
 void MainWindow::applyPermissions()
 {
-    // Kiểm tra xem user có phải là Manager không
     bool isAdmin = (dynamic_cast<Manager*>(currentUser) != nullptr);
-
-    // Ẩn/hiện các nút quản lý
+    bool isCashier = (dynamic_cast<Cashier*>(currentUser) != nullptr);
     ui->ThemHang->setVisible(isAdmin);
-    ui->ThongKe->setVisible(isAdmin);
-    ui->KhachHang->setVisible(isAdmin);
+    ui->ThongKe->setVisible(isAdmin || isCashier);
+    ui->KhachHang->setVisible(isAdmin || isCashier);
 
-    // Hiển thị thông tin user đăng nhập
-    QString userInfo = QString("%1 (%2)")
-                           .arg(currentUser->getName())
-                           .arg(isAdmin ? "Quản lý" : "Nhân viên");
+    QString userInfo = QString("%1 (%2)").arg(currentUser->getName()).arg(isAdmin ? "Quản lý" : "Nhân viên");
     ui->lblStoreName->setText(QString("CỬA HÀNG TẠP HÓA\n%1").arg(userInfo));
 }
 
@@ -259,23 +250,28 @@ void MainWindow::resetHoaDon()
     ui->btnDungDiem->setEnabled(false);
     ui->stackedWidgeOrder->setCurrentIndex(0);
     ui->lblTenKhach->setText("Khách lẻ");
-    ui->lblDiemKhach->setText(nullptr);
-    ui->TotalBefore->setText(nullptr);
-    ui->TotalAfter->setText(nullptr);
+    ui->lblDiemKhach->setText("");
+    ui->TotalBefore->setText("");
+    ui->TotalAfter->setText("");
 
-    std::vector<BillItem> billitems = currentBill->getItems();
-    for(size_t i = 0; i < billitems.size(); i++)
+    const std::vector<BillItem>& billitems = currentBill->getItems();
+    for(const BillItem& item : billitems)
     {
-        Product* p = store->findProductByName(billitems[i].getProduct()->getName());
-        p->setQuantity(p->getQuantity() + billitems[i].getQuantity());
+        Product* p = store->findProductByName(item.getProduct()->getName());
+        if(p) {
+            p->setQuantity(p->getQuantity() + item.getQuantity());
+        }
     }
 
-    Customer *c = currentBill->getCustomer();
+    Customer* c = currentBill->getCustomer();
     if(c && currentBill->getCheck())
         c->setPoints(c->getPoints() + 100000);
 
     delete currentBill;
-    currentBill = new Bill(nullptr, "", currentUser);  // Tạo bill mới với currentUser
+    currentBill = nullptr;
+
+    currentBill = new Bill(nullptr, "", currentUser);
+
     updateHoaDonView();
 }
 
@@ -394,9 +390,19 @@ void MainWindow::onAddSanPham(const QModelIndex &index)
     auto v2 = ui->stackedWidgeOrder->currentIndex();
     if(v2 == 1)
         return;
+
+    if(!index.isValid()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng chọn sản phẩm hợp lệ.");
+        return;
+    }
+
     QString Id = modelTable->item(index.row(), 0)->text();
-    qDebug() << Id << '\n';
     Product* p = store->findProductById(Id);
+
+    if(!p) {
+        QMessageBox::warning(this, "Lỗi", "Không tìm thấy sản phẩm.");
+        return;
+    }
 
     int maxStock = p->getQuantity();
     if (maxStock <= 0)
@@ -404,14 +410,25 @@ void MainWindow::onAddSanPham(const QModelIndex &index)
         QMessageBox::warning(this, "Hết hàng", "Sản phẩm này đã hết hàng.");
         return;
     }
+
     bool ok;
-    int quantityToAdd = QInputDialog::getInt(this, "Nhập số lượng", QString("%1:").arg(p->getName()), 1, 1, maxStock, 1, &ok);
+    int quantityToAdd = QInputDialog::getInt(
+        this,
+        "Nhập số lượng",
+        QString("Nhập số lượng cho %1:").arg(p->getName()),
+        1, 1, maxStock, 1, &ok
+        );
+
     if(ok)
     {
-        currentBill->addItem(p, quantityToAdd);
-        ui->stackedWidgeOrder->setCurrentIndex(0);
-        loadProductsFromStore(curTableProduct);
-        updateHoaDonView();
+        try {
+            currentBill->addItem(p, quantityToAdd);
+            ui->stackedWidgeOrder->setCurrentIndex(0);
+            loadProductsFromStore(curTableProduct);
+            updateHoaDonView();
+        } catch(const std::exception& e) {
+            QMessageBox::critical(this, "Lỗi", QString("Không thể thêm sản phẩm: %1").arg(e.what()));
+        }
     }
 }
 

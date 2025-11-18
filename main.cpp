@@ -34,11 +34,6 @@ int main(int argc, char *argv[])
     }
 
     User* loggedInUser = loginDialog.getLoggedInUser();
-    if (!loggedInUser)
-    {
-        QMessageBox::critical(nullptr, "Lỗi", "Không thể xác định người dùng đăng nhập!");
-        return 0;
-    }
 
     MainWindow w(loggedInUser, &store);
     w.show();

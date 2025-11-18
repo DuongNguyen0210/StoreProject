@@ -31,14 +31,14 @@ private:
     Ui::MainWindow *ui;
     QStandardItemModel *modelTable;
     int curTableProduct;
-    Store* store;  // Thay đổi thành pointer
+    Store* store;
     Bill *currentBill;
     QStandardItemModel *modelHoaDon;
     QStandardItemModel *modelLastBill;
-    User* currentUser;  // Thêm user hiện tại (Task 5)
+    User* currentUser;
 
 public:
-    MainWindow(User* user, Store* store, QWidget *parent = nullptr);  // Cập nhật constructor
+    MainWindow(User* user, Store* store, QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
@@ -79,7 +79,7 @@ private:
     void resetHoaDon();
     void finalizeThanhToan(const QString& paymentMethod);
 
-    void applyPermissions();  // Thêm hàm phân quyền (Task 5)
+    void applyPermissions();
 };
 
 #endif
