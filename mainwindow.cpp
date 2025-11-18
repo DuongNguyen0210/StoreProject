@@ -10,6 +10,8 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QInputDialog>
+#include <QLabel>
+#include <algorithm>
 
 #include <qstring.h>
 #include <qlineedit.h>
@@ -33,12 +35,12 @@
 #include "AddCustomerToStore.h"
 
 MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), modelTable(nullptr),
-    curTableProduct(0), store(storePtr), currentUser(user)
+    : QMainWindow(parent), ui(new Ui::MainWindow), modelTable(nullptr), curTableProduct(0), store(storePtr), currentUser(user), currentSortCriteria(SORT_DEFAULT)
 {
     ui->setupUi(this);
     setupTable();
     setupHoaDonTable();
+    setupSortComboBox();
     ui->frameMenu->hide();
 
     connect(ui->ToanBo, &QPushButton::clicked, this, [this]() {
@@ -87,7 +89,7 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     connect(ui->btnCard, &QPushButton::clicked, this, &MainWindow::onThanhToanTheClicked);
     connect(ui->btnExport, &QPushButton::clicked, this, &MainWindow::onThanhToanClicked);
 
-    loadProductsFromStore(0);
+    loadAndSortProducts(0);
 
     currentBill = new Bill(nullptr, "", currentUser);
 
@@ -104,7 +106,35 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     for (int i = 2; i <= 6; i++) {
         header->setSectionResizeMode(i, QHeaderView::Stretch);
     }
+}
 
+void MainWindow::setupSortComboBox()
+{
+    ui->sortComboBox->setMinimumHeight(45);
+    ui->sortComboBox->setMinimumWidth(200);
+
+    ui->sortComboBox->addItem("Mặc định", SORT_DEFAULT);
+    ui->sortComboBox->addItem("Giá: Tăng dần", SORT_PRICE_ASC);
+    ui->sortComboBox->addItem("Giá: Giảm dần", SORT_PRICE_DESC);
+    ui->sortComboBox->addItem("Số lượng: Tăng dần", SORT_QUANTITY_ASC);
+    ui->sortComboBox->addItem("Số lượng: Giảm dần", SORT_QUANTITY_DESC);
+    ui->sortComboBox->addItem("Hạn SD: Gần nhất", SORT_EXPIRY_ASC);
+    ui->sortComboBox->addItem("Hạn SD: Xa nhất", SORT_EXPIRY_DESC);
+    ui->sortComboBox->addItem("Thể tích: Tăng dần", SORT_VOLUME_ASC);
+    ui->sortComboBox->addItem("Thể tích: Giảm dần", SORT_VOLUME_DESC);
+    ui->sortComboBox->addItem("Bảo hành: Tăng dần", SORT_WARRANTY_ASC);
+    ui->sortComboBox->addItem("Bảo hành: Giảm dần", SORT_WARRANTY_DESC);
+
+    connect(ui->sortComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &MainWindow::onSortCriteriaChanged);
+}
+
+void MainWindow::onSortCriteriaChanged(int index)
+{
+    if (index < 0 || index >= ui->sortComboBox->count()) return;
+
+    currentSortCriteria = static_cast<SortCriteria>(ui->sortComboBox->itemData(index).toInt());
+    loadAndSortProducts(curTableProduct);
 }
 
 void MainWindow::applyPermissions()
@@ -118,7 +148,6 @@ void MainWindow::applyPermissions()
     QString userInfo = QString("%1 (%2)").arg(currentUser->getName()).arg(isAdmin ? "Quản lý" : "Nhân viên");
     ui->lblStoreName->setText(QString("CỬA HÀNG TẠP HÓA\n%1").arg(userInfo));
 }
-
 
 void MainWindow::onToggleMenuClicked()
 {
@@ -270,108 +299,315 @@ void MainWindow::resetHoaDon()
     updateHoaDonView();
 }
 
-void MainWindow::loadProductsFromStore(int typeFilter)
+void MainWindow::loadAndSortProducts(int typeFilter)
 {
+    std::vector<Product*> products;
+
+    store->forEachProduct([&](const QString&, Product* p) {
+        if (!p) return;
+
+        bool shouldInclude = false;
+        Food* f = dynamic_cast<Food*>(p);
+        Beverage* b = dynamic_cast<Beverage*>(p);
+        HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
+
+        if (typeFilter == 0) {
+            shouldInclude = true;
+        } else if (typeFilter == 1 && f) {
+            shouldInclude = true;
+        } else if (typeFilter == 2 && b) {
+            shouldInclude = true;
+        } else if (typeFilter == 3 && h) {
+            shouldInclude = true;
+        }
+
+        if (shouldInclude) {
+            products.push_back(p);
+        }
+    });
+
+    applySortingAndFiltering(products);
+
     modelTable->removeRows(0, modelTable->rowCount());
-    store->forEachProduct([&](const QString&, Product* p)
-                        {
-                            if (!p) return;
-                            bool ok = false;
-                            Food* f = dynamic_cast<Food*>(p);
-                            Beverage* b = dynamic_cast<Beverage*>(p);
-                            HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
-                            if (typeFilter == 0) ok = true;
-                            else if (typeFilter == 1 && f) ok = true;
-                            else if (typeFilter == 2 && b) ok = true;
-                            else if (typeFilter == 3 && h) ok = true;
-                            if (!ok) return;
 
-                            QList<QStandardItem*> row;
-                            row << new QStandardItem(p->getId());
-                            row << new QStandardItem(p->getName());
-                            QString typeName;
-                            if (f) typeName = "Đồ ăn";
-                            else if (b) typeName = "Thức uống";
-                            else if (h) typeName = "Đồ gia dụng";
-                            else typeName = "Khác";
-                            row << new QStandardItem(typeName);
-                            row << new QStandardItem(QString::number(p->calcFinalPrice()));
-                            row << new QStandardItem(QString::number(p->getQuantity()));
-                            row << new QStandardItem(b ? QString::number(b->getVolume()) : "");
+    for (Product* p : products) {
+        if (!p) continue;
 
-                            if(f)
-                            row << new QStandardItem(f->getExpiryDate());
-                            else if(b)
-                            row << new QStandardItem(b->getExpiryDate());
-                            else
-                            row << new QStandardItem("");
-                            row << new QStandardItem(h ? QString::number(h->getWarrantyMonths()) : "");
-                            modelTable->appendRow(row);
-                        });
+        Food* f = dynamic_cast<Food*>(p);
+        Beverage* b = dynamic_cast<Beverage*>(p);
+        HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
+
+        QList<QStandardItem*> row;
+        row << new QStandardItem(p->getId());
+        row << new QStandardItem(p->getName());
+
+        QString typeName;
+        if (f) typeName = "Đồ ăn";
+        else if (b) typeName = "Thức uống";
+        else if (h) typeName = "Đồ gia dụng";
+        else typeName = "Khác";
+        row << new QStandardItem(typeName);
+
+        row << new QStandardItem(QString::number(p->calcFinalPrice()));
+        row << new QStandardItem(QString::number(p->getQuantity()));
+        row << new QStandardItem(b ? QString::number(b->getVolume()) : "");
+
+        if(f)
+            row << new QStandardItem(f->getExpiryDate());
+        else if(b)
+            row << new QStandardItem(b->getExpiryDate());
+        else
+            row << new QStandardItem("");
+
+        row << new QStandardItem(h ? QString::number(h->getWarrantyMonths()) : "");
+        modelTable->appendRow(row);
+    }
 }
 
+void MainWindow::applySortingAndFiltering(std::vector<Product*>& products)
+{
+    switch (currentSortCriteria) {
+    case SORT_DEFAULT:
+        break;
+
+    case SORT_PRICE_ASC:
+        std::sort(products.begin(), products.end(), comparePriceAsc);
+        break;
+
+    case SORT_PRICE_DESC:
+        std::sort(products.begin(), products.end(), comparePriceDesc);
+        break;
+
+    case SORT_QUANTITY_ASC:
+        std::sort(products.begin(), products.end(), compareQuantityAsc);
+        break;
+
+    case SORT_QUANTITY_DESC:
+        std::sort(products.begin(), products.end(), compareQuantityDesc);
+        break;
+
+    case SORT_EXPIRY_ASC:
+        std::sort(products.begin(), products.end(), compareExpiryAsc);
+        break;
+
+    case SORT_EXPIRY_DESC:
+        std::sort(products.begin(), products.end(), compareExpiryDesc);
+        break;
+
+    case SORT_VOLUME_ASC:
+    case SORT_VOLUME_DESC:
+        products.erase(
+            std::remove_if(products.begin(), products.end(), [](Product* p) {
+                return dynamic_cast<Beverage*>(p) == nullptr;
+            }),
+            products.end()
+            );
+        if (currentSortCriteria == SORT_VOLUME_ASC)
+            std::sort(products.begin(), products.end(), compareVolumeAsc);
+        else
+            std::sort(products.begin(), products.end(), compareVolumeDesc);
+        break;
+
+    case SORT_WARRANTY_ASC:
+    case SORT_WARRANTY_DESC:
+        products.erase(
+            std::remove_if(products.begin(), products.end(), [](Product* p) {
+                return dynamic_cast<HouseholdItem*>(p) == nullptr;
+            }),
+            products.end()
+            );
+        if (currentSortCriteria == SORT_WARRANTY_ASC)
+            std::sort(products.begin(), products.end(), compareWarrantyAsc);
+        else
+            std::sort(products.begin(), products.end(), compareWarrantyDesc);
+        break;
+    }
+}
+
+bool MainWindow::comparePriceAsc(Product* a, Product* b)
+{
+    if (!a || !b) return false;
+    return a->calcFinalPrice() < b->calcFinalPrice();
+}
+
+bool MainWindow::comparePriceDesc(Product* a, Product* b)
+{
+    if (!a || !b) return false;
+    return a->calcFinalPrice() > b->calcFinalPrice();
+}
+
+bool MainWindow::compareQuantityAsc(Product* a, Product* b)
+{
+    if (!a || !b) return false;
+    return a->getQuantity() < b->getQuantity();
+}
+
+bool MainWindow::compareQuantityDesc(Product* a, Product* b)
+{
+    if (!a || !b) return false;
+    return a->getQuantity() > b->getQuantity();
+}
+
+bool MainWindow::compareExpiryAsc(Product* a, Product* b)
+{
+    if (!a || !b) return false;
+
+    QDate d1 = getProductDate(a);
+    QDate d2 = getProductDate(b);
+
+    if (!d1.isValid() && !d2.isValid()) return false;
+    if (!d1.isValid()) return false;
+    if (!d2.isValid()) return true;
+
+    return d1 < d2;
+}
+
+bool MainWindow::compareExpiryDesc(Product* a, Product* b)
+{
+    if (!a || !b) return false;
+
+    QDate d1 = getProductDate(a);
+    QDate d2 = getProductDate(b);
+
+    if (!d1.isValid() && !d2.isValid()) return false;
+    if (!d1.isValid()) return false;
+    if (!d2.isValid()) return true;
+
+    return d1 > d2;
+}
+
+bool MainWindow::compareVolumeAsc(Product* a, Product* b)
+{
+    if (!a || !b) return false;
+
+    Beverage* b1 = dynamic_cast<Beverage*>(a);
+    Beverage* b2 = dynamic_cast<Beverage*>(b);
+
+    if (!b1 || !b2) return false;
+
+    return b1->getVolume() < b2->getVolume();
+}
+
+bool MainWindow::compareVolumeDesc(Product* a, Product* b)
+{
+    if (!a || !b) return false;
+
+    Beverage* b1 = dynamic_cast<Beverage*>(a);
+    Beverage* b2 = dynamic_cast<Beverage*>(b);
+
+    if (!b1 || !b2) return false;
+
+    return b1->getVolume() > b2->getVolume();
+}
+
+bool MainWindow::compareWarrantyAsc(Product* a, Product* b)
+{
+    if (!a || !b) return false;
+
+    HouseholdItem* h1 = dynamic_cast<HouseholdItem*>(a);
+    HouseholdItem* h2 = dynamic_cast<HouseholdItem*>(b);
+
+    if (!h1 || !h2) return false;
+
+    return h1->getWarrantyMonths() < h2->getWarrantyMonths();
+}
+
+bool MainWindow::compareWarrantyDesc(Product* a, Product* b)
+{
+    if (!a || !b) return false;
+
+    HouseholdItem* h1 = dynamic_cast<HouseholdItem*>(a);
+    HouseholdItem* h2 = dynamic_cast<HouseholdItem*>(b);
+
+    if (!h1 || !h2) return false;
+
+    return h1->getWarrantyMonths() > h2->getWarrantyMonths();
+}
+
+QDate MainWindow::getProductDate(Product* p)
+{
+    if (!p) return QDate();
+
+    QString dateStr;
+    if (auto f = dynamic_cast<Food*>(p))
+        dateStr = f->getExpiryDate();
+    else if (auto b = dynamic_cast<Beverage*>(p))
+        dateStr = b->getExpiryDate();
+
+    if (dateStr.isEmpty()) return QDate();
+    return QDate::fromString(dateStr, "dd/MM/yyyy");
+}
+
+void MainWindow::loadProductsFromStore(int typeFilter)
+{
+    loadAndSortProducts(typeFilter);
+}
 
 void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
 {
     QString kw = keyword.trimmed();
     if (kw.isEmpty())
     {
-        loadProductsFromStore(0);
+        loadAndSortProducts(0);
         return;
     }
-    modelTable->removeRows(0, modelTable->rowCount());
-    qDebug() << kw << '\n';
-    store->forEachProductByName(kw, [&](const QString&, Product* p)
-                                {
-                                    if (!p)
-                                       return;
-                                    Food* f = dynamic_cast<Food*>(p);
-                                    Beverage* b = dynamic_cast<Beverage*>(p);
-                                    HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
-                                    QList<QStandardItem*> row;
-                                    row << new QStandardItem(p->getId());
-                                    row << new QStandardItem(p->getName());
-                                    QString typeName;
-                                    if (f) typeName = "Đồ ăn";
-                                    else if(b) typeName = "Thức uống";
-                                    else if (h) typeName = "Đồ gia dụng";
-                                    row << new QStandardItem(typeName);
-                                    row << new QStandardItem(QString::number(p->calcFinalPrice()));
-                                    row << new QStandardItem(QString::number(p->getQuantity()));
-                                    row << new QStandardItem(b ? QString::number(b->getVolume()) : "");
-                                    if(f)
-                                       row << new QStandardItem(f->getExpiryDate());
-                                    else if(b)
-                                       row << new QStandardItem(b->getExpiryDate());
-                                    else
-                                       row << new QStandardItem("");
-                                    row << new QStandardItem(h ? QString::number(h->getWarrantyMonths()) : "");
-                                    modelTable->appendRow(row);
-                                });
-}
 
+    modelTable->removeRows(0, modelTable->rowCount());
+
+    store->forEachProductByName(kw, [&](const QString&, Product* p) {
+        if (!p) return;
+
+        Food* f = dynamic_cast<Food*>(p);
+        Beverage* b = dynamic_cast<Beverage*>(p);
+        HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
+
+        QList<QStandardItem*> row;
+        row << new QStandardItem(p->getId());
+        row << new QStandardItem(p->getName());
+
+        QString typeName;
+        if (f) typeName = "Đồ ăn";
+        else if(b) typeName = "Thức uống";
+        else if (h) typeName = "Đồ gia dụng";
+        row << new QStandardItem(typeName);
+
+        row << new QStandardItem(QString::number(p->calcFinalPrice()));
+        row << new QStandardItem(QString::number(p->getQuantity()));
+        row << new QStandardItem(b ? QString::number(b->getVolume()) : "");
+
+        if(f)
+            row << new QStandardItem(f->getExpiryDate());
+        else if(b)
+            row << new QStandardItem(b->getExpiryDate());
+        else
+            row << new QStandardItem("");
+
+        row << new QStandardItem(h ? QString::number(h->getWarrantyMonths()) : "");
+        modelTable->appendRow(row);
+    });
+}
 
 void MainWindow::on_ToanBo_clicked()
 {
-    loadProductsFromStore(0);
+    loadAndSortProducts(0);
     curTableProduct = 0;
 }
 
 void MainWindow::on_DoAn_clicked()
 {
-    loadProductsFromStore(1);
+    loadAndSortProducts(1);
     curTableProduct = 1;
 }
 
 void MainWindow::on_ThucUong_clicked()
 {
-    loadProductsFromStore(2);
+    loadAndSortProducts(2);
     curTableProduct = 2;
 }
 
 void MainWindow::on_DoGiaDung_clicked()
 {
-    loadProductsFromStore(3);
+    loadAndSortProducts(3);
     curTableProduct = 3;
 }
 
@@ -419,7 +655,7 @@ void MainWindow::onAddSanPham(const QModelIndex &index)
         try {
             currentBill->addItem(p, quantityToAdd);
             ui->stackedWidgeOrder->setCurrentIndex(0);
-            loadProductsFromStore(curTableProduct);
+            loadAndSortProducts(curTableProduct);
             updateHoaDonView();
         } catch(const std::exception& e) {
             QMessageBox::critical(this, "Lỗi", QString("Không thể thêm sản phẩm: %1").arg(e.what()));
@@ -432,7 +668,7 @@ void MainWindow::onRemoveSanPhamDoubleClicked(const QModelIndex &index)
     QString name = modelHoaDon->item(index.row(), 0)->text();
     Product* p = store->findProductByName(name);
     currentBill->removeItem(p);
-    loadProductsFromStore(curTableProduct);
+    loadAndSortProducts(curTableProduct);
     updateHoaDonView();
 }
 
@@ -577,7 +813,7 @@ void MainWindow::on_ThemHang_clicked()
             int warranty = dialog.getWarranty();
             store->addProduct(new HouseholdItem("", name, price, quantity, warranty));
         }
-        loadProductsFromStore(curTableProduct);
+        loadAndSortProducts(curTableProduct);
     }
 }
 
@@ -592,42 +828,3 @@ void MainWindow::on_KhachHang_clicked()
     CustomerDialog dialog(store, this);
     dialog.exec();
 }
-
-
-QDate MainWindow::getProductDate(Product* p)
-{
-    QString dateStr;
-    if (auto f = dynamic_cast<Food*>(p)) dateStr = f->getExpiryDate();
-    else if (auto b = dynamic_cast<Beverage*>(p)) dateStr = b->getExpiryDate();
-
-    if (dateStr.isEmpty()) return QDate();
-    return QDate::fromString(dateStr, "dd/MM/yyyy");
-}
-
-bool MainWindow::comparePriceAsc(Product* a, Product* b)
-{
-    return a->calcFinalPrice() < b->calcFinalPrice();
-}
-
-bool MainWindow::comparePriceDesc(Product* a, Product* b)
-{
-    return a->calcFinalPrice() > b->calcFinalPrice();
-}
-
-bool MainWindow::compareExpiry(Product* a, Product* b)
-{
-    QDate d1 = getProductDate(a);
-    QDate d2 = getProductDate(b);
-
-    if (!d1.isValid() && !d2.isValid()) return compareDefault(a, b);
-    if (!d1.isValid()) return false;
-    if (!d2.isValid()) return true;
-
-    return d1 < d2;
-}
-
-bool MainWindow::compareDefault(Product* a, Product* b)
-{
-    return QString::compare(a->getId(), b->getId(), Qt::CaseInsensitive) < 0;
-}
-

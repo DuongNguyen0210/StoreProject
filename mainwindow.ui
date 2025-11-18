@@ -235,6 +235,35 @@
            </property>
           </widget>
          </item>
+         <item>
+          <spacer name="horizontalSpacerTopBar">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="sortLabel">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>45</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Sắp xếp</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="sortComboBox"/>
+         </item>
         </layout>
        </item>
        <item>
@@ -409,7 +438,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidgeOrder">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="ChuanBiHoaDon">
           <layout class="QVBoxLayout" name="verticalLayout_3">

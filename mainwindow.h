@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QStandardItemModel>
 #include <QGridLayout>
+#include <QComboBox>
 
 #include "Store.h"
 #include "Food.h"
@@ -37,6 +38,24 @@ private:
     QStandardItemModel *modelLastBill;
     User* currentUser;
 
+    QComboBox* sortComboBox;
+
+    enum SortCriteria {
+        SORT_DEFAULT,
+        SORT_PRICE_ASC,
+        SORT_PRICE_DESC,
+        SORT_QUANTITY_ASC,
+        SORT_QUANTITY_DESC,
+        SORT_EXPIRY_ASC,
+        SORT_EXPIRY_DESC,
+        SORT_VOLUME_ASC,
+        SORT_VOLUME_DESC,
+        SORT_WARRANTY_ASC,
+        SORT_WARRANTY_DESC
+    };
+
+    SortCriteria currentSortCriteria;
+
 public:
     MainWindow(User* user, Store* store, QWidget *parent = nullptr);
     ~MainWindow();
@@ -65,10 +84,13 @@ private slots:
     void onToggleMenuClicked();
     void onCancelOrderClicked();
 
+    void onSortCriteriaChanged(int index);
+
 private:
     void setupTable();
     void setupHoaDonTable();
     void setupLastBill();
+    void setupSortComboBox();
 
     void updateHoaDonView();
     void updateLastBillView();
@@ -76,23 +98,26 @@ private:
     void loadProductsFromStore(int typeFilter);
     void loadProductsFromStoreWithKeyWord(const QString &keyword);
 
+    void loadAndSortProducts(int typeFilter);
+    void applySortingAndFiltering(std::vector<Product*>& products);
+
+    static bool comparePriceAsc(Product* a, Product* b);
+    static bool comparePriceDesc(Product* a, Product* b);
+    static bool compareQuantityAsc(Product* a, Product* b);
+    static bool compareQuantityDesc(Product* a, Product* b);
+    static bool compareExpiryAsc(Product* a, Product* b);
+    static bool compareExpiryDesc(Product* a, Product* b);
+    static bool compareVolumeAsc(Product* a, Product* b);
+    static bool compareVolumeDesc(Product* a, Product* b);
+    static bool compareWarrantyAsc(Product* a, Product* b);
+    static bool compareWarrantyDesc(Product* a, Product* b);
+
+    static QDate getProductDate(Product* p);
+
     void resetHoaDon();
     void finalizeThanhToan(const QString& paymentMethod);
 
     void applyPermissions();
-
-    using ProductComparator = std::function<bool(Product*, Product*)>;
-
-    static bool comparePriceAsc(Product* a, Product* b);  // Giá tăng
-    static bool comparePriceDesc(Product* a, Product* b); // Giá giảm
-    static bool compareExpiry(Product* a, Product* b);    // Hạn sử dụng
-    static bool compareDefault(Product* a, Product* b);   // Mặc định (theo ID)
-
-
-    static QDate getProductDate(Product* p);
-
-    // Biến lưu con trỏ hàm hiện tại đang dùng
-    ProductComparator currentComparator;
 };
 
 #endif

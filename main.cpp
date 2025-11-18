@@ -31,19 +31,18 @@ int main(int argc, char *argv[])
 
     StorePersistence::load(store, dataPath);
     LoginDialog loginDialog(&store);
-    // if (loginDialog.exec() != QDialog::Accepted)
-    // {
-    //     return 0;
-    // }
+    if (loginDialog.exec() != QDialog::Accepted)
+    {
+        return 0;
+    }
 
-    // User* loggedInUser = loginDialog.getLoggedInUser();
-User* loggedInUser = new Manager("admin", "Admin Test", "123");
+    User* loggedInUser = loginDialog.getLoggedInUser();
     MainWindow w(loggedInUser, &store);
     w.show();
 
     int result = a.exec();
 
-    //StorePersistence::save(store, dataPath);
+    StorePersistence::save(store, dataPath);
 
     return result;
 }
