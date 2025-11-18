@@ -29,7 +29,8 @@ Store::Store(const QString& name)
     userByName(101), userById(101)
 {}
 
-Store::~Store() {
+Store::~Store()
+{
     productById.forEach([](const QString&, Product* p) {
         delete p;
     });
@@ -39,10 +40,8 @@ Store::~Store() {
     userById.forEach([](const QString&, User* u) {
         delete u;
     });
-    // Xóa billHistory
-    for (Bill* bill : billHistory) {
+    for (Bill* bill : billHistory)
         delete bill;
-    }
     billHistory.clear();
 }
 

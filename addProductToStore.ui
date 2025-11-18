@@ -43,7 +43,7 @@
        <number>20</number>
       </property>
       <item row="0" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="labelAddProductType">
         <property name="text">
          <string>Chọn loại sản phẩm:</string>
         </property>
@@ -53,7 +53,7 @@
        <widget class="QComboBox" name="Type"/>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_3">
+       <widget class="QLabel" name="labelAddProductName">
         <property name="text">
          <string>Tên sản phẩm:</string>
         </property>
@@ -63,7 +63,7 @@
        <widget class="QLineEdit" name="Name"/>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="labelAddProductQuantity">
         <property name="text">
          <string>Số lượng thêm:</string>
         </property>
@@ -73,7 +73,7 @@
        <widget class="QSpinBox" name="Quantity"/>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="labelAddProductPrice">
         <property name="text">
          <string>Giá tiền:</string>
         </property>
@@ -83,7 +83,7 @@
        <widget class="QDoubleSpinBox" name="Price"/>
       </item>
       <item row="4" column="0">
-       <widget class="QLabel" name="label_5">
+       <widget class="QLabel" name="labelAddProductVolume">
         <property name="text">
          <string>Thể tích:</string>
         </property>
@@ -93,7 +93,7 @@
        <widget class="QDoubleSpinBox" name="Volume"/>
       </item>
       <item row="5" column="0">
-       <widget class="QLabel" name="label_6">
+       <widget class="QLabel" name="labelAddProductExpiryDate">
         <property name="text">
          <string>Hạn sử dụng:</string>
         </property>
@@ -103,7 +103,7 @@
        <widget class="QDateEdit" name="dateEdit"/>
       </item>
       <item row="6" column="0">
-       <widget class="QLabel" name="label_7">
+       <widget class="QLabel" name="labelAddProducWarranty">
         <property name="text">
          <string>Thời hạn bảo hành:</string>
         </property>
