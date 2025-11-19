@@ -93,7 +93,7 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
 
     out << "[BILLS]\n";
     const std::vector<Bill*>& history = store.getBillHistory();
-    for (Bill* bill : history)
+    for (const Bill* bill : history)
     {
         if (!bill) continue;
 
@@ -138,8 +138,6 @@ bool StorePersistence::load(Store &store, const QString &filePath)
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return false;
-    Bill *b = new Bill();
-    store.addBillToHistory(b);
     QTextStream in(&file);
     in.setEncoding(QStringConverter::Utf8);
     enum Section {

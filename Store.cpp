@@ -108,6 +108,8 @@ Product* Store::findProductById(const QString& id) const
     return productById.getFirst(id);
 }
 
+
+
 void Store::addCustomer(Customer* c)
 {
     if (!c)

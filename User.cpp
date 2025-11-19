@@ -1,7 +1,7 @@
 #include "User.h"
 #include <QDebug>
 
-int User::nextId = 1;
+int User::nextId = 0;
 
 QString User::generateId()
 {

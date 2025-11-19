@@ -13,7 +13,6 @@ ThongKe::ThongKe(Store* store, QWidget *parent)
     setupTable();
     loadBillHistory();
 
-    // Kết nối double click
     connect(ui->billHistoryTable, &QTableView::doubleClicked,
             this, &ThongKe::onBillDoubleClicked);
 }
@@ -47,9 +46,8 @@ void ThongKe::loadBillHistory()
 
     const auto& history = m_store->getBillHistory();
 
-    for (size_t i = 1; i < history.size(); i++)
+    for (const Bill* bill : history)
     {
-        const Bill* bill = history[i];
         if (!bill) continue;
 
         QList<QStandardItem*> row;
@@ -70,7 +68,11 @@ void ThongKe::loadBillHistory()
         QString totalStr = QString::number(bill->getTotal(), 'f', 0) + " đ";
         row << new QStandardItem(totalStr);
 
-        row << new QStandardItem(bill->getCreatedBy()->getName());
+        User * u = bill->getCreatedBy();
+        if(u)
+            row << new QStandardItem(u->getName());
+        else
+            row << new QStandardItem("N/A");
 
         m_model->appendRow(row);
     }

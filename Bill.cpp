@@ -4,7 +4,7 @@
 #include "Exceptions.h"
 #include <sstream>
 
-int Bill::nextId = 1;
+int Bill::nextId = 0;
 
 QString Bill::generateId()
 {

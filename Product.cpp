@@ -2,7 +2,7 @@
 #include <QString>
 using namespace std;
 
-int Product::nextId = 1;
+int Product::nextId = 0;
 
 QString Product::generateId()
 {
