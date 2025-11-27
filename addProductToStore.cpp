@@ -64,6 +64,8 @@ void AddProductToStore::validateForm()
         isValid = false;
     if (ui->Quantity->value() <= 0)
         isValid = false;
+    if(ui->Price->value() == 0)
+        isValid = false;
 
     if (typeIndex == 1 || typeIndex == 2)
     {
@@ -83,9 +85,21 @@ void AddProductToStore::validateForm()
     else
         isValid = false;
 
-    ui->buttonBox->setEnabled(isValid);
+    //ui->buttonBox->setEnabled(isValid);
     if (ui->buttonBox)
-        ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(isValid);
+    {
+        // 1. Xử lý nút OK: Chỉ sáng khi isValid = true
+        QPushButton* btnOk = ui->buttonBox->button(QDialogButtonBox::Ok);
+        if (btnOk) {
+            btnOk->setEnabled(isValid);
+        }
+
+        // 2. Xử lý nút Cancel: Luôn luôn sáng
+        QPushButton* btnCancel = ui->buttonBox->button(QDialogButtonBox::Cancel);
+        if (btnCancel) {
+            btnCancel->setEnabled(true);
+        }
+    }
 }
 
 void AddProductToStore::setFieldsForType(int typeIndex)

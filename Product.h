@@ -2,6 +2,7 @@
 #define PRODUCT_H
 
 #include <QString>
+#include <QSet>
 #include <iostream>
 
 using namespace std;
@@ -14,7 +15,7 @@ protected:
     double basePrice;
     int quantity;
 
-    static int nextId;
+    static QSet<int> usedIds;
     static QString generateId();
 
 public:
@@ -33,6 +34,9 @@ public:
     void setQuantity(int q);
 
     virtual double calcFinalPrice() const = 0;
+
+    static void registerUsedId(const QString& id);
+    static void unregisterUsedId(const QString& id);
 };
 
 #endif

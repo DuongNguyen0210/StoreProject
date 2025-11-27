@@ -13,7 +13,6 @@ ThongKe::ThongKe(Store* store, QWidget *parent)
     setupTable();
     loadBillHistory();
 
-    // Kết nối double click
     connect(ui->billHistoryTable, &QTableView::doubleClicked,
             this, &ThongKe::onBillDoubleClicked);
 }
@@ -50,40 +49,33 @@ void ThongKe::loadBillHistory()
     for (const Bill* bill : history)
     {
         if (!bill) continue;
-
+        qDebug() << bill->getId() << '\n';
         QList<QStandardItem*> row;
-
-        // Mã hóa đơn
         row << new QStandardItem(bill->getId());
 
-        // Tên khách hàng
         QString customerName = "Khách lẻ";
         if (bill->getCustomer())
             customerName = bill->getCustomer()->getName();
         row << new QStandardItem(customerName);
 
-        // Ngày tạo
         QString dateStr = bill->getCreatedDate().toString("dd/MM/yyyy");
         row << new QStandardItem(dateStr);
 
-        // Giờ tạo
         QString timeStr = bill->getCreatedDate().toString("HH:mm:ss");
         row << new QStandardItem(timeStr);
 
-        // Tổng tiền
         QString totalStr = QString::number(bill->getTotal(), 'f', 0) + " đ";
         row << new QStandardItem(totalStr);
 
-        // Nhân viên tạo
-        QString employeeName = "N/A";
-        if (bill->getCreatedBy())
-            employeeName = bill->getCreatedBy()->getName();
-        row << new QStandardItem(employeeName);
+        User * u = bill->getCreatedBy();
+        if(u)
+            row << new QStandardItem(u->getName());
+        else
+            row << new QStandardItem("N/A");
 
         m_model->appendRow(row);
     }
 
-    // Hiển thị tổng doanh thu
     double totalRevenue = m_store->getTotalRevenue();
     ui->lblRevenue->setText(QString("Tổng doanh thu: %1 đ")
                                 .arg(QString::number(totalRevenue, 'f', 0)));
@@ -94,10 +86,8 @@ void ThongKe::onBillDoubleClicked(const QModelIndex &index)
     if (!index.isValid())
         return;
 
-    // Lấy mã hóa đơn từ cột đầu tiên
     QString billId = m_model->item(index.row(), 0)->text();
 
-    // Tìm hóa đơn trong lịch sử
     const auto& history = m_store->getBillHistory();
     Bill* selectedBill = nullptr;
 
@@ -112,7 +102,6 @@ void ThongKe::onBillDoubleClicked(const QModelIndex &index)
 
     if (selectedBill)
     {
-        // Mở dialog chi tiết
         BillDetailDialog detailDialog(selectedBill, this);
         detailDialog.exec();
     }

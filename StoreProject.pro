@@ -25,9 +25,12 @@ SOURCES += \
     ThongKe.cpp \
     User.cpp \
     billdetaildialog.cpp \
+    editproductdialog.cpp \
     logindialog.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    manageinventory.cpp \
+    storePersistence.cpp
 
 HEADERS += \
     AddCustomerToStore.h \
@@ -47,17 +50,22 @@ HEADERS += \
     ThongKe.h \
     User.h \
     billdetaildialog.h \
+    editproductdialog.h \
     hashtable.h \
     logindialog.h \
-    mainwindow.h
+    mainwindow.h \
+    manageinventory.h \
+    storePersistence.h
 
 FORMS += \
     AddCustomerToStore.ui \
     AddProductToStore.ui \
     ThongKe.ui \
     billdetaildialog.ui \
+    editproductdialog.ui \
     logindialog.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    manageinventory.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -68,4 +76,5 @@ RESOURCES += \
     Resource.qrc
 
 DISTFILES += \
-    ../Store/Icon/banhmi.png
+    ../Store/Icon/banhmi.png \
+    build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/debug/store_data.txt

@@ -3,10 +3,15 @@
 #include "Store.h"
 #include "Manager.h"
 #include "Cashier.h"
+#include "StorePersistence.h"
+
 #include <QFile>
 #include <QTextStream>
 #include <QApplication>
 #include <QMessageBox>
+#include <QDir>
+#include <QCoreApplication>
+
 
 int main(int argc, char *argv[])
 {
@@ -16,17 +21,15 @@ int main(int argc, char *argv[])
     if (styleFile.open(QFile::ReadOnly | QFile::Text))
     {
         QTextStream stream(&styleFile);
-        QString style = stream.readAll();
-        a.setStyleSheet(style);
+        a.setStyleSheet(stream.readAll());
         styleFile.close();
     }
 
     Store store("Cửa hàng tạp hóa");
 
-    store.addUser(new Manager("M1", "admin", "admin123"));
-    store.addUser(new Cashier("C1", "nhanvien", "nv123"));
-    store.addUser(new Manager("M2", "quanly", "ql456"));
+    QString dataPath = QCoreApplication::applicationDirPath() + QDir::separator() + "store_data.txt";
 
+    StorePersistence::load(store, dataPath);
     LoginDialog loginDialog(&store);
     if (loginDialog.exec() != QDialog::Accepted)
     {
@@ -34,9 +37,12 @@ int main(int argc, char *argv[])
     }
 
     User* loggedInUser = loginDialog.getLoggedInUser();
-
     MainWindow w(loggedInUser, &store);
     w.show();
 
-    return a.exec();
+    int result = a.exec();
+
+    StorePersistence::save(store, dataPath);
+
+    return result;
 }

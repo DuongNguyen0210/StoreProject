@@ -1,46 +1,62 @@
 #include "Customer.h"
-#include <QDebug> // QDebug có thể cần cho Qt::CaseInsensitive, hoặc đã có trong QString
+#include <QDebug>
 
-int Customer::nextId = 1; // Luôn bắt đầu từ 1
+QSet<int> Customer::usedIds;
 
 QString Customer::generateId()
 {
-    return QString("C%1").arg(nextId++);
+    int mex = 0;
+    while (usedIds.contains(mex))
+    {
+        mex++;
+    }
+    usedIds.insert(mex);
+
+    return QString("C%1").arg(mex);
 }
 
-// ----- HÀM ĐÃ SỬA LỖI LOGIC -----
+void Customer::registerUsedId(const QString& id)
+{
+    if (id.startsWith('C', Qt::CaseInsensitive) && id.length() > 1)
+    {
+        bool ok = false;
+        int idNum = id.mid(1).toInt(&ok);
+
+        if (ok && idNum >= 0)
+        {
+            usedIds.insert(idNum);
+        }
+    }
+}
+
+void Customer::unregisterUsedId(const QString& id)
+{
+    if (id.startsWith('C', Qt::CaseInsensitive) && id.length() > 1)
+    {
+        bool ok = false;
+        int idNum = id.mid(1).toInt(&ok);
+
+        if (ok && idNum >= 0)
+        {
+            usedIds.remove(idNum);
+        }
+    }
+}
+
 Customer::Customer(const QString& id, const QString& name, const QString& phone, int points)
     : name(name), phone(phone), points(points)
 {
     if (id.isEmpty())
     {
-        // 1. ID rỗng: Tự động tạo ID mới
-        this->id = generateId(); // Sẽ tạo "C1", "C2", "C3"...
+        this->id = generateId();
     }
     else
     {
-        // 2. ID có sẵn (ví dụ: "C1", "C2" từ mainwindow.cpp):
         this->id = id;
-
-        // (PHẦN TỰ ĐỘNG CẬP NHẬT BỘ ĐẾM)
-        // Kiểm tra xem ID có phải là dạng "C" không
-        if (id.startsWith('C', Qt::CaseInsensitive))
-        {
-            bool ok = false;
-            // Lấy phần SỐ từ ID (ví dụ: "C1" -> 1, "C2" -> 2)
-            int idNum = id.mid(1).toInt(&ok);
-
-            // Nếu lấy số thành công VÀ số đó lớn hơn hoặc bằng bộ đếm
-            if (ok && idNum >= nextId)
-            {
-                // Cập nhật bộ đếm: ID tiếp theo phải là số này + 1
-                // Ví dụ: khi "C2" được tạo, nextId sẽ thành 3
-                nextId = idNum + 1;
-            }
-        }
+        // Đăng ký ID này đã được sử dụng
+        registerUsedId(id);
     }
 }
-// ----- KẾT THÚC SỬA ĐỔI -----
 
 const QString& Customer::getId() const
 {

@@ -6,7 +6,8 @@
 #include <QTimer>
 #include "Store.h"
 
-namespace Ui {
+namespace Ui
+{
 class CustomerDialog;
 }
 

@@ -2,6 +2,7 @@
 #define CUSTOMER_H
 
 #include <QString>
+#include <QSet>
 
 class Customer
 {
@@ -11,7 +12,7 @@ private:
     QString phone;
     int points;
 
-    static int nextId;
+    static QSet<int> usedIds;
     static QString generateId();
 
 public:
@@ -26,6 +27,9 @@ public:
     void setPhone(const QString& p);
     void setPoints(int p);
     void addPoints(int p);
+
+    static void registerUsedId(const QString& id);
+    static void unregisterUsedId(const QString& id);
 };
 
 #endif

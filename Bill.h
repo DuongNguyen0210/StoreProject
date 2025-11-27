@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QDateTime>
+#include <QSet>
 #include <vector>
 #include <iostream>
 #include "BillItem.h"
@@ -20,14 +21,14 @@ private:
     Payment* payment;
     double discountPercent;
     bool check;
-    QDateTime createdDate;      // Thêm ngày tạo
-    User* createdBy;            // Thêm người tạo
+    QDateTime createdDate;
+    User* createdBy;
 
-    static int nextId;
+    static QSet<int> usedIds;
     static QString generateId();
 
 public:
-    Bill(Customer* customer = nullptr, const QString& id = "", User* createdBy = nullptr);
+    Bill(Customer* customer = nullptr, const QString& id = "", User* createdBy = nullptr, const QDateTime& createdDate = QDateTime());
     ~Bill();
 
     const QString& getId() const;
@@ -49,10 +50,12 @@ public:
     void setPayment(Payment* p);
     Payment* getPayment() const;
 
-    // Getters cho ngày tạo và người tạo
     const QDateTime& getCreatedDate() const;
     User* getCreatedBy() const;
     void setCreatedBy(User* user);
+
+    static void registerUsedId(const QString& id);
+    static void unregisterUsedId(const QString& id);
 };
 
 #endif
