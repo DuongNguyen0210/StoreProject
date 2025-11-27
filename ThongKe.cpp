@@ -49,9 +49,8 @@ void ThongKe::loadBillHistory()
     for (const Bill* bill : history)
     {
         if (!bill) continue;
-
+        qDebug() << bill->getId() << '\n';
         QList<QStandardItem*> row;
-
         row << new QStandardItem(bill->getId());
 
         QString customerName = "Khách lẻ";

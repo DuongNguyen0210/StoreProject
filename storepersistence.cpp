@@ -138,8 +138,10 @@ bool StorePersistence::load(Store &store, const QString &filePath)
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return false;
+
     QTextStream in(&file);
     in.setEncoding(QStringConverter::Utf8);
+
     enum Section {
         None,
         Products,
@@ -151,6 +153,8 @@ bool StorePersistence::load(Store &store, const QString &filePath)
 
     Section current = None;
 
+    // HashMap để lưu Bill tạm thời theo ID để dễ tìm kiếm
+    QHash<QString, Bill*> billMap;
 
     while (!in.atEnd())
     {
@@ -172,160 +176,176 @@ bool StorePersistence::load(Store &store, const QString &filePath)
                 store.addRevenue(totalRev);
             else
             {
-                QMessageBox::warning(nullptr, "Lỗi", "Có vấn đề trong file Data, yêu cầu kiếm tra lại 1");
+                QMessageBox::warning(nullptr, "Lỗi", "Có vấn đề khi đọc doanh thu từ file");
                 return false;
             }
             continue;
         }
 
         QStringList parts = line.split('|');
+
         switch (current)
         {
-            case Products:
+        case Products:
+        {
+            if (parts.size() < 5)
+            {
+                QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu sản phẩm không đúng định dạng");
+                return false;
+            }
+
+            QString type = parts[0];
+            if (type == "Food")
+            {
+                if (parts.size() < 6) break;
+                QString id = parts[1];
+                QString name = parts[2];
+                double price = parts[3].toDouble();
+                int quantity = parts[4].toInt();
+                QString expiry = parts[5];
+
+                Product* p = new Food(id, name, price, quantity, expiry);
+                store.addProduct(p);
+            }
+            else if (type == "Beverage")
+            {
+                if (parts.size() < 7) break;
+                QString id = parts[1];
+                QString name = parts[2];
+                double price = parts[3].toDouble();
+                int quantity = parts[4].toInt();
+                QString expiry = parts[5];
+                double volume = parts[6].toDouble();
+
+                Product* p = new Beverage(id, name, price, quantity, expiry, volume);
+                store.addProduct(p);
+            }
+            else if (type == "Household")
+            {
+                if (parts.size() < 6) break;
+                QString id = parts[1];
+                QString name = parts[2];
+                double price = parts[3].toDouble();
+                int quantity = parts[4].toInt();
+                int warranty = parts[5].toInt();
+
+                Product* p = new HouseholdItem(id, name, price, quantity, warranty);
+                store.addProduct(p);
+            }
+            break;
+        }
+
+        case Customers:
+        {
+            if (parts.size() < 4)
+            {
+                QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu khách hàng không đúng định dạng");
+                return false;
+            }
+
+            QString id = parts[0];
+            QString name = parts[1];
+            QString phone = parts[2];
+            int points = parts[3].toInt();
+
+            Customer* c = new Customer(id, name, phone, points);
+            store.addCustomer(c);
+            break;
+        }
+
+        case Users:
+        {
+            if (parts.size() < 4)
+            {
+                QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu người dùng không đúng định dạng");
+                return false;
+            }
+
+            QString role = parts[0];
+            QString id = parts[1];
+            QString name = parts[2];
+            QString password = parts[3];
+
+            User* u = nullptr;
+            if (role.compare("Manager", Qt::CaseInsensitive) == 0)
+                u = new Manager(id, name, password);
+            else if (role.compare("Cashier", Qt::CaseInsensitive) == 0)
+                u = new Cashier(id, name, password);
+
+            if (u)
+                store.addUser(u);
+            else
+                QMessageBox::warning(nullptr, "Lỗi", "Role người dùng không hợp lệ: " + role);
+
+            break;
+        }
+
+        case Bills:
+        {
+            if (parts.size() < 1)
+            {
+                QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu hóa đơn không đúng định dạng");
+                return false;
+            }
+
+            QString tag = parts[0];
+
+            if (tag == "BILL")
+            {
                 if (parts.size() < 5)
                 {
-                    QMessageBox::warning(nullptr, "Lỗi", "Có vấn đề trong file Data, yêu cầu kiếm tra lại 2");
+                    QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu BILL không đầy đủ");
                     return false;
                 }
-                else
-                {
-                    QString type = parts[0];
-                    if (type == "Food")
-                    {
-                        if (parts.size() < 6) break;
-                        QString id = parts[1];
-                        QString name = parts[2];
-                        double price = parts[3].toDouble();
-                        int quantity = parts[4].toInt();
-                        QString expiry = parts[5];
 
-                        Product* p = new Food(id, name, price, quantity, expiry);
-                        store.addProduct(p);
-                    }
-                    else if (type == "Beverage")
-                    {
-                        if (parts.size() < 7) break;
-                        QString id = parts[1];
-                        QString name = parts[2];
-                        double price = parts[3].toDouble();
-                        int quantity = parts[4].toInt();
-                        QString expiry = parts[5];
-                        double volume = parts[6].toDouble();
+                QString id = parts[1];
+                QString datetimeStr = parts[2];
+                QString customerId = parts[3];
+                QString userId = parts[4];
 
-                        Product* p = new Beverage(id, name, price, quantity, expiry, volume);
-                        store.addProduct(p);
-                    }
-                    else if (type == "Household")
-                    {
-                        if (parts.size() < 6) break;
-                        QString id = parts[1];
-                        QString name = parts[2];
-                        double  price = parts[3].toDouble();
-                        int quantity = parts[4].toInt();
-                        int warranty = parts[5].toInt();
+                Customer* c = store.findCustomerById(customerId);
+                User* u = store.findUserById(userId);
+                QDateTime dt = QDateTime::fromString(datetimeStr, "yyyy-MM-dd HH:mm:ss");
 
-                        Product* p = new HouseholdItem(id, name, price, quantity, warranty);
-                        store.addProduct(p);
-                    }
-                }
-                break;
-            case Customers:
-                if (parts.size() < 4)
-                {
-                    QMessageBox::warning(nullptr, "Lỗi", "Có vấn đề trong file Data, yêu cầu kiếm tra lại 3");
-                    return false;
-                }
-                else
-                {
-                    QString id = parts[0];
-                    QString name = parts[1];
-                    QString phone = parts[2];
-                    int points = parts[3].toInt();
+                Bill* b = new Bill(c, id, u, dt);
 
-                    Customer* c = new Customer(id, name, phone, points);
-                    store.addCustomer(c);
-                }
-                break;
-            case Users:
-                if (parts.size() < 4)
-                {
-                    QMessageBox::warning(nullptr, "Lỗi", "Có vấn đề trong file Data, yêu cầu kiếm tra lại 4");
-                    return false;
-                }
-                else
-                {
-                    QString role = parts[0];
-                    QString id = parts[1];
-                    QString name = parts[2];
-                    QString password = parts[3];
+                billMap[id] = b;
 
-                    User* u = nullptr;
-                    if (role.compare("Manager", Qt::CaseInsensitive) == 0)
-                        u = new Manager(id, name, password);
-                    else if (role.compare("Cashier", Qt::CaseInsensitive) == 0)
-                        u = new Cashier(id, name, password);
-                    else
-                        QMessageBox::warning(nullptr, "Lỗi", "Có vấn đề trong file Data, yêu cầu kiếm tra lại 5");
-
-                    store.addUser(u);
-                }
-                break;
-            case Bills:
-                if (parts.size() < 1)
-                {
-                    QMessageBox::warning(nullptr, "Lỗi", "Có vấn đề trong file Data, yêu cầu kiếm tra lại 6");
-                    return false;
-                }
-                else
-                {
-                    QString tag = parts[0];
-
-                    if (tag == "BILL")
-                    {
-                        if (parts.size() < 5)
-                        {
-                            QMessageBox::warning(nullptr, "Lỗi", "Có vấn đề trong file Data, yêu cầu kiếm tra lại 7");
-                            return false;
-                        }
-                        QString id = parts[1];
-                        QString datetimeStr = parts[2];
-                        QString customerId = parts[3];
-                        QString userId = parts[4];
-                        Customer* c = store.findCustomerById(customerId);
-                        User* u = store.findUserById(userId);
-                        QDateTime dt = QDateTime::fromString(datetimeStr, "yyyy-MM-dd HH:mm:ss");
-
-                        Bill* b = new Bill(c, id, u, dt);
-                        store.addBillToHistory(b);
-                    }
-                    else if (tag == "ITEM")
-                    {
-                        if (parts.size() < 5)
-                        {
-                            QMessageBox::warning(nullptr, "Lỗi", "Có vấn đề trong file Data, yêu cầu kiếm tra lại 8");
-                            return false;
-                        }
-
-                        QString billId = parts[1];
-                        QString productId = parts[2];
-                        int quantity = parts[3].toInt();
-                        double unitPrice = parts[4].toDouble();
-
-                        Bill* b = store.getBillHistory()[billId[1].digitValue()];
-                        Product* p = store.findProductById(productId);
-
-                        if (!b || !p) break;
-
-                        const std::vector<BillItem>& constItems = b->getItems();
-                        auto& items = const_cast<std::vector<BillItem>&>(constItems);
-                        BillItem* bi = new BillItem(p, quantity, unitPrice);
-                        items.emplace_back(*bi);
-                    }
-                }
-                break;
-            default:
-                break;
+                store.addBillToHistory(b);
             }
+            else if (tag == "ITEM")
+            {
+                if (parts.size() < 5)
+                {
+                    QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu ITEM không đầy đủ");
+                    return false;
+                }
+
+                QString billId = parts[1];
+                QString productId = parts[2];
+                int quantity = parts[3].toInt();
+                double unitPrice = parts[4].toDouble();
+
+                Bill* b = billMap.value(billId, nullptr);
+                Product* p = store.findProductById(productId);
+
+                if (!b || !p)
+                {
+                    qDebug() << "Warning: Cannot find Bill" << billId << "or Product" << productId;
+                    break;
+                }
+
+                const std::vector<BillItem>& constItems = b->getItems();
+                auto& items = const_cast<std::vector<BillItem>&>(constItems);
+                items.emplace_back(p, quantity, unitPrice);
+            }
+            break;
+        }
+
+        default:
+            break;
+        }
     }
+
     return true;
 }

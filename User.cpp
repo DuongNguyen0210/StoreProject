@@ -1,23 +1,68 @@
 #include "User.h"
 #include <QDebug>
 
-int User::nextId = 0;
+QSet<int> User::usedIds;
 
 QString User::generateId()
 {
-    return QString("U%1").arg(nextId++);
+    int mex = 0;
+    while (usedIds.contains(mex))
+    {
+        mex++;
+    }
+
+    usedIds.insert(mex);
+
+    return QString("U%1").arg(mex);
+}
+
+void User::registerUsedId(const QString& id)
+{
+    // Kiểm tra nếu ID có format Uxxxx
+    if (id.startsWith('U', Qt::CaseInsensitive) && id.length() > 1)
+    {
+        bool ok = false;
+        int idNum = id.mid(1).toInt(&ok);
+
+        if (ok && idNum >= 0)
+        {
+            usedIds.insert(idNum);
+        }
+    }
+}
+
+void User::unregisterUsedId(const QString& id)
+{
+    if (id.startsWith('U', Qt::CaseInsensitive) && id.length() > 1)
+    {
+        bool ok = false;
+        int idNum = id.mid(1).toInt(&ok);
+
+        if (ok && idNum >= 0)
+        {
+            usedIds.remove(idNum);
+        }
+    }
 }
 
 User::User(const QString& id, const QString& name, const QString& password)
     : name(name), password(password)
 {
     if (id.isEmpty())
+    {
         this->id = generateId();
+    }
     else
+    {
         this->id = id;
+        registerUsedId(id);
+    }
 }
 
-User::~User() = default;
+User::~User()
+{
+    unregisterUsedId(id);
+}
 
 const QString& User::getId() const
 {

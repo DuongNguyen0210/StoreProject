@@ -1,11 +1,46 @@
 #include "Customer.h"
 #include <QDebug>
 
-int Customer::nextId = 0;
+QSet<int> Customer::usedIds;
 
 QString Customer::generateId()
 {
-    return QString("C%1").arg(nextId++);
+    int mex = 0;
+    while (usedIds.contains(mex))
+    {
+        mex++;
+    }
+    usedIds.insert(mex);
+
+    return QString("C%1").arg(mex);
+}
+
+void Customer::registerUsedId(const QString& id)
+{
+    if (id.startsWith('C', Qt::CaseInsensitive) && id.length() > 1)
+    {
+        bool ok = false;
+        int idNum = id.mid(1).toInt(&ok);
+
+        if (ok && idNum >= 0)
+        {
+            usedIds.insert(idNum);
+        }
+    }
+}
+
+void Customer::unregisterUsedId(const QString& id)
+{
+    if (id.startsWith('C', Qt::CaseInsensitive) && id.length() > 1)
+    {
+        bool ok = false;
+        int idNum = id.mid(1).toInt(&ok);
+
+        if (ok && idNum >= 0)
+        {
+            usedIds.remove(idNum);
+        }
+    }
 }
 
 Customer::Customer(const QString& id, const QString& name, const QString& phone, int points)
@@ -18,14 +53,8 @@ Customer::Customer(const QString& id, const QString& name, const QString& phone,
     else
     {
         this->id = id;
-        if (id.startsWith('C', Qt::CaseInsensitive))
-        {
-            bool ok = false;
-            int idNum = id.mid(1).toInt(&ok);
-
-            if (ok && idNum >= nextId)
-                nextId = idNum + 1;
-        }
+        // Đăng ký ID này đã được sử dụng
+        registerUsedId(id);
     }
 }
 

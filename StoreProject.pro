@@ -25,9 +25,11 @@ SOURCES += \
     ThongKe.cpp \
     User.cpp \
     billdetaildialog.cpp \
+    editproductdialog.cpp \
     logindialog.cpp \
     main.cpp \
     mainwindow.cpp \
+    manageinventory.cpp \
     storePersistence.cpp
 
 HEADERS += \
@@ -48,9 +50,11 @@ HEADERS += \
     ThongKe.h \
     User.h \
     billdetaildialog.h \
+    editproductdialog.h \
     hashtable.h \
     logindialog.h \
     mainwindow.h \
+    manageinventory.h \
     storePersistence.h
 
 FORMS += \
@@ -58,8 +62,10 @@ FORMS += \
     AddProductToStore.ui \
     ThongKe.ui \
     billdetaildialog.ui \
+    editproductdialog.ui \
     logindialog.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    manageinventory.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -4,21 +4,59 @@
 #include "Exceptions.h"
 #include <sstream>
 
-int Bill::nextId = 0;
+QSet<int> Bill::usedIds;
 
 QString Bill::generateId()
 {
-    QString id = QString("B%1").arg(nextId++);
-    return id;
+    int mex = 0;
+    while (usedIds.contains(mex))
+    {
+        mex++;
+    }
+    usedIds.insert(mex);
+    return QString("B%1").arg(mex);
+}
+
+void Bill::registerUsedId(const QString& id)
+{
+    if (id.startsWith('B', Qt::CaseInsensitive) && id.length() > 1)
+    {
+        bool ok = false;
+        int idNum = id.mid(1).toInt(&ok);
+
+        if (ok && idNum >= 0)
+        {
+            usedIds.insert(idNum);
+        }
+    }
+}
+
+void Bill::unregisterUsedId(const QString& id)
+{
+    if (id.startsWith('B', Qt::CaseInsensitive) && id.length() > 1)
+    {
+        bool ok = false;
+        int idNum = id.mid(1).toInt(&ok);
+
+        if (ok && idNum >= 0)
+        {
+            usedIds.remove(idNum);
+        }
+    }
 }
 
 Bill::Bill(Customer* customer, const QString& id, User* createdBy, const QDateTime& createdDate)
     : customer(customer), payment(nullptr), discountPercent(0.0), check(false), createdBy(createdBy)
 {
     if (id.isEmpty())
+    {
         this->id = generateId();
+    }
     else
+    {
         this->id = id;
+        registerUsedId(id);
+    }
 
     if (createdDate.isValid())
         this->createdDate = createdDate;
@@ -48,12 +86,6 @@ void Bill::setCustomer(Customer* c)
 
 void Bill::addItem(Product* p, int quantity)
 {
-    if (!p)
-        throw InvalidInputException("Product is null");
-    if (quantity <= 0)
-        throw InvalidInputException("Quantity must be > 0");
-    if (p->getQuantity() < quantity)
-        throw OutOfStockException("Product " + p->getName() + " only has " + QString::number(p->getQuantity()));
     p->setQuantity(p->getQuantity() - quantity);
     for(size_t i = 0; i < items.size(); i++)
         if(items[i].getProduct()->getId() == p->getId())

@@ -9,8 +9,6 @@ CustomerDialog::CustomerDialog(Store* store, QWidget *parent)
     :QDialog(parent), ui(new Ui::CustomerDialog), m_store(store)
 {
     ui->setupUi(this);
-
-    // Ẩn label lỗi ban đầu
     ui->label_Message->setVisible(false);
     ui->label_Message->setText("");
 

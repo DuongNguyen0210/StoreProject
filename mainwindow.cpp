@@ -33,6 +33,8 @@
 #include "AddProductToStore.h"
 #include "ThongKe.h"
 #include "AddCustomerToStore.h"
+#include "ManageInventory.h"
+
 
 MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), modelTable(nullptr), curTableProduct(0), store(storePtr), currentUser(user), currentSortCriteria(SORT_DEFAULT)
@@ -90,7 +92,6 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     connect(ui->btnExport, &QPushButton::clicked, this, &MainWindow::onThanhToanClicked);
 
     loadAndSortProducts(0);
-
     currentBill = new Bill(nullptr, "", currentUser);
 
     ui->stackedWidgeOrder->setCurrentIndex(curTableProduct);
@@ -99,13 +100,14 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     QHeaderView* header = ui->tableViewProduct->horizontalHeader();
     header->setMaximumSectionSize(500);
     header->setMinimumSectionSize(100);
-    header->setStretchLastSection(true);
+    header->setStretchLastSection(false);
     header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(1, QHeaderView::Interactive);
     header->resizeSection(1, 300);
     for (int i = 2; i <= 6; i++) {
         header->setSectionResizeMode(i, QHeaderView::Stretch);
     }
+    header->setSectionResizeMode(7, QHeaderView::ResizeToContents);
 }
 
 void MainWindow::setupSortComboBox()
@@ -131,8 +133,6 @@ void MainWindow::setupSortComboBox()
 
 void MainWindow::onSortCriteriaChanged(int index)
 {
-    if (index < 0 || index >= ui->sortComboBox->count()) return;
-
     currentSortCriteria = static_cast<SortCriteria>(ui->sortComboBox->itemData(index).toInt());
     loadAndSortProducts(curTableProduct);
 }
@@ -157,6 +157,8 @@ void MainWindow::onToggleMenuClicked()
 
 void MainWindow::onCancelOrderClicked()
 {
+    if(currentBill == nullptr)
+        return;
     if (currentBill->getCustomer() == nullptr &&  currentBill->getItems().empty())
     {
         ui->txtSearchCustomer->clear();
@@ -173,6 +175,7 @@ void MainWindow::onCancelOrderClicked()
     if (reply == QMessageBox::Yes)
     {
         resetHoaDon();
+        updateHoaDonView();
         QMessageBox::information(this, "Thành công", "Đã hủy hóa đơn và trả hàng về kho.");
     }
 }
@@ -225,27 +228,31 @@ void MainWindow::setupLastBill()
 
 void MainWindow::updateHoaDonView()
 {
+    qDebug() << 1 << '\n';
     modelHoaDon->removeRows(0, modelHoaDon->rowCount());
 
-    const auto& items = currentBill->getItems();
-    for (const BillItem& item : items)
+    if(currentBill)
     {
-        QList<QStandardItem*> row;
-        row << new QStandardItem(item.getProduct()->getName());
-        row << new QStandardItem(QString::number(item.getQuantity()));
-        row << new QStandardItem(QString::number(item.getLineTotal()));
-        modelHoaDon->appendRow(row);
-    }
+        const auto& items = currentBill->getItems();
+        for (const BillItem& item : items)
+        {
+            QList<QStandardItem*> row;
+            row << new QStandardItem(item.getProduct()->getName());
+            row << new QStandardItem(QString::number(item.getQuantity()));
+            row << new QStandardItem(QString::number(item.getLineTotal()));
+            modelHoaDon->appendRow(row);
+        }
 
-    double subTotal = currentBill->getSubTotal();
-    double finalTotal = currentBill->getTotal();
-    if(currentBill->getCustomer())
-    {
-        ui->lblTenKhach->setText(currentBill->getCustomer()->getName());
-        ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(currentBill->getCustomer()->getPoints()));
+        double subTotal = currentBill->getSubTotal();
+        double finalTotal = currentBill->getTotal();
+        if(currentBill->getCustomer())
+        {
+            ui->lblTenKhach->setText(currentBill->getCustomer()->getName());
+            ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(currentBill->getCustomer()->getPoints()));
+        }
+        ui->TotalBefore->setText(QString("Tổng tiền ban đầu: %1").arg(subTotal));
+        ui->TotalAfter->setText(QString("Tổng tiền thanh toán: %1").arg(finalTotal));
     }
-    ui->TotalBefore->setText(QString("Tổng tiền ban đầu: %1").arg(subTotal));
-    ui->TotalAfter->setText(QString("Tổng tiền thanh toán: %1").arg(finalTotal));
 }
 
 void MainWindow::updateLastBillView()
@@ -291,12 +298,7 @@ void MainWindow::resetHoaDon()
     if(c && currentBill->getCheck())
         c->setPoints(c->getPoints() + 100000);
 
-    delete currentBill;
     currentBill = nullptr;
-
-    currentBill = new Bill(nullptr, "", currentUser);
-
-    updateHoaDonView();
 }
 
 void MainWindow::loadAndSortProducts(int typeFilter)
@@ -387,13 +389,18 @@ void MainWindow::applySortingAndFiltering(std::vector<Product*>& products)
         break;
 
     case SORT_EXPIRY_ASC:
-        std::sort(products.begin(), products.end(), compareExpiryAsc);
-        break;
-
     case SORT_EXPIRY_DESC:
-        std::sort(products.begin(), products.end(), compareExpiryDesc);
+        products.erase(
+            std::remove_if(products.begin(), products.end(), [](Product* p) {
+                return dynamic_cast<HouseholdItem*>(p);
+            }),
+            products.end()
+            );
+        if(currentSortCriteria == SORT_EXPIRY_ASC)
+            std::sort(products.begin(), products.end(), compareExpiryAsc);
+        else
+            std::sort(products.begin(), products.end(), compareExpiryDesc);
         break;
-
     case SORT_VOLUME_ASC:
     case SORT_VOLUME_DESC:
         products.erase(
@@ -457,7 +464,7 @@ bool MainWindow::compareExpiryAsc(Product* a, Product* b)
 
     if (!d1.isValid() && !d2.isValid()) return false;
     if (!d1.isValid()) return false;
-    if (!d2.isValid()) return true;
+    if (!d2.isValid()) return false;
 
     return d1 < d2;
 }
@@ -646,20 +653,16 @@ void MainWindow::onAddSanPham(const QModelIndex &index)
     int quantityToAdd = QInputDialog::getInt(
         this,
         "Nhập số lượng",
-        QString("Nhập số lượng cho %1:").arg(p->getName()),
-        1, 1, maxStock, 1, &ok
-        );
+        QString("Nhập số lượng cho %1:").arg(p->getName()), 1, 1, maxStock, 1, &ok);
 
     if(ok)
     {
-        try {
-            currentBill->addItem(p, quantityToAdd);
-            ui->stackedWidgeOrder->setCurrentIndex(0);
-            loadAndSortProducts(curTableProduct);
-            updateHoaDonView();
-        } catch(const std::exception& e) {
-            QMessageBox::critical(this, "Lỗi", QString("Không thể thêm sản phẩm: %1").arg(e.what()));
-        }
+        if(currentBill == nullptr)
+            currentBill = new Bill(nullptr, "", currentUser);
+        currentBill->addItem(p, quantityToAdd);
+        ui->stackedWidgeOrder->setCurrentIndex(0);
+        loadAndSortProducts(curTableProduct);
+        updateHoaDonView();
     }
 }
 
@@ -668,7 +671,6 @@ void MainWindow::onRemoveSanPhamDoubleClicked(const QModelIndex &index)
     QString name = modelHoaDon->item(index.row(), 0)->text();
     Product* p = store->findProductByName(name);
     currentBill->removeItem(p);
-    loadAndSortProducts(curTableProduct);
     updateHoaDonView();
 }
 
@@ -689,17 +691,16 @@ void MainWindow::onTimKhachPressed()
         ui->btnDungDiem->setEnabled(false);
         return;
     }
-
     if (c->getName().toLower() != name.toLower())
     {
-        currentBill->setCustomer(nullptr);
         ui->lblTenKhach->setText("Thông tin không khớp!");
         ui->lblTenKhach->setStyleSheet("color: red;");
         ui->lblDiemKhach->setText("");
         ui->btnDungDiem->setEnabled(false);
         return;
     }
-
+    if(currentBill == nullptr)
+        currentBill = new Bill(nullptr, "", currentUser);
     currentBill->setCustomer(c);
     ui->lblTenKhach->setText(c->getName());
     ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));
@@ -762,8 +763,9 @@ void MainWindow::onThanhToanClicked()
     }
     finalizeThanhToan(currentBill->getPayment()->getMethodName());
     ui->stackedWidgeOrder->setCurrentIndex(0);
-    resetHoaDon();
+    currentBill = new Bill(nullptr, "", currentUser);
     updateHoaDonView();
+    loadAndSortProducts(curTableProduct);
 }
 
 void MainWindow::finalizeThanhToan(const QString& paymentMethod)
@@ -779,8 +781,6 @@ void MainWindow::finalizeThanhToan(const QString& paymentMethod)
     }
 
     store->addBillToHistory(currentBill);
-    currentBill = new Bill(nullptr, "", currentUser);
-
     QMessageBox::information(this, "Thành công",
                              QString("Đã thanh toán %1 đồng bằng %2").arg(finalTotal).arg(paymentMethod));
 }
@@ -828,3 +828,12 @@ void MainWindow::on_KhachHang_clicked()
     CustomerDialog dialog(store, this);
     dialog.exec();
 }
+
+
+void MainWindow::on_QuanLyKho_clicked()
+{
+    ManageInventory dialog(store, this);
+    dialog.exec();
+    loadAndSortProducts(curTableProduct);
+}
+

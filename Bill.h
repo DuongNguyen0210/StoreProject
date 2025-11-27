@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QDateTime>
+#include <QSet>
 #include <vector>
 #include <iostream>
 #include "BillItem.h"
@@ -23,7 +24,7 @@ private:
     QDateTime createdDate;
     User* createdBy;
 
-    static int nextId;
+    static QSet<int> usedIds;
     static QString generateId();
 
 public:
@@ -49,10 +50,12 @@ public:
     void setPayment(Payment* p);
     Payment* getPayment() const;
 
-
     const QDateTime& getCreatedDate() const;
     User* getCreatedBy() const;
     void setCreatedBy(User* user);
+
+    static void registerUsedId(const QString& id);
+    static void unregisterUsedId(const QString& id);
 };
 
 #endif

@@ -16,6 +16,7 @@
 #include "AddProductToStore.h"
 #include "ThongKe.h"
 #include "AddCustomerToStore.h"
+#include "ManageInventory.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -80,6 +81,7 @@ private slots:
     void on_ThemHang_clicked();
     void on_ThongKe_clicked();
     void on_KhachHang_clicked();
+    void on_QuanLyKho_clicked();
 
     void onToggleMenuClicked();
     void onCancelOrderClicked();
