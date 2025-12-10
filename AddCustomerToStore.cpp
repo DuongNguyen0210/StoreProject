@@ -4,7 +4,7 @@
 #include "Exceptions.h"
 #include <QMessageBox>
 #include <QHeaderView>
-
+//Mai anh kể cho
 CustomerDialog::CustomerDialog(Store* store, QWidget *parent)
     :QDialog(parent), ui(new Ui::CustomerDialog), m_store(store)
 {
