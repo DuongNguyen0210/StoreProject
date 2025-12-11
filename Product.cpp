@@ -44,8 +44,9 @@ void Product::unregisterUsedId(const QString& id)
     }
 }
 
-Product::Product(const QString& id, const QString& name, double basePrice, int quantity)
-    : basePrice(basePrice), quantity(quantity)
+Product::Product(const QString& id, const QString& name, double basePrice, int quantity,
+                 double importPrice, double profitMargin)
+    : basePrice(basePrice), importPrice(importPrice), profitMargin(profitMargin), quantity(quantity)
 {
     if (id.isEmpty())
     {
@@ -102,4 +103,26 @@ void Product::setBasePrice(double p)
 void Product::setQuantity(int q)
 {
     quantity = q;
+}
+
+// Getter/Setter cho Giá gốc (Import Price)
+double Product::getImportPrice() const
+{
+    return importPrice;
+}
+
+void Product::setImportPrice(double ip)
+{
+    importPrice = ip;
+}
+
+// Getter/Setter cho % Lợi nhuận (Profit Margin)
+double Product::getProfitMargin() const
+{
+    return profitMargin;
+}
+
+void Product::setProfitMargin(double pm)
+{
+    profitMargin = pm;
 }

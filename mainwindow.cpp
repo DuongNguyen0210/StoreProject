@@ -794,24 +794,38 @@ void MainWindow::on_ThemHang_clicked()
     {
         QString type = dialog.getProductType();
         QString name = dialog.getName();
-        double price = dialog.getPrice();
+        double price = dialog.getPrice();              // Giá bán (tự động tính)
+        double importPrice = dialog.getImportPrice();  // Giá gốc
+        double profitMargin = dialog.getProfitMargin();// % Lợi nhuận
         int quantity = dialog.getQuantity();
 
         if (type == "Đồ ăn")
         {
             QString expiry = dialog.getExpiryDate();
-            store->addProduct(new Food("", name, price, quantity, expiry));
+            QString id = store->generateFoodId();
+            Product* p = new Food(id, name, price, quantity, expiry);
+            p->setImportPrice(importPrice);
+            p->setProfitMargin(profitMargin);
+            store->addProduct(p);
         }
         else if (type == "Thức uống")
         {
             QString expiry = dialog.getExpiryDate();
             double volume = dialog.getVolume();
-            store->addProduct(new Beverage("", name, price, quantity, expiry, volume));
+            QString id = store->generateBeverageId();
+            Product* p = new Beverage(id, name, price, quantity, expiry, volume);
+            p->setImportPrice(importPrice);
+            p->setProfitMargin(profitMargin);
+            store->addProduct(p);
         }
         else if (type == "Đồ gia dụng")
         {
             int warranty = dialog.getWarranty();
-            store->addProduct(new HouseholdItem("", name, price, quantity, warranty));
+            QString id = store->generateHouseholdId();
+            Product* p = new HouseholdItem(id, name, price, quantity, warranty);
+            p->setImportPrice(importPrice);
+            p->setProfitMargin(profitMargin);
+            store->addProduct(p);
         }
         loadAndSortProducts(curTableProduct);
     }

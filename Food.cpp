@@ -4,7 +4,7 @@
 using namespace std;
 
 Food::Food(const QString& id, const QString& name, double basePrice, int quantity, const QString& expiryDate)
-    : Product(id, name, basePrice, quantity), expiryDate(expiryDate) {}
+    : Product(id, name, basePrice, quantity, 0.0, 0.0), expiryDate(expiryDate) {}
 
 const QString& Food::getExpiryDate() const
 {
