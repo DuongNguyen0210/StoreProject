@@ -285,10 +285,12 @@ void MainWindow::resetHoaDon()
     ui->TotalBefore->setText("");
     ui->TotalAfter->setText("");
 
+    // ✅ TRẢ HÀNG VỀ KHO khi hủy đơn
     const std::vector<BillItem>& billitems = currentBill->getItems();
     for(const BillItem& item : billitems)
     {
-        Product* p = store->findProductByName(item.getProduct()->getName());
+        // 🛡️ FIX: Dùng ID thay vì Name (tránh trả nhầm sản phẩm cùng tên)
+        Product* p = store->findProductById(item.getProduct()->getId());
         if(p) {
             p->setQuantity(p->getQuantity() + item.getQuantity());
         }
@@ -768,8 +770,33 @@ void MainWindow::onThanhToanClicked()
     loadAndSortProducts(curTableProduct);
 }
 
+// ✅ BLUE TEAM FIX: Atomic Transaction với Rollback Protection
 void MainWindow::finalizeThanhToan(const QString& paymentMethod)
 {
+    // 🛡️ BƯỚC 1: RE-CHECK STOCK (Đề phòng race condition)
+    const std::vector<BillItem>& billItems = currentBill->getItems();
+    for (const BillItem& item : billItems)
+    {
+        Product* p = item.getProduct();
+        int needed = item.getQuantity();
+        int available = p->getQuantity();
+
+        if (available < 0) // Kho đã bị âm
+        {
+            QMessageBox::critical(this, "Lỗi Nghiêm Trọng",
+                QString("Sản phẩm '%1' có tồn kho bất thường (%2). Hủy giao dịch!")
+                .arg(p->getName()).arg(available));
+            
+            // Rollback: Trả hàng về kho
+            for (const BillItem& rollbackItem : billItems)
+            {
+                Product* rp = rollbackItem.getProduct();
+                rp->setQuantity(rp->getQuantity() + rollbackItem.getQuantity());
+            }
+            return; // DỪNG GIAO DỊCH
+        }
+    }
+
     double finalTotal = currentBill->getTotal();
     store->addRevenue(finalTotal);
 
@@ -781,8 +808,10 @@ void MainWindow::finalizeThanhToan(const QString& paymentMethod)
     }
 
     store->addBillToHistory(currentBill);
+
     QMessageBox::information(this, "Thành công",
-                             QString("Đã thanh toán %1 đồng bằng %2").arg(finalTotal).arg(paymentMethod));
+        QString("Đã thanh toán %1 đồng bằng %2\n")
+        .arg(finalTotal).arg(paymentMethod));
 }
 
 void MainWindow::on_ThemHang_clicked()

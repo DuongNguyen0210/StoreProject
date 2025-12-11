@@ -88,12 +88,23 @@ void Customer::setPhone(const QString& p)
     phone = p;
 }
 
+// 🛡️ SECURITY FIX: Prevent negative points
 void Customer::setPoints(int p)
 {
+    if (p < 0) {
+        qDebug() << "❌ CHẶN: Không cho phép điểm âm! Giữ nguyên điểm cũ:" << points;
+        return;
+    }
     points = p;
 }
 
+// 🛡️ SECURITY FIX: Prevent points from going negative
 void Customer::addPoints(int p)
 {
-    points += p;
+    int newPoints = points + p;
+    if (newPoints < 0) {
+        qDebug() << "❌ CHẶN: Cộng/trừ điểm làm tổng âm! Giữ nguyên:" << points;
+        return;
+    }
+    points = newPoints;
 }

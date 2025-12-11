@@ -5,7 +5,7 @@
 #include <QSet>
 #include <iostream>
 
-using namespace std;
+// ✅ COMPILER GUARD: Removed 'using namespace std;' from header
 
 class Product
 {
