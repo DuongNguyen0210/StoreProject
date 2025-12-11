@@ -109,10 +109,25 @@ void AddProductToStore::setFieldsForType(int typeIndex)
     ui->Name->setEnabled(generalEnabled);
     ui->Quantity->setEnabled(generalEnabled);
     ui->Price->setEnabled(generalEnabled);
+    bool isFoodOrBeverage = (typeIndex == 1 || typeIndex == 2);
+    bool isBeverage = (typeIndex == 2);
+    bool isHousehold = (typeIndex == 3);
+    // Hạn sử dụng (Đồ ăn, Thức uống)
+    ui->labelAddProductExpiryDate->setVisible(isFoodOrBeverage);
+    ui->dateEdit->setVisible(isFoodOrBeverage);
+    ui->dateEdit->setEnabled(isFoodOrBeverage); // Giữ lại enabled để phục vụ validate
 
-    ui->dateEdit->setEnabled(typeIndex == 1 || typeIndex == 2);
-    ui->Volume->setEnabled(typeIndex == 2);
-    ui->Warranty->setEnabled(typeIndex == 3);
+    // Thể tích (Thức uống)
+    ui->labelAddProductVolume->setVisible(isBeverage);
+    ui->Volume->setVisible(isBeverage);
+    ui->Volume->setEnabled(isBeverage); // Giữ lại enabled để phục vụ validate
+
+    // Thời hạn bảo hành (Đồ gia dụng)
+    ui->labelAddProducWarranty->setVisible(isHousehold);
+    ui->Warranty->setVisible(isHousehold);
+    ui->Warranty->setEnabled(isHousehold); // Giữ lại enabled để phục vụ validate
+
+    // Gọi lại validateForm để cập nhật trạng thái nút OK
     validateForm();
 }
 
