@@ -44,8 +44,8 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     setupHoaDonTable();
     setupSortComboBox();
     ui->txtSearchCustomer->setVisible(false);
+    ui->btnDungDiem->setVisible(false);
     ui->frameMenu->hide();
-
     connect(ui->ToanBo, &QPushButton::clicked, this, [this]() {
         ui->ToanBo->setChecked(true);
         ui->DoAn->setChecked(false);
@@ -160,12 +160,20 @@ void MainWindow::onCancelOrderClicked()
 {
     if(currentBill == nullptr)
         return;
-    if (currentBill->getCustomer() == nullptr &&  currentBill->getItems().empty())
+
+    bool isBillEmpty = currentBill->getItems().empty();
+    if (isBillEmpty)
     {
-        ui->txtSearchCustomer->clear();
+        // Chỉ cần gọi reset giao diện
+        // Hàm resetHoaDon() sẽ không trả hàng vì không có item nào trong bill.
+        resetHoaDon();
+        updateHoaDonView();
+
+        // Cập nhật lại giao diện chung
         ui->txtSearchPhoneCustomer->clear();
-        ui->txtSearchCustomer->setVisible(false);
         ui->lblTenKhach->setText("Khách Lẻ");
+
+        loadAndSortProducts(curTableProduct);
         return;
     }
 
@@ -178,6 +186,9 @@ void MainWindow::onCancelOrderClicked()
     {
         resetHoaDon();
         updateHoaDonView();
+        ui->txtSearchPhoneCustomer->clear();
+        ui->lblTenKhach->setText("Khách Lẻ");
+
         loadAndSortProducts(curTableProduct);
         QMessageBox::information(this, "Thành công", "Đã hủy hóa đơn và trả hàng về kho.");
     }
@@ -229,33 +240,105 @@ void MainWindow::setupLastBill()
     ui->tableLastBill->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
+// Trong file mainwindow.cpp
+
 void MainWindow::updateHoaDonView()
 {
-    qDebug() << 1 << '\n';
     modelHoaDon->removeRows(0, modelHoaDon->rowCount());
 
     if(currentBill)
     {
+        // 1. Cập nhật bảng hàng hóa (Giữ nguyên)
         const auto& items = currentBill->getItems();
         for (const BillItem& item : items)
         {
             QList<QStandardItem*> row;
-            row << new QStandardItem(item.getProduct()->getName());
-            row << new QStandardItem(QString::number(item.getQuantity()));
-            double lineTotal = item.getLineTotal();
-            row << new QStandardItem(QString::number(lineTotal, 'f', 0));
+
+            // Lấy item Tên Sản Phẩm
+            QStandardItem* nameItem = new QStandardItem(item.getProduct()->getName());
+            // KHÓA CHỈNH SỬA: Bỏ cờ cho phép chỉnh sửa
+            nameItem->setFlags(nameItem->flags() & ~Qt::ItemIsEditable); // <--- QUAN TRỌNG
+            row << nameItem;
+
+            // Lấy item Số Lượng
+            QStandardItem* qtyItem = new QStandardItem(QString::number(item.getQuantity()));
+            // KHÓA CHỈNH SỬA
+            qtyItem->setFlags(qtyItem->flags() & ~Qt::ItemIsEditable); // <--- QUAN TRỌNG
+            row << qtyItem;
+
+            // Lấy item Thành Tiền
+            QStandardItem* totalItem = new QStandardItem(QString::number(item.getLineTotal(), 'f', 0));
+            // KHÓA CHỈNH SỬA
+            totalItem->setFlags(totalItem->flags() & ~Qt::ItemIsEditable); // <--- QUAN TRỌNG
+            row << totalItem;
+
             modelHoaDon->appendRow(row);
         }
 
         double subTotal = currentBill->getSubTotal();
         double finalTotal = currentBill->getTotal();
-        if(currentBill->getCustomer())
+
+        // 2. Cập nhật thông tin khách và Nút dùng điểm
+        Customer* c = currentBill->getCustomer();
+        if(c)
         {
-            ui->lblTenKhach->setText(currentBill->getCustomer()->getName());
-            ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(currentBill->getCustomer()->getPoints()));
+            ui->lblTenKhach->setText(c->getName());
+            ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));
+
+            ui->btnDungDiem->setVisible(true); // Hiện nút
+
+            // === LOGIC MỚI CHO NÚT DÙNG ĐIỂM ===
+            if (currentBill->getCheck())
+            {
+                // TRƯỜNG HỢP 1: ĐÃ ÁP DỤNG GIẢM GIÁ -> HIỆN NÚT HỦY
+                ui->btnDungDiem->setEnabled(true); // Vẫn cho bấm để hủy
+                ui->btnDungDiem->setText(QString("Hủy giảm giá (Trả lại %1 điểm)")
+                                             .arg(currentBill->getPointsUsed()));
+                // Có thể set style đỏ để cảnh báo đây là nút hủy
+                ui->btnDungDiem->setStyleSheet("QPushButton { color: red; border-color: red; }");
+            }
+            else
+            {
+                // TRƯỜNG HỢP 2: CHƯA ÁP DỤNG -> TÍNH TOÁN XEM CÓ ĐƯỢC DÙNG KHÔNG
+                // Reset style về mặc định (Xanh)
+                ui->btnDungDiem->setStyleSheet("");
+
+                int currentPoints = c->getPoints();
+                double maxAllowedDiscount = subTotal - 1000.0;
+
+                if (currentPoints >= 10 && maxAllowedDiscount > 0)
+                {
+                    double pointsValue = currentPoints * 100.0;
+                    double actualDiscount = (pointsValue > maxAllowedDiscount) ? maxAllowedDiscount : pointsValue;
+                    int ptsToUse = qRound(actualDiscount / 100.0);
+                    double priceAfterDiscount = subTotal - (ptsToUse * 100.0);
+
+                    ui->btnDungDiem->setEnabled(true);
+                    ui->btnDungDiem->setText(QString("Dùng %1 điểm (Còn: %2 đ)")
+                                                 .arg(ptsToUse)
+                                                 .arg(QString::number(priceAfterDiscount, 'f', 0)));
+                }
+                else
+                {
+                    ui->btnDungDiem->setEnabled(false);
+                    if (subTotal <= 1000)
+                        ui->btnDungDiem->setText("Hóa đơn quá thấp");
+                    else
+                        ui->btnDungDiem->setText("Không đủ điểm (Min 10)");
+                }
+            }
         }
-        ui->TotalBefore->setText(QString("Tổng tiền ban đầu: %1").arg(QString::number(subTotal, 'f', 0)));
-        ui->TotalAfter->setText(QString("Tổng tiền thanh toán: %1").arg(QString::number(finalTotal, 'f', 0)));
+        else
+        {
+            ui->btnDungDiem->setVisible(false); // Không khách -> Ẩn
+        }
+
+        // 3. Cập nhật tổng tiền
+        ui->TotalBefore->setText(QString("Tổng tiền ban đầu: %1 đ")
+                                     .arg(QString::number(subTotal, 'f', 0)));
+
+        ui->TotalAfter->setText(QString("Tổng tiền thanh toán: %1 đ")
+                                    .arg(QString::number(finalTotal, 'f', 0)));
     }
 }
 
@@ -266,10 +349,21 @@ void MainWindow::updateLastBillView()
     for (const BillItem& item : items)
     {
         QList<QStandardItem*> row;
-        row << new QStandardItem(item.getProduct()->getName());
-        row << new QStandardItem(QString::number(item.getQuantity()));
-        double lineTotal = item.getLineTotal();
-        row << new QStandardItem(QString::number(lineTotal, 'f', 0));
+        // Cột 1: Tên SP
+        QStandardItem* nameItem = new QStandardItem(item.getProduct()->getName());
+        nameItem->setFlags(nameItem->flags() & ~Qt::ItemIsEditable); // KHÓA CHỈNH SỬA
+        row << nameItem;
+
+        // Cột 2: Số lượng
+        QStandardItem* qtyItem = new QStandardItem(QString::number(item.getQuantity()));
+        qtyItem->setFlags(qtyItem->flags() & ~Qt::ItemIsEditable); // KHÓA CHỈNH SỬA
+        row << qtyItem;
+
+        // Cột 3: Thành tiền
+        QStandardItem* totalItem = new QStandardItem(QString::number(item.getLineTotal(), 'f', 0));
+        totalItem->setFlags(totalItem->flags() & ~Qt::ItemIsEditable); // KHÓA CHỈNH SỬA
+        row << totalItem;
+
         modelLastBill->appendRow(row);
     }
 
@@ -285,7 +379,7 @@ void MainWindow::resetHoaDon()
     ui->txtSearchPhoneCustomer->clear();
     ui->btnDungDiem->setEnabled(false);
     ui->stackedWidgeOrder->setCurrentIndex(0);
-    ui->lblTenKhach->setText("Khách lẻ");
+    ui->lblTenKhach->setText("Khách Lẻ");
     ui->lblDiemKhach->setText("");
     ui->TotalBefore->setText("");
     ui->TotalAfter->setText("");
@@ -302,10 +396,22 @@ void MainWindow::resetHoaDon()
     }
 
     Customer* c = currentBill->getCustomer();
-    if(c && currentBill->getCheck())
-        c->setPoints(c->getPoints() + 100000);
 
-    currentBill = nullptr;
+    // Lấy đúng số điểm đã trừ lúc nãy từ Bill::getPointsUsed()
+    int used = currentBill->getPointsUsed();
+    if (c && currentBill->getCheck() && used > 0) {
+        c->setPoints(c->getPoints() + used);
+    }
+
+    delete currentBill;
+    currentBill = new Bill(nullptr, "", currentUser);
+
+    ui->btnDungDiem->setVisible(false);
+    ui->btnDungDiem->setEnabled(false);
+    ui->btnDungDiem->setText("Dùng điểm tích lũy");
+
+    ui->lblTenKhach->setStyleSheet("");
+    ui->lblDiemKhach->setStyleSheet("");
 }
 
 void MainWindow::loadAndSortProducts(int typeFilter)
@@ -746,98 +852,105 @@ void MainWindow::onEditSanPhamDoubleClicked(const QModelIndex &index)
 void MainWindow::onTimKhachPressed()
 {
     QString phone = ui->txtSearchPhoneCustomer->text().trimmed();
-
+    auto resetErrorDisplay = [this]() {
+        // Chỉ reset nếu nhãn đang hiển thị lỗi (kiểm tra bằng màu đỏ)
+        if (ui->lblTenKhach->styleSheet().contains("red")) {
+            ui->lblTenKhach->setText("Khách Lẻ");
+            ui->lblTenKhach->setStyleSheet(""); // Xóa style sheet
+            ui->lblDiemKhach->setText("");
+        }
+    };
     if (phone.isEmpty())
     {
-        ui->lblTenKhach->setText("Vui lòng nhập SĐT!");
-        ui->lblTenKhach->setStyleSheet("color: red; font-weight: bold;");
-        ui->lblDiemKhach->setText("");
         return;
     }
 
-    bool isValidPhone = true;
+    bool errorOccurred = false;
+
+    // Kiểm tra ký tự số
     for (QChar c : std::as_const(phone))
     {
         if (!c.isDigit())
         {
-            isValidPhone = false;
+            ui->lblTenKhach->setText("Số điện thoại chỉ được chứa chữ số!");
+            errorOccurred = true;
             break;
         }
     }
 
-    if (!isValidPhone)
-    {
-        ui->lblTenKhach->setText("Số điện thoại chỉ được chứa chữ số!");
-        ui->lblTenKhach->setStyleSheet("color: red; font-weight: bold;");
-        ui->lblDiemKhach->setText("");
-        return;
-    }
-
-    if (phone.length() < 10 || phone.length() > 11)
+    if (!errorOccurred && (phone.length() < 10 || phone.length() > 11))
     {
         ui->lblTenKhach->setText("Số điện thoại phải có 10-11 chữ số!");
+        errorOccurred = true;
+    }
+
+    if (!errorOccurred && !phone.startsWith('0'))
+    {
+        ui->lblTenKhach->setText("Số điện thoại phải bắt đầu bằng số 0!");
+        errorOccurred = true;
+    }
+
+    if (errorOccurred)
+    {
+        // Áp dụng style lỗi cho nhãn hiển thị
         ui->lblTenKhach->setStyleSheet("color: red; font-weight: bold;");
         ui->lblDiemKhach->setText("");
+
+        QTimer::singleShot(3500, this, resetErrorDisplay);
         return;
     }
 
-    if (!phone.startsWith('0'))
-    {
-        ui->lblTenKhach->setText("Số điện thoại phải bắt đầu bằng số 0!");
-        ui->lblTenKhach->setStyleSheet("color: red; font-weight: bold;");
-        ui->lblDiemKhach->setText("");
-        return;
-    }
-    if (phone.isEmpty())
-    {
-        ui->lblTenKhach->setText("Vui lòng nhập SĐT!");
-        ui->lblTenKhach->setStyleSheet("color: red; font-weight: bold;");
-        return;
-    }
     Customer* c = store->findCustomerByPhone(phone);
 
     if (c != nullptr)
     {
-        if (currentBill == nullptr) {
-            currentBill = new Bill(nullptr, "", currentUser);
-        }
+        if (currentBill == nullptr) currentBill = new Bill(nullptr, "", currentUser);
         currentBill->setCustomer(c);
-
-        // Hiện tên khách hàng
+        ui->lblTenKhach->setStyleSheet("");
         ui->lblTenKhach->setText(c->getName());
-        ui->lblTenKhach->setStyleSheet("color: #0284C7; font-weight: 600;"); // Màu xanh
+        ui->lblTenKhach->setStyleSheet("color: #0284C7; font-weight: 600;");
         ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));
-
-        // Bật nút dùng điểm nếu đủ điều kiện
-        ui->btnDungDiem->setEnabled(c->getPoints() >= 100000);
+        updateHoaDonView();
     }
     else
     {
-        // === TRƯỜNG HỢP 2: SĐT CHƯA TỒN TẠI ===
-
-        // Xóa khách khỏi hóa đơn (đề phòng đang lưu khách cũ)
+        // === KHÁCH MỚI HOẶC KHÔNG TÌM THẤY ===
         if (currentBill) currentBill->setCustomer(nullptr);
 
-        // Thông báo yêu cầu thêm thủ công
+        // Xóa thông tin trên giao diện
         ui->lblTenKhach->setText("Chưa có dữ liệu! Vui lòng thêm ở mục 'Khách Hàng'.");
-        ui->lblTenKhach->setStyleSheet("color: #DC2626; font-weight: bold;"); // Màu đỏ đậm
+        ui->lblTenKhach->setStyleSheet("color: #DC2626; font-weight: bold;");
         ui->lblDiemKhach->setText("");
-        ui->btnDungDiem->setEnabled(false);
+
+        // Ẩn nút dùng điểm ngay lập tức
+        ui->btnDungDiem->setVisible(false);
+        QTimer::singleShot(3500, this, resetErrorDisplay);
     }
 }
 
+
 void MainWindow::onDungDiemClicked()
 {
-    bool success = currentBill->applyPointsDiscount(100000);
-    currentBill->setCheck(true);
-    if (success)
+    if (currentBill->getCheck())
     {
+        currentBill->removePointsDiscount();
         updateHoaDonView();
-        ui->btnDungDiem->setEnabled(false);
-        QMessageBox::information(this, "Thành công", "Đã áp dụng giảm giá 2% và trừ 100.000 điểm.");
+
+        QMessageBox::information(this, "Đã hủy", "Đã hủy áp dụng giảm giá và hoàn trả điểm cho khách.");
     }
     else
-        QMessageBox::warning(this, "Lỗi", "Không đủ điểm hoặc đã áp dụng giảm giá.");
+    {
+        bool success = currentBill->applyPointsDiscount(10);
+        if (success)
+        {
+            updateHoaDonView();
+            QMessageBox::information(this, "Thành công", QString("Đã dùng %1 điểm để giảm giá.").arg(currentBill->getPointsUsed()));
+        }
+        else
+        {
+            QMessageBox::warning(this, "Lỗi", "Không thể áp dụng điểm (Số dư không đủ hoặc hóa đơn quá thấp).");
+        }
+    }
 }
 
 void MainWindow::onXuatHoaDonClicked()
@@ -916,39 +1029,33 @@ void MainWindow::finalizeThanhToan(const QString& paymentMethod)
     }
 
     double finalTotal = currentBill->getTotal();
+
     store->addRevenue(finalTotal);
 
     // Xử lý cộng điểm tích lũy
     Customer* c = currentBill->getCustomer();
     int pointsAdded = 0;
-
     if (c != nullptr)
     {
-        // Logic tính điểm: 10% giá trị hóa đơn
-        pointsAdded = static_cast<int>(finalTotal * 0.10);
-        c->addPoints(pointsAdded);
+        // LOGIC MỚI: 1.000đ chi tiêu = 1 điểm
+        double finalTotal = currentBill->getTotal();
+        pointsAdded = qRound(finalTotal / 1000.0);
+
+        if (pointsAdded> 0)
+            c->addPoints(pointsAdded);
+
     }
 
-    // Lưu hóa đơn vào lịch sử
     store->addBillToHistory(currentBill);
 
-    // --- PHẦN 3: THÔNG BÁO & DỌN DẸP GIAO DIỆN (CỦA BẠN) ---
-
     // Tạo thông báo chi tiết
-    QString msg = QString("Thanh toán thành công!\n\n"
-                          "Tổng tiền: %1 đ\n"
-                          "Hình thức: %2")
-                      .arg(QString::number(finalTotal, 'f', 0))
-                      .arg(paymentMethod);
+    QString msg = QString("Thanh toán thành công!\n\n" "Tổng tiền: %1 đ\n" "Hình thức: %2").arg(QString::number(finalTotal, 'f', 0)).arg(paymentMethod);
+
 
     // Nếu có khách hàng thì báo thêm về điểm
     if (c != nullptr && pointsAdded > 0)
     {
-        msg += QString("\n--------------------\n"
-                       "Đã cộng: +%1 điểm\n"
-                       "Tổng điểm hiện tại: %2 điểm")
-                   .arg(pointsAdded)
-                   .arg(c->getPoints());
+        msg += QString("\n--------------------\n" "Đã cộng: +%1 điểm\n" "Tổng điểm hiện tại: %2 điểm").arg(pointsAdded).arg(c->getPoints());
     }
 
     QMessageBox::information(this, "Hoàn tất giao dịch", msg);

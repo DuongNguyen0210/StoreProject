@@ -174,20 +174,69 @@ double Bill::getTotal() const
     return subTotal * (1.0 - discountPercent);
 }
 
+// Trong file Bill.cpp
+
 bool Bill::applyPointsDiscount(int pointsRequired)
 {
-    if (discountPercent > 0.0)
+    if (discountPercent > 0.0 || customer == nullptr)
         return false;
 
-    if (customer == nullptr)
+    int currentPoints = customer->getPoints();
+    double subTotal = getSubTotal();
+
+    // 1. Kiểm tra điểm tối thiểu (10 điểm = 1000đ)
+    if (currentPoints < 10)
         return false;
 
-    if (customer->getPoints() < pointsRequired)
-        return false;
-    customer->setPoints(customer->getPoints() - pointsRequired);
-    this->discountPercent = 0.02;
+    // Quy tắc: Hóa đơn phải còn ít nhất 1.000đ sau khi giảm
+    // Nghĩa là số tiền tối đa được phép giảm = Tổng tiền - 1.000đ
+    double maxAllowedDiscount = subTotal - 1000.0;
 
-    return true;
+    // Nếu hóa đơn quá nhỏ (<= 1000đ), không cho giảm
+    if (maxAllowedDiscount <= 0)
+        return false;
+    if (maxAllowedDiscount <= 0) return false;
+
+    // Tính giá trị tiền của toàn bộ số điểm khách đang có
+    double pointsValueInMoney = currentPoints * 100.0;
+
+    // Số tiền giảm thực tế là số nhỏ hơn giữa (Tiền của điểm) và (Tiền được phép giảm)
+    double actualDiscountMoney = (pointsValueInMoney > maxAllowedDiscount)
+                                     ? maxAllowedDiscount
+                                     : pointsValueInMoney;
+
+    // Tính ra số điểm cần dùng (chia 100)
+   int actualPointsToUse = qRound(actualDiscountMoney / 100.0);
+
+    // Tính lại chính xác số tiền giảm từ số điểm chẵn
+    double finalDiscountMoney = actualPointsToUse * 100.0;
+
+    if (actualPointsToUse > 0 && finalDiscountMoney > 0)
+    {
+        customer->setPoints(customer->getPoints() - actualPointsToUse);
+
+        this->pointsUsed = actualPointsToUse;
+        this->discountPercent = finalDiscountMoney / subTotal;
+        this->check = true;
+        return true;
+    }
+
+    return false;
+}
+
+
+void Bill::removePointsDiscount()
+{
+    if (!check || customer == nullptr) return;
+
+    if (pointsUsed > 0)
+    {
+        customer->setPoints(customer->getPoints() + pointsUsed);
+    }
+
+    this->pointsUsed = 0;
+    this->discountPercent = 0.0;
+    this->check = false;
 }
 
 void Bill::setPayment(Payment* p)

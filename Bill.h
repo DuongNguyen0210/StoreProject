@@ -20,6 +20,9 @@ private:
     std::vector<BillItem> items;
     Payment* payment;
     double discountPercent;
+
+    int pointsUsed = 0;
+
     bool check;
     QDateTime createdDate;
     User* createdBy;
@@ -44,6 +47,7 @@ public:
     double getTotal() const;
 
     bool applyPointsDiscount(int pointsRequired);
+    void removePointsDiscount();
 
     void setCheck(const bool x);
     bool getCheck();
@@ -57,6 +61,9 @@ public:
 
     static void registerUsedId(const QString& id);
     static void unregisterUsedId(const QString& id);
+
+    int getPointsUsed() const { return pointsUsed; }
+    void setPointsUsed(int p) { pointsUsed = p; }
 };
 
 #endif

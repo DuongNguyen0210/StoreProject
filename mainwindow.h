@@ -5,6 +5,7 @@
 #include <QStandardItemModel>
 #include <QGridLayout>
 #include <QComboBox>
+#include <QTimer>
 
 #include "Store.h"
 #include "Food.h"

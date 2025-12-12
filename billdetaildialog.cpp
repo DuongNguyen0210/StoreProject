@@ -40,7 +40,7 @@ void BillDetailDialog::loadBillDetails()
     // Hiển thị thông tin hóa đơn
     ui->lblBillId->setText(QString("Mã hóa đơn: %1").arg(m_bill->getId()));
 
-    QString customerName = "Khách lẻ";
+    QString customerName = "Khách Lẻ";
     if (m_bill->getCustomer())
         customerName = m_bill->getCustomer()->getName();
     ui->lblCustomer->setText(QString("Khách hàng: %1").arg(customerName));
