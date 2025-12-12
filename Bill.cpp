@@ -14,7 +14,7 @@ QString Bill::generateId()
         mex++;
     }
     usedIds.insert(mex);
-    return QString("B%1").arg(mex);
+    return QString("B%1").arg(mex, 3, 10, QChar('0'));
 }
 
 void Bill::registerUsedId(const QString& id)
@@ -94,23 +94,11 @@ void Bill::addItem(Product* p, int quantity)
         return; // Không làm gì cả
     }
 
-    // 🛡️ CHẶN 2: Tính tổng số lượng trong giỏ hiện tại
-    int currentInCart = 0;
-    for (const auto& item : items)
-    {
-        if (item.getProduct()->getId() == p->getId())
-        {
-            currentInCart = item.getQuantity();
-            break;
-        }
-    }
-
-    // 🛡️ CHẶN 3: Kiểm tra bán khống (Tổng trong giỏ + Mua thêm > Tồn kho)
+    // 🛡️ CHẶN 3: Kiểm tra bán khống (Số lượng muốn thêm > Tồn kho hiện tại)
     int availableStock = p->getQuantity();
-    if ((currentInCart + quantity) > availableStock)
+    if (quantity > availableStock)
     {
-        qDebug() << "❌ CHẶN: Bán khống! Kho:" << availableStock 
-                 << "Trong giỏ:" << currentInCart 
+        qDebug() << "❌ CHẶN: Bán khống! Kho còn:" << availableStock 
                  << "Muốn thêm:" << quantity;
         return; // Không cho thêm
     }

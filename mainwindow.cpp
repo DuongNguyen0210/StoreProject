@@ -991,7 +991,8 @@ void MainWindow::onThanhToanClicked()
     }
     finalizeThanhToan(currentBill->getPayment()->getMethodName());
     ui->stackedWidgeOrder->setCurrentIndex(0);
-    currentBill = new Bill(nullptr, "", currentUser);
+    // REMOVED: currentBill = new Bill(nullptr, "", currentUser);
+    // Reason: finalizeThanhToan already creates a new Bill, this was causing duplicate ID generation
     updateHoaDonView();
     loadAndSortProducts(curTableProduct);
 }
