@@ -49,6 +49,7 @@ private:
     void createRevenueChart();
     void createTop5ProductsChart();
     void createWarningsChart();
+    void showStockDetails();  // Show detailed product list
 
     // Hàm tính toán
     double calculateTotalProfit();

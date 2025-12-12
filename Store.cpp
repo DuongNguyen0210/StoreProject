@@ -58,10 +58,34 @@ void Store::addProduct(Product* p)
 {
     if (!p) return;
 
+    // ✅ SMART RESTORE: Check if there's an inactive product with same name & type
+    Product* inactiveProduct = findInactiveProduct(p->getName(), typeid(*p).name());
+    
+    if (inactiveProduct)
+    {
+        // 🔄 RESTORE: Activate lại + cộng thêm quantity
+        inactiveProduct->setActive(true);
+        inactiveProduct->setQuantity(inactiveProduct->getQuantity() + p->getQuantity());
+        
+        // Update price nếu cần
+        inactiveProduct->setBasePrice(p->getBasePrice());
+        inactiveProduct->setImportPrice(p->getImportPrice());
+        inactiveProduct->setProfitMargin(p->getProfitMargin());
+        
+        // Xóa product mới (không cần nữa)
+        delete p;
+        return;
+    }
+
+    // Check merge với active products (logic cũ)
     Product* existingProductToMerge = nullptr;
     productByName.forEachInKeyGroup(p->getName(), [&](const QString&, Product* exist)
                                     {
                                         if (existingProductToMerge)
+                                            return;
+                                        
+                                        // Skip inactive products
+                                        if (!exist->getIsActive())
                                             return;
 
                                         if (typeid(*exist) != typeid(*p))
@@ -243,5 +267,40 @@ QString Store::generateHouseholdId()
         if (ok && num > maxNum) maxNum = num;
     });
     return QString("H%1").arg(maxNum + 1, 3, 10, QChar('0'));
+}
+
+// ==================== SOFT DELETE IMPLEMENTATION ====================
+
+Product* Store::findInactiveProduct(const QString& name, const QString& type) const
+{
+    Product* found = nullptr;
+    productByName.forEachInKeyGroup(name, [&](const QString&, Product* p) {
+        if (found) return;  // Already found
+        if (!p) return;
+        
+        // Only look for inactive products
+        if (p->getIsActive()) return;
+        
+        // Check if same type
+        if (QString(typeid(*p).name()) == type) {
+            found = p;
+        }
+    });
+    return found;
+}
+
+void Store::softDeleteProduct(const QString& productId)
+{
+    Product* p = findProductById(productId);
+    if (!p) {
+        throw std::runtime_error("Product not found: " + productId.toStdString());
+    }
+    
+    // Soft delete: Mark inactive + set quantity to 0
+    p->setActive(false);
+    p->setQuantity(0);
+    
+    // Product vẫn trong HashTable, chỉ là inactive
+    qDebug() << "Soft deleted product:" << productId;
 }
 

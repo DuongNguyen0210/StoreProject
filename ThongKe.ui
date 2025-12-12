@@ -285,6 +285,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="btnStockDetails">
+          <property name="text">
+           <string>📦 Xem chi tiết</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>

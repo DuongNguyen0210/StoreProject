@@ -334,90 +334,70 @@ void ThongKe::createTop5ProductsChart()
 
 void ThongKe::createWarningsChart()
 {
-    // Thống kê hàng tồn kho: Tốt / Thấp / Hết hạn sắp tới
-    int goodStock = 0;
-    int lowStock = 0;
-    int nearExpiry = 0;
-
-    QDate today = QDate::currentDate();
-    QDate warningDate = today.addDays(7); // Cảnh báo trong vòng 7 ngày
-
+    // Count products by stock status
+    int outOfStock = 0;        // Quantity = 0
+    int criticalLow = 0;       // 1-5
+    int low = 0;               // 6-10
+    int adequate = 0;          // > 10
+    
     m_store->forEachProduct([&](const QString&, Product* p) {
-        if (!p) return;
-
+        if (!p || !p->getIsActive()) return;
+        
         int qty = p->getQuantity();
-
-        // Kiểm tra hạn sử dụng
-        Food* f = dynamic_cast<Food*>(p);
-        Beverage* b = dynamic_cast<Beverage*>(p);
-
-        bool isExpiringSoon = false;
-        if (f)
-        {
-            QDate expiry = QDate::fromString(f->getExpiryDate(), "dd/MM/yyyy");
-            if (expiry.isValid() && expiry <= warningDate && expiry >= today)
-                isExpiringSoon = true;
+        
+        if (qty == 0) {
+            outOfStock++;
         }
-        else if (b)
-        {
-            QDate expiry = QDate::fromString(b->getExpiryDate(), "dd/MM/yyyy");
-            if (expiry.isValid() && expiry <= warningDate && expiry >= today)
-                isExpiringSoon = true;
+        else if (qty >= 1 && qty <= 5) {
+            criticalLow++;
         }
-
-        if (isExpiringSoon)
-            nearExpiry++;
-        else if (qty < 10)
-            lowStock++;
-        else
-            goodStock++;
+        else if (qty >= 6 && qty <= 10) {
+            low++;
+        }
+        else {
+            adequate++;
+        }
     });
-
-    // ✅ SỬA: Kiểm tra nếu không có sản phẩm nào
-    if (goodStock == 0 && lowStock == 0 && nearExpiry == 0)
-    {
-        QChart *chart = new QChart();
-        chart->setTitle("Chưa có dữ liệu sản phẩm");
-        ui->chartWarnings->setChart(chart);
-        ui->chartWarnings->setRenderHint(QPainter::Antialiasing);
-        return;
-    }
-
-    // Tạo biểu đồ tròn (Donut Chart)
+    
+    // Create pie chart
     QPieSeries *series = new QPieSeries();
-    series->setHoleSize(0.4); // Donut style
-
-    if (goodStock > 0) {
-        QPieSlice *sliceGood = series->append("Tốt", goodStock);
-        sliceGood->setBrush(QColor("#10B981")); // Emerald - Tốt
-        sliceGood->setLabelVisible(true);
-        sliceGood->setLabelColor(Qt::black);
-        sliceGood->setLabel(QString("%1 (%2)").arg("Tốt").arg(goodStock));
+    
+    if (outOfStock > 0) {
+        QPieSlice *slice = series->append(QString("❌ Hết hàng (%1)").arg(outOfStock), outOfStock);
+        slice->setBrush(QColor("#EF4444"));  // Red
+        slice->setLabelVisible(true);
     }
-
-    if (lowStock > 0) {
-        QPieSlice *sliceLow = series->append("Sắp hết", lowStock);
-        sliceLow->setBrush(QColor("#F59E0B")); // Amber - Cảnh báo
-        sliceLow->setLabelVisible(true);
-        sliceLow->setLabelColor(Qt::black);
-        sliceLow->setLabel(QString("%1 (%2)").arg("Sắp hết").arg(lowStock));
+    
+    if (criticalLow > 0) {
+        QPieSlice *slice = series->append(QString("⚠️ Gần hết (1-5) (%1)").arg(criticalLow), criticalLow);
+        slice->setBrush(QColor("#F59E0B"));  // Orange
+        slice->setLabelVisible(true);
     }
-
-    if (nearExpiry > 0) {
-        QPieSlice *sliceExpiry = series->append("Gần hết hạn", nearExpiry);
-        sliceExpiry->setBrush(QColor("#EF4444")); // Rose - Nguy hiểm
-        sliceExpiry->setLabelVisible(true);
-        sliceExpiry->setLabelColor(Qt::black);
-        sliceExpiry->setLabel(QString("%1 (%2)").arg("Gần hết hạn").arg(nearExpiry));
+    
+    if (low > 0) {
+        QPieSlice *slice = series->append(QString("⚡ Sắp hết (6-10) (%1)").arg(low), low);
+        slice->setBrush(QColor("#EAB308"));  // Yellow
+        slice->setLabelVisible(true);
     }
-
+    
+    if (adequate > 0) {
+        QPieSlice *slice = series->append(QString("✅ Đủ hàng (>10) (%1)").arg(adequate), adequate);
+        slice->setBrush(QColor("#10B981"));  // Green
+        slice->setLabelVisible(true);
+    }
+    
+    // If no products
+    if (outOfStock == 0 && criticalLow == 0 && low == 0 && adequate == 0) {
+        QPieSlice *slice = series->append("Chưa có sản phẩm", 1);
+        slice->setBrush(QColor("#9CA3AF"));
+    }
+    
     QChart *chart = new QChart();
     chart->addSeries(series);
     chart->setTitle("");
     chart->setAnimationOptions(QChart::SeriesAnimations);
-    chart->legend()->setAlignment(Qt::AlignBottom);
-
-    // ✅ SỬA: Không xóa widget, chỉ set chart vào QChartView hiện có
+    chart->legend()->setVisible(false);
+    
     ui->chartWarnings->setChart(chart);
     ui->chartWarnings->setRenderHint(QPainter::Antialiasing);
 }

@@ -61,6 +61,9 @@ void ManageInventory::loadProductsFiltered(int filterType, const QString& search
 
     m_store->forEachProduct([&](const QString&, Product* p) {
         if (!p) return;
+        
+        // ✅ FILTER OUT INACTIVE PRODUCTS (soft deleted)
+        if (!p->getIsActive()) return;
 
         Food* f = dynamic_cast<Food*>(p);
         Beverage* b = dynamic_cast<Beverage*>(p);
@@ -201,8 +204,8 @@ void ManageInventory::onDeleteProductClicked()
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, "Xác nhận xóa",
                                   QString("Bạn có chắc muốn xóa sản phẩm '%1'?\n\n"
-                                          "⚠️ Cảnh báo: Hành động này không thể hoàn tác!\n"
-                                          "Sản phẩm sẽ bị xóa hoàn toàn khỏi hệ thống.")
+                                          "💡 Lưu ý: Sản phẩm sẽ được đánh dấu đã xóa.\n"
+                                          "Khi thêm lại sản phẩm này, hệ thống sẽ tự động khôi phục!")
                                       .arg(p->getName()),
                                   QMessageBox::Yes | QMessageBox::No);
 
@@ -210,18 +213,23 @@ void ManageInventory::onDeleteProductClicked()
         QString productId = p->getId();
         QString productName = p->getName();
 
-        // ✅ TODO: Implement Store::deleteProduct method
-        // For now, show warning that this needs Store-level implementation
-        QMessageBox::warning(this, "Chức năng chưa hoàn thiện",
-            QString("⚠️ XÓA SẢN PHẨM CẦN TRIỂN KHAI Ở STORE LEVEL\n\n"
-                    "Cần implement:\n"
-                    "1. Store::deleteProduct(productId)\n"
-                    "2. Xóa khỏi HashTable (productById, productByName)\n"
-                    "3. delete p; // Giải phóng bộ nhớ\n"
-                    "4. Product::unregisterUsedId(productId)\n\n"
-                    "❌ HIỆN TẠI: Chức năng bị vô hiệu hóa để tránh memory leak!"));
-
-        loadProductsFiltered(ui->cmbFilter->currentIndex(), ui->txtSearch->text());
+        try {
+            // Call soft delete
+            m_store->softDeleteProduct(productId);
+            
+            QMessageBox::information(this, "Thành công",
+                QString("✅ Đã xóa sản phẩm '%1' thành công!\n\n"
+                        "💡 Tip: Khi thêm lại sản phẩm này trong tương lai,\n"
+                        "hệ thống sẽ tự động khôi phục thay vì tạo mới.")
+                    .arg(productName));
+            
+            loadProductsFiltered(ui->cmbFilter->currentIndex(), ui->txtSearch->text());
+            
+        } catch (const std::runtime_error& e) {
+            QMessageBox::critical(this, "Lỗi",
+                QString("❌ Không thể xóa sản phẩm!\n\nChi tiết: %1")
+                    .arg(QString::fromStdString(e.what())));
+        }
     }
 }
 

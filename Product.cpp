@@ -46,7 +46,7 @@ void Product::unregisterUsedId(const QString& id)
 
 Product::Product(const QString& id, const QString& name, double basePrice, int quantity,
                  double importPrice, double profitMargin)
-    : basePrice(basePrice), importPrice(importPrice), profitMargin(profitMargin), quantity(quantity)
+    : basePrice(basePrice), importPrice(importPrice), profitMargin(profitMargin), quantity(quantity), isActive(true)
 {
     if (id.isEmpty())
     {
@@ -125,4 +125,15 @@ double Product::getProfitMargin() const
 void Product::setProfitMargin(double pm)
 {
     profitMargin = pm;
+}
+
+// Getter/Setter for isActive (Soft delete)
+bool Product::getIsActive() const
+{
+    return isActive;
+}
+
+void Product::setActive(bool active)
+{
+    isActive = active;
 }

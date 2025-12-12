@@ -42,6 +42,8 @@ public:
     void addProduct(Product* p);
     Product* findProductByName(const QString& name) const;
     Product* findProductById(const QString& id) const;
+    Product* findInactiveProduct(const QString& name, const QString& type) const;
+    void softDeleteProduct(const QString& productId);
 
     template<typename Func>
     void forEachProduct(Func f) const

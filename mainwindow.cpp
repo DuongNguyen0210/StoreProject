@@ -420,6 +420,10 @@ void MainWindow::loadAndSortProducts(int typeFilter)
 
     store->forEachProduct([&](const QString&, Product* p) {
         if (!p) return;
+        
+        // ✅ FILTER: Only show active products with stock > 0
+        if (!p->getIsActive()) return;
+        if (p->getQuantity() <= 0) return;
 
         bool shouldInclude = false;
         Food* f = dynamic_cast<Food*>(p);

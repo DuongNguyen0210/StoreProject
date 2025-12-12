@@ -16,6 +16,7 @@ protected:
     double importPrice;      // Giá gốc (Import Price)
     double profitMargin;     // % Lợi nhuận (Profit Margin %)
     int quantity;
+    bool isActive;           // Soft delete flag
 
     static QSet<int> usedIds;
     static QString generateId();
@@ -32,6 +33,7 @@ public:
     double getImportPrice() const;      // Giá gốc
     double getProfitMargin() const;     // % Lợi nhuận
     int getQuantity() const;
+    bool getIsActive() const;           // Check if active
 
     void setId(const QString& i);
     void setName(const QString& n);
@@ -39,6 +41,7 @@ public:
     void setImportPrice(double ip);
     void setProfitMargin(double pm);
     void setQuantity(int q);
+    void setActive(bool active);        // Soft delete/restore
 
     virtual double calcFinalPrice() const = 0;
 
