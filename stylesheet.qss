@@ -558,12 +558,14 @@ QGroupBox::title
 QLabel
 {
     color: #64748B;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 QLabel#lblStoreName
 {
     color: #0EA5E9;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     padding: 10px;
 }
@@ -571,17 +573,15 @@ QLabel#lblStoreName
 QLabel#lblOrderTitle
 {
     color: #0284C7;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 QLabel#TotalBefore,
-QLabel#TotalAfter,
-QLabel#TotalBefore_2,
-QLabel#TotalAfter_2
+QLabel#TotalBefore_2
 {
-    color: #475569;
-    font-size: 16px;
+    color: #64748B;
+    font-size: 15px;
     font-weight: 600;
     padding: 8px;
 }
@@ -590,8 +590,9 @@ QLabel#TotalAfter,
 QLabel#TotalAfter_2
 {
     color: #10B981;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
+    padding: 8px;
 }
 
 /* label khách hàng */
@@ -599,27 +600,30 @@ QLabel#TotalAfter_2
 QLabel#lblTenKhach
 {
     color: #0284C7;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
 }
 
 QLabel#lblDiemKhach
 {
     color: #F59E0B;
+    font-size: 14px;
     font-weight: 600;
 }
 
-/* AddCustomer message */
+/* ==================== NOTIFICATION/MESSAGE LABELS - UNIFIED STYLE ==================== */
 
-QLabel#label_Message
+/* Tất cả label thông báo (error, success, warning) - Style chung */
+QLabel#label_Message,
+QLabel#lblError
 {
-    color: #DC2626;
     background-color: #FEE2E2;
-    border-radius: 8px;
-    padding: 10px;
-    font-family: "Urbanist";
-    font-weight: 500;
-    font-size: 13px;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 /* AddCustomer labels */
@@ -627,11 +631,11 @@ QLabel#label_Message
 QLabel#labelAddCustomeName,
 QLabel#labelAddCustomePhone
 {
-    color: #64748B;
+    color: #475569;
     background-color: transparent;
-    font-size: 13px;
-    font-weight: bold;
-    padding: 0 2px 4px 2px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0 2px 6px 2px;
 }
 
 /* Login dialog labels */
@@ -643,34 +647,21 @@ QDialog#LoginDialog
 
 QLabel#lblTitle
 {
-    font-family: "Urbanist";
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
     color: #0F172A;
-    padding: 10px;
+    padding: 16px;
     qproperty-alignment: AlignCenter;
 }
 
 QLabel#labeUsername,
 QLabel#labePassword
 {
-    color: #64748B;
+    color: #475569;
     background-color: transparent;
-    font-size: 13px;
-    font-weight: bold;
-    padding: 0 2px 4px 2px;
-}
-
-QLabel#lblError
-{
-    color: #DC2626;
-    background-color: #FEE2E2;
-    border-radius: 8px;
-    padding: 10px;
-    font-family: "Urbanist";
-    font-weight: 500;
-    font-size: 13px;
-    qproperty-alignment: AlignCenter;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0 2px 6px 2px;
 }
 
 /* ==================== CHECKBOX (Hiển thị mật khẩu) ==================== */
@@ -679,8 +670,8 @@ QCheckBox#chkShowPassword
 {
     color: #475569;
     font-size: 14px;
-    font-weight: 500;
-    spacing: 8px;
+    font-weight: 600;
+    spacing: 10px;
 }
 
 QCheckBox#chkShowPassword::indicator
