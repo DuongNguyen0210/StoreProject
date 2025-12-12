@@ -43,6 +43,7 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     setupTable();
     setupHoaDonTable();
     setupSortComboBox();
+    ui->txtSearchCustomer->setVisible(false);
     ui->frameMenu->hide();
 
     connect(ui->ToanBo, &QPushButton::clicked, this, [this]() {
@@ -163,6 +164,7 @@ void MainWindow::onCancelOrderClicked()
     {
         ui->txtSearchCustomer->clear();
         ui->txtSearchPhoneCustomer->clear();
+        ui->txtSearchCustomer->setVisible(false);
         ui->lblTenKhach->setText("Khách Lẻ");
         return;
     }
@@ -176,6 +178,7 @@ void MainWindow::onCancelOrderClicked()
     {
         resetHoaDon();
         updateHoaDonView();
+        loadAndSortProducts(curTableProduct);
         QMessageBox::information(this, "Thành công", "Đã hủy hóa đơn và trả hàng về kho.");
     }
 }
@@ -672,45 +675,149 @@ void MainWindow::onRemoveSanPhamDoubleClicked(const QModelIndex &index)
 {
     QString name = modelHoaDon->item(index.row(), 0)->text();
     Product* p = store->findProductByName(name);
-    currentBill->removeItem(p);
-    updateHoaDonView();
+    if (p) {
+        currentBill->removeItem(p);
+        updateHoaDonView();
+        loadAndSortProducts(curTableProduct);
+    }
+
 }
 
 void MainWindow::onTimKhachPressed()
 {
     QString phone = ui->txtSearchPhoneCustomer->text().trimmed();
     QString name = ui->txtSearchCustomer->text().trimmed();
-    if (phone.isEmpty() || name.isEmpty())
+    if (phone.isEmpty())
+    {
+        ui->lblTenKhach->setText("Vui lòng nhập SĐT!");
+        ui->lblTenKhach->setStyleSheet("color: red; font-weight: bold;");
+        ui->lblDiemKhach->setText("");
         return;
+    }
 
+    bool isValidPhone = true;
+    for (QChar c : std::as_const(phone))
+    {
+        if (!c.isDigit())
+        {
+            isValidPhone = false;
+            break;
+        }
+    }
+
+    if (!isValidPhone)
+    {
+        ui->lblTenKhach->setText("Số điện thoại chỉ được chứa chữ số!");
+        ui->lblTenKhach->setStyleSheet("color: red; font-weight: bold;");
+        ui->lblDiemKhach->setText("");
+        return;
+    }
+
+    if (phone.length() < 10 || phone.length() > 11)
+    {
+        ui->lblTenKhach->setText("Số điện thoại phải có 10-11 chữ số!");
+        ui->lblTenKhach->setStyleSheet("color: red; font-weight: bold;");
+        ui->lblDiemKhach->setText("");
+        return;
+    }
+
+    if (!phone.startsWith('0'))
+    {
+        ui->lblTenKhach->setText("Số điện thoại phải bắt đầu bằng số 0!");
+        ui->lblTenKhach->setStyleSheet("color: red; font-weight: bold;");
+        ui->lblDiemKhach->setText("");
+        return;
+    }
+    if (phone.isEmpty())
+    {
+        ui->lblTenKhach->setText("Vui lòng nhập SĐT!");
+        ui->lblTenKhach->setStyleSheet("color: red; font-weight: bold;");
+        return;
+    }
     Customer* c = store->findCustomerByPhone(phone);
-    if (c == nullptr)
-    {
-        currentBill->setCustomer(nullptr);
-        ui->lblTenKhach->setText("Không tìm thấy!");
-        ui->lblTenKhach->setStyleSheet("color: red;");
-        ui->lblDiemKhach->setText("");
-        ui->btnDungDiem->setEnabled(false);
-        return;
-    }
-    if (c->getName().toLower() != name.toLower())
-    {
-        ui->lblTenKhach->setText("Thông tin không khớp!");
-        ui->lblTenKhach->setStyleSheet("color: red;");
-        ui->lblDiemKhach->setText("");
-        ui->btnDungDiem->setEnabled(false);
-        return;
-    }
-    if(currentBill == nullptr)
-        currentBill = new Bill(nullptr, "", currentUser);
-    currentBill->setCustomer(c);
-    ui->lblTenKhach->setText(c->getName());
-    ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));
 
-    if (c->getPoints() >= 100000)
-        ui->btnDungDiem->setEnabled(true);
+    if (c != nullptr)
+    {
+        // === TRƯỜNG HỢP 1: KHÁCH HÀNG ĐÃ TỒN TẠI ===
+
+        ui->txtSearchCustomer->clear(); // Xóa text cũ nếu có
+
+        // Cập nhật hóa đơn
+        if (currentBill == nullptr) {
+            currentBill = new Bill(nullptr, "", currentUser);
+        }
+        currentBill->setCustomer(c);
+
+        // Hiển thị tên lên Label
+        ui->lblTenKhach->setText(c->getName());
+        ui->lblTenKhach->setStyleSheet("color: #0284C7; font-weight: 600;");
+        ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));
+
+        // Kiểm tra điểm
+        ui->btnDungDiem->setEnabled(c->getPoints() >= 100000);
+    }
     else
-        ui->btnDungDiem->setEnabled(false);
+    {
+        // === TRƯỜNG HỢP 2: SĐT CHƯA TỒN TẠI ===
+
+        // Kiểm tra xem ô nhập tên CÓ ĐANG HIỆN KHÔNG?
+        if (!ui->txtSearchCustomer->isVisible())
+        {
+            // >> GIAI ĐOẠN 2.1: Lần đầu nhấn Enter -> Hiện ô nhập tên
+
+            ui->txtSearchCustomer->setVisible(true); // Hiện ô nhập tên
+            ui->txtSearchCustomer->setFocus();       // Đưa con trỏ chuột vào đó luôn
+
+            ui->lblTenKhach->setText("Khách mới! Nhập tên rồi nhấn Enter.");
+            ui->lblTenKhach->setStyleSheet("color: #EAB308; font-weight: bold;"); // Màu vàng cam cảnh báo
+            ui->lblDiemKhach->setText("");
+
+            // Xóa khách cũ khỏi hóa đơn nếu có
+            if (currentBill) currentBill->setCustomer(nullptr);
+            ui->btnDungDiem->setEnabled(false);
+        }
+        else
+        {
+            // >> GIAI ĐOẠN 2.2: Ô tên đang hiện -> Người dùng đã nhập tên và nhấn Enter lần nữa
+
+            QString name = ui->txtSearchCustomer->text().trimmed();
+
+            if (name.isEmpty())
+            {
+                ui->lblTenKhach->setText("Vui lòng nhập tên khách hàng!");
+                ui->lblTenKhach->setStyleSheet("color: red; font-weight: bold;");
+                return;
+            }
+
+            try
+            {
+                // Tạo khách hàng mới
+                Customer* newCustomer = new Customer("", name, phone, 0);
+                store->addCustomer(newCustomer);
+
+                // Cập nhật hóa đơn
+                if (currentBill == nullptr) {
+                    currentBill = new Bill(nullptr, "", currentUser);
+                }
+                currentBill->setCustomer(newCustomer);
+
+                // Cập nhật giao diện thành công
+                ui->lblTenKhach->setText(newCustomer->getName());
+                ui->lblTenKhach->setStyleSheet("color: #0284C7; font-weight: 600;");
+                ui->lblDiemKhach->setText("Điểm Tích Lũy: 0");
+
+                // Ẩn lại ô nhập tên cho gọn
+                ui->txtSearchCustomer->setVisible(false);
+                ui->txtSearchCustomer->clear();
+
+                QMessageBox::information(this, "Thành công", "Đã thêm khách hàng mới!");
+            }
+            catch (const std::exception& e)
+            {
+                QMessageBox::warning(this, "Lỗi", QString("Lỗi: %1").arg(e.what()));
+            }
+        }
+    }
 }
 
 void MainWindow::onDungDiemClicked()
@@ -770,48 +877,98 @@ void MainWindow::onThanhToanClicked()
     loadAndSortProducts(curTableProduct);
 }
 
-// ✅ BLUE TEAM FIX: Atomic Transaction với Rollback Protection
 void MainWindow::finalizeThanhToan(const QString& paymentMethod)
 {
-    // 🛡️ BƯỚC 1: RE-CHECK STOCK (Đề phòng race condition)
+    // --- PHẦN 1: TÍNH NĂNG MỚI (CỦA BẠN BẠN) - RE-CHECK STOCK ---
+    // Mục đích: Đảm bảo an toàn dữ liệu, đề phòng kho bị âm trước khi chốt đơn
     const std::vector<BillItem>& billItems = currentBill->getItems();
     for (const BillItem& item : billItems)
     {
         Product* p = item.getProduct();
-        int needed = item.getQuantity();
         int available = p->getQuantity();
 
-        if (available < 0) // Kho đã bị âm
+        // Nếu kho bị âm (nghĩa là đã trừ quá tay ở bước trước đó)
+        if (available < 0)
         {
             QMessageBox::critical(this, "Lỗi Nghiêm Trọng",
-                QString("Sản phẩm '%1' có tồn kho bất thường (%2). Hủy giao dịch!")
-                .arg(p->getName()).arg(available));
-            
-            // Rollback: Trả hàng về kho
+                                  QString("Sản phẩm '%1' có tồn kho bất thường (%2). Hủy giao dịch để bảo toàn dữ liệu!")
+                                      .arg(p->getName()).arg(available));
+
+            // Rollback: Trả lại số lượng hàng đã trừ vào kho
             for (const BillItem& rollbackItem : billItems)
             {
                 Product* rp = rollbackItem.getProduct();
-                rp->setQuantity(rp->getQuantity() + rollbackItem.getQuantity());
+                if(rp) {
+                    rp->setQuantity(rp->getQuantity() + rollbackItem.getQuantity());
+                }
             }
-            return; // DỪNG GIAO DỊCH
+
+            // Cập nhật lại giao diện kho hàng để người dùng thấy số lượng đúng
+            loadAndSortProducts(curTableProduct);
+
+            return; // DỪNG GIAO DỊCH NGAY LẬP TỨC
         }
     }
+
+    // --- PHẦN 2: XỬ LÝ THANH TOÁN & TÍNH ĐIỂM (CỦA BẠN) ---
 
     double finalTotal = currentBill->getTotal();
     store->addRevenue(finalTotal);
 
+    // Xử lý cộng điểm tích lũy
     Customer* c = currentBill->getCustomer();
+    int pointsAdded = 0;
+
     if (c != nullptr)
     {
-        int pointsToAdd = static_cast<int>(finalTotal * 0.10);
-        c->addPoints(pointsToAdd);
+        // Logic tính điểm: 10% giá trị hóa đơn
+        pointsAdded = static_cast<int>(finalTotal * 0.10);
+        c->addPoints(pointsAdded);
     }
 
+    // Lưu hóa đơn vào lịch sử
     store->addBillToHistory(currentBill);
 
-    QMessageBox::information(this, "Thành công",
-        QString("Đã thanh toán %1 đồng bằng %2\n")
-        .arg(finalTotal).arg(paymentMethod));
+    // --- PHẦN 3: THÔNG BÁO & DỌN DẸP GIAO DIỆN (CỦA BẠN) ---
+
+    // Tạo thông báo chi tiết
+    QString msg = QString("Thanh toán thành công!\n\n"
+                          "Tổng tiền: %1 đ\n"
+                          "Hình thức: %2")
+                      .arg(QString::number(finalTotal, 'f', 0))
+                      .arg(paymentMethod);
+
+    // Nếu có khách hàng thì báo thêm về điểm
+    if (c != nullptr && pointsAdded > 0)
+    {
+        msg += QString("\n--------------------\n"
+                       "Đã cộng: +%1 điểm\n"
+                       "Tổng điểm hiện tại: %2 điểm")
+                   .arg(pointsAdded)
+                   .arg(c->getPoints());
+    }
+
+    QMessageBox::information(this, "Hoàn tất giao dịch", msg);
+
+    // --- Reset giao diện để sẵn sàng cho đơn mới ---
+    ui->stackedWidgeOrder->setCurrentIndex(0); // Quay về màn hình bán hàng
+
+    // Tạo hóa đơn mới (rỗng)
+    currentBill = new Bill(nullptr, "", currentUser);
+
+    // Cập nhật lại view hóa đơn (trống)
+    updateHoaDonView();
+
+    // QUAN TRỌNG: Tải lại danh sách sản phẩm để cập nhật số lượng tồn kho mới lên bảng
+    loadAndSortProducts(curTableProduct);
+
+    // Xóa trắng thông tin khách hàng trên giao diện
+    ui->txtSearchCustomer->clear();
+    ui->txtSearchCustomer->setVisible(false); // Ẩn ô nhập tên đi cho gọn
+    ui->txtSearchPhoneCustomer->clear();
+    ui->lblTenKhach->setText("Khách Lẻ");
+    ui->lblDiemKhach->setText("");
+    ui->btnDungDiem->setEnabled(false);
 }
 
 void MainWindow::on_ThemHang_clicked()
