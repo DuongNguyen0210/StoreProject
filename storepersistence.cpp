@@ -41,6 +41,8 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
                                      << f->getId() << '|'
                                      << f->getName() << '|'
                                      << QString::number(f->getBasePrice(), 'f', 2) << '|'
+                                     << QString::number(f->getImportPrice(), 'f', 2) << '|'     // Giá gốc
+                                     << QString::number(f->getProfitMargin(), 'f', 2) << '|'    // % Lợi nhuận
                                      << f->getQuantity() << '|'
                                      << f->getExpiryDate() << '\n';
                              }
@@ -50,6 +52,8 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
                                      << b->getId() << '|'
                                      << b->getName() << '|'
                                      << QString::number(b->getBasePrice(), 'f', 2) << '|'
+                                     << QString::number(b->getImportPrice(), 'f', 2) << '|'     // Giá gốc
+                                     << QString::number(b->getProfitMargin(), 'f', 2) << '|'    // % Lợi nhuận
                                      << b->getQuantity() << '|'
                                      << b->getExpiryDate() << '|'
                                      << QString::number(b->getVolume(), 'f', 2) << '\n';
@@ -60,6 +64,8 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
                                      << h->getId() << '|'
                                      << h->getName() << '|'
                                      << QString::number(h->getBasePrice(), 'f', 2) << '|'
+                                     << QString::number(h->getImportPrice(), 'f', 2) << '|'     // Giá gốc
+                                     << QString::number(h->getProfitMargin(), 'f', 2) << '|'    // % Lợi nhuận
                                      << h->getQuantity() << '|'
                                      << h->getWarrantyMonths() << '\n';
                              }
@@ -138,7 +144,6 @@ bool StorePersistence::load(Store &store, const QString &filePath)
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return false;
-
     QTextStream in(&file);
     in.setEncoding(QStringConverter::Utf8);
 
@@ -153,7 +158,6 @@ bool StorePersistence::load(Store &store, const QString &filePath)
 
     Section current = None;
 
-    // HashMap để lưu Bill tạm thời theo ID để dễ tìm kiếm
     QHash<QString, Bill*> billMap;
 
     while (!in.atEnd())
@@ -197,39 +201,96 @@ bool StorePersistence::load(Store &store, const QString &filePath)
             QString type = parts[0];
             if (type == "Food")
             {
+                // Hỗ trợ cả format cũ (6 fields) và mới (8 fields)
                 if (parts.size() < 6) break;
                 QString id = parts[1];
                 QString name = parts[2];
                 double price = parts[3].toDouble();
-                int quantity = parts[4].toInt();
-                QString expiry = parts[5];
+                
+                // Format mới có importPrice và profitMargin
+                double importPrice = 0.0;
+                double profitMargin = 0.0;
+                int quantity = 0;
+                QString expiry = "";
+                
+                if (parts.size() >= 8) {  // Format mới
+                    importPrice = parts[4].toDouble();
+                    profitMargin = parts[5].toDouble();
+                    quantity = parts[6].toInt();
+                    expiry = parts[7];
+                } else {  // Format cũ - backward compatibility
+                    importPrice = price;  // Giả định giá cũ là giá gốc
+                    profitMargin = 0.0;
+                    quantity = parts[4].toInt();
+                    expiry = parts[5];
+                }
 
                 Product* p = new Food(id, name, price, quantity, expiry);
+                p->setImportPrice(importPrice);
+                p->setProfitMargin(profitMargin);
                 store.addProduct(p);
             }
             else if (type == "Beverage")
             {
+                // Hỗ trợ cả format cũ (7 fields) và mới (9 fields)
                 if (parts.size() < 7) break;
                 QString id = parts[1];
                 QString name = parts[2];
                 double price = parts[3].toDouble();
-                int quantity = parts[4].toInt();
-                QString expiry = parts[5];
-                double volume = parts[6].toDouble();
+                
+                double importPrice = 0.0;
+                double profitMargin = 0.0;
+                int quantity = 0;
+                QString expiry = "";
+                double volume = 0.0;
+                
+                if (parts.size() >= 9) {  // Format mới
+                    importPrice = parts[4].toDouble();
+                    profitMargin = parts[5].toDouble();
+                    quantity = parts[6].toInt();
+                    expiry = parts[7];
+                    volume = parts[8].toDouble();
+                } else {  // Format cũ
+                    importPrice = price;
+                    profitMargin = 0.0;
+                    quantity = parts[4].toInt();
+                    expiry = parts[5];
+                    volume = parts[6].toDouble();
+                }
 
                 Product* p = new Beverage(id, name, price, quantity, expiry, volume);
+                p->setImportPrice(importPrice);
+                p->setProfitMargin(profitMargin);
                 store.addProduct(p);
             }
             else if (type == "Household")
             {
+                // Hỗ trợ cả format cũ (6 fields) và mới (8 fields)
                 if (parts.size() < 6) break;
                 QString id = parts[1];
                 QString name = parts[2];
                 double price = parts[3].toDouble();
-                int quantity = parts[4].toInt();
-                int warranty = parts[5].toInt();
+                
+                double importPrice = 0.0;
+                double profitMargin = 0.0;
+                int quantity = 0;
+                int warranty = 0;
+                
+                if (parts.size() >= 8) {  // Format mới
+                    importPrice = parts[4].toDouble();
+                    profitMargin = parts[5].toDouble();
+                    quantity = parts[6].toInt();
+                    warranty = parts[7].toInt();
+                } else {  // Format cũ
+                    importPrice = price;
+                    profitMargin = 0.0;
+                    quantity = parts[4].toInt();
+                    warranty = parts[5].toInt();
+                }
 
                 Product* p = new HouseholdItem(id, name, price, quantity, warranty);
+                p->setImportPrice(importPrice);
+                p->setProfitMargin(profitMargin);
                 store.addProduct(p);
             }
             break;
@@ -263,8 +324,8 @@ bool StorePersistence::load(Store &store, const QString &filePath)
 
             QString role = parts[0];
             QString id = parts[1];
-            QString name = parts[2];
-            QString password = parts[3];
+            QString name = parts[2].trimmed();  // ✅ SỬA: trim username để tránh khoảng trắng
+            QString password = parts[3].trimmed();  // ✅ SỬA: trim password để tránh khoảng trắng
 
             User* u = nullptr;
             if (role.compare("Manager", Qt::CaseInsensitive) == 0)
@@ -273,7 +334,10 @@ bool StorePersistence::load(Store &store, const QString &filePath)
                 u = new Cashier(id, name, password);
 
             if (u)
+            {
                 store.addUser(u);
+                qDebug() << "✅ Loaded user:" << name << "with password:" << password;
+            }
             else
                 QMessageBox::warning(nullptr, "Lỗi", "Role người dùng không hợp lệ: " + role);
 

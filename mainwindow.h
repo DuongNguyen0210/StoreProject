@@ -69,7 +69,7 @@ private slots:
     void on_BtnSearch_clicked();
 
     void onAddSanPham(const QModelIndex &index);
-    void onRemoveSanPhamDoubleClicked(const QModelIndex &index);
+    void onEditSanPhamDoubleClicked(const QModelIndex &index);
     void onTimKhachPressed();
     void onDungDiemClicked();
     void onXuatHoaDonClicked();
@@ -103,6 +103,7 @@ private:
     void loadAndSortProducts(int typeFilter);
     void applySortingAndFiltering(std::vector<Product*>& products);
 
+    static bool compareNameAsc(Product* a, Product* b);
     static bool comparePriceAsc(Product* a, Product* b);
     static bool comparePriceDesc(Product* a, Product* b);
     static bool compareQuantityAsc(Product* a, Product* b);

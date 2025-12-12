@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -77,4 +77,21 @@ RESOURCES += \
 
 DISTFILES += \
     ../Store/Icon/banhmi.png \
-    build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/debug/store_data.txt
+    store_data.txt
+
+# Copy store_data.txt to output directory
+win32 {
+    COPY_CMD = copy /y
+} else {
+    COPY_CMD = cp
+}
+
+# Define output directory (debug/release specifics)
+CONFIG(debug, debug|release) {
+    DEST_DIR = $$OUT_PWD/debug
+} else {
+    DEST_DIR = $$OUT_PWD/release
+}
+
+# Copy file after link
+QMAKE_POST_LINK += $$COPY_CMD \"$$shell_path($$PWD/store_data.txt)\" \"$$shell_path($$DEST_DIR/store_data.txt)\"

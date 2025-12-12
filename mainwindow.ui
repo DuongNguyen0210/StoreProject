@@ -102,7 +102,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Lịch sử hóa đơn</string>
+          <string>Thống Kê</string>
          </property>
          <property name="icon">
           <iconset resource="Resource.qrc">
@@ -127,23 +127,23 @@
          </property>
         </widget>
        </item>
-<item>
- <widget class="QPushButton" name="QuanLyKho">
-  <property name="minimumSize">
-   <size>
-    <width>0</width>
-    <height>50</height>
-   </size>
-  </property>
-  <property name="text">
-   <string>Quản Lý Kho</string>
-  </property>
-  <property name="icon">
-   <iconset resource="Resource.qrc">
-    <normaloff>:/icons/bag.png</normaloff>:/icons/bag.png</iconset>
-  </property>
- </widget>
-</item>
+       <item>
+        <widget class="QPushButton" name="QuanLyKho">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Quản Lý Kho</string>
+         </property>
+         <property name="icon">
+          <iconset resource="Resource.qrc">
+           <normaloff>:/icons/bag.png</normaloff>:/icons/bag.png</iconset>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QPushButton" name="KhachHang">
          <property name="minimumSize">

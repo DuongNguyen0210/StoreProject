@@ -40,7 +40,7 @@ void LoginDialog::onLoginClicked()
 
     ui->lblError->setVisible(false);
 
-    qDebug() << username << " " << password << '\n';
+    qDebug() << username << " " << password << 1 << '\n';
 
     if (username.isEmpty() || password.isEmpty())
     {
@@ -50,7 +50,8 @@ void LoginDialog::onLoginClicked()
     }
 
     User* user = m_store->findUserByName(username);
-
+    if(user == nullptr)
+        qDebug() << "sai cu no roi";
     if (user == nullptr || user->getPassword() != password)
     {
         ui->lblError->setText("Tên đăng nhập hoặc mật khẩu không hợp lệ!");

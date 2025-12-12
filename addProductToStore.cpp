@@ -16,9 +16,23 @@ AddProductToStore::AddProductToStore(QWidget *parent) :
     ui->Type->addItem("Thức uống");
     ui->Type->addItem("Đồ gia dụng");
 
+    // Cấu hình cho Giá gốc (Import Price)
+    ui->ImportPrice->setMinimum(0.0);
+    ui->ImportPrice->setMaximum(1000000.0);
+    ui->ImportPrice->setSuffix(" đ");
+    
+    // Cấu hình cho % Lợi nhuận (Profit Margin)
+    ui->ProfitMargin->setMinimum(0.0);
+    ui->ProfitMargin->setMaximum(1000.0);  // Cho phép lợi nhuận lên đến 1000%
+    ui->ProfitMargin->setSuffix(" %");
+    ui->ProfitMargin->setDecimals(1);
+    
+    // Cấu hình cho Giá bán (Price) - chỉ đọc, tự động tính
     ui->Price->setMinimum(0.0);
-    ui->Price->setMaximum(1000000.0);
+    ui->Price->setMaximum(10000000.0);
     ui->Price->setSuffix(" đ");
+    ui->Price->setReadOnly(true);
+    ui->Price->setButtonSymbols(QAbstractSpinBox::NoButtons);  // Ẩn nút tăng/giảm
 
     ui->Quantity->setMinimum(0);
     ui->Quantity->setMaximum(10000);
@@ -32,9 +46,15 @@ AddProductToStore::AddProductToStore(QWidget *parent) :
     ui->dateEdit->setMinimumDate(minDate.addDays(1));
     ui->dateEdit->setDate(minDate.addDays(1));
 
+    // Kết nối tự động tính giá bán khi nhập Giá gốc hoặc % Lợi nhuận
+    connect(ui->ImportPrice, QOverload<double>::of(&QDoubleSpinBox::valueChanged), 
+            this, &AddProductToStore::calculateSellingPrice);
+    connect(ui->ProfitMargin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), 
+            this, &AddProductToStore::calculateSellingPrice);
+
     connect(ui->Name, &QLineEdit::textChanged, this, &AddProductToStore::validateForm);
     connect(ui->Quantity, QOverload<int>::of(&QSpinBox::valueChanged), this, &AddProductToStore::validateForm);
-    connect(ui->Price, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &AddProductToStore::validateForm);
+    connect(ui->ImportPrice, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &AddProductToStore::validateForm);
     connect(ui->dateEdit, &QDateEdit::dateChanged, this, &AddProductToStore::validateForm);
     connect(ui->Volume, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &AddProductToStore::validateForm);
     connect(ui->Warranty, QOverload<int>::of(&QSpinBox::valueChanged), this, &AddProductToStore::validateForm);
@@ -64,7 +84,8 @@ void AddProductToStore::validateForm()
         isValid = false;
     if (ui->Quantity->value() <= 0)
         isValid = false;
-    if(ui->Price->value() == 0)
+    // Kiểm tra Giá gốc thay vì Giá bán
+    if(ui->ImportPrice->value() == 0)
         isValid = false;
 
     if (typeIndex == 1 || typeIndex == 2)
@@ -85,16 +106,15 @@ void AddProductToStore::validateForm()
     else
         isValid = false;
 
-    //ui->buttonBox->setEnabled(isValid);
     if (ui->buttonBox)
     {
-        // 1. Xử lý nút OK: Chỉ sáng khi isValid = true
+        // Xử lý nút OK: Chỉ sáng khi isValid = true
         QPushButton* btnOk = ui->buttonBox->button(QDialogButtonBox::Ok);
         if (btnOk) {
             btnOk->setEnabled(isValid);
         }
 
-        // 2. Xử lý nút Cancel: Luôn luôn sáng
+        // Xử lý nút Cancel: Luôn luôn sáng
         QPushButton* btnCancel = ui->buttonBox->button(QDialogButtonBox::Cancel);
         if (btnCancel) {
             btnCancel->setEnabled(true);
@@ -109,11 +129,41 @@ void AddProductToStore::setFieldsForType(int typeIndex)
     ui->Name->setEnabled(generalEnabled);
     ui->Quantity->setEnabled(generalEnabled);
     ui->Price->setEnabled(generalEnabled);
+    bool isFoodOrBeverage = (typeIndex == 1 || typeIndex == 2);
+    bool isBeverage = (typeIndex == 2);
+    bool isHousehold = (typeIndex == 3);
+    // Hạn sử dụng (Đồ ăn, Thức uống)
+    ui->labelAddProductExpiryDate->setVisible(isFoodOrBeverage);
+    ui->dateEdit->setVisible(isFoodOrBeverage);
+    ui->dateEdit->setEnabled(isFoodOrBeverage); // Giữ lại enabled để phục vụ validate
+    ui->ImportPrice->setEnabled(generalEnabled);
+    ui->ProfitMargin->setEnabled(generalEnabled);
+    // Price luôn disabled vì tự động tính
 
-    ui->dateEdit->setEnabled(typeIndex == 1 || typeIndex == 2);
-    ui->Volume->setEnabled(typeIndex == 2);
-    ui->Warranty->setEnabled(typeIndex == 3);
+    // Thể tích (Thức uống)
+    ui->labelAddProductVolume->setVisible(isBeverage);
+    ui->Volume->setVisible(isBeverage);
+    ui->Volume->setEnabled(isBeverage); // Giữ lại enabled để phục vụ validate
+
+    // Thời hạn bảo hành (Đồ gia dụng)
+    ui->labelAddProducWarranty->setVisible(isHousehold);
+    ui->Warranty->setVisible(isHousehold);
+    ui->Warranty->setEnabled(isHousehold); // Giữ lại enabled để phục vụ validate
+
+    // Gọi lại validateForm để cập nhật trạng thái nút OK
     validateForm();
+}
+
+// Hàm tự động tính giá bán từ giá gốc và % lợi nhuận
+void AddProductToStore::calculateSellingPrice()
+{
+    double importPrice = ui->ImportPrice->value();
+    double profitMargin = ui->ProfitMargin->value();
+    
+    // Công thức: Giá bán = Giá gốc + (Giá gốc * % Lợi nhuận / 100)
+    double sellingPrice = importPrice + (importPrice * profitMargin / 100.0);
+    
+    ui->Price->setValue(sellingPrice);
 }
 
 QString AddProductToStore::getProductType() const
@@ -129,6 +179,16 @@ QString AddProductToStore::getName() const
 double AddProductToStore::getPrice() const
 {
     return ui->Price->value();
+}
+
+double AddProductToStore::getImportPrice() const
+{
+    return ui->ImportPrice->value();
+}
+
+double AddProductToStore::getProfitMargin() const
+{
+    return ui->ProfitMargin->value();
 }
 
 int AddProductToStore::getQuantity() const
