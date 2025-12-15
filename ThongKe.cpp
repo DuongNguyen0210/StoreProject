@@ -3,6 +3,7 @@
 #include "Customer.h"
 #include "ui_ThongKe.h"
 #include "BillDetailDialog.h"
+#include "StockProductDialog.h"
 #include "Food.h"
 #include "Beverage.h"
 #include <QString>
@@ -23,6 +24,9 @@ ThongKe::ThongKe(Store* store, QWidget *parent)
 
     connect(ui->billHistoryTable, &QTableView::doubleClicked,
             this, &ThongKe::onBillDoubleClicked);
+    
+    connect(ui->btnStockDetails, &QPushButton::clicked,
+            this, &ThongKe::showStockDetails);
 }
 
 ThongKe::~ThongKe()
@@ -363,33 +367,33 @@ void ThongKe::createWarningsChart()
     QPieSeries *series = new QPieSeries();
     
     if (outOfStock > 0) {
-        QPieSlice *slice = series->append(QString("❌ Hết hàng (%1)").arg(outOfStock), outOfStock);
+        QPieSlice *slice = series->append(QString("Hết hàng (%1)").arg(outOfStock), outOfStock);
         slice->setBrush(QColor("#EF4444"));  // Red
-        slice->setLabelVisible(true);
+        //slice->setLabelVisible(true);
     }
     
     if (criticalLow > 0) {
-        QPieSlice *slice = series->append(QString("⚠️ Gần hết (1-5) (%1)").arg(criticalLow), criticalLow);
+        QPieSlice *slice = series->append(QString("Gần hết (%1)").arg(criticalLow), criticalLow);
         slice->setBrush(QColor("#F59E0B"));  // Orange
-        slice->setLabelVisible(true);
+        //slice->setLabelVisible(true);
     }
     
     if (low > 0) {
-        QPieSlice *slice = series->append(QString("⚡ Sắp hết (6-10) (%1)").arg(low), low);
+        QPieSlice *slice = series->append(QString("Sắp hết (%1)").arg(low), low);
         slice->setBrush(QColor("#EAB308"));  // Yellow
-        slice->setLabelVisible(true);
+        //slice->setLabelVisible(true);
     }
     
     if (adequate > 0) {
-        QPieSlice *slice = series->append(QString("✅ Đủ hàng (>10) (%1)").arg(adequate), adequate);
+        QPieSlice *slice = series->append(QString("Đủ hàng (%1)").arg(adequate), adequate);
         slice->setBrush(QColor("#10B981"));  // Green
-        slice->setLabelVisible(true);
+        //slice->setLabelVisible(true);
     }
     
     // If no products
     if (outOfStock == 0 && criticalLow == 0 && low == 0 && adequate == 0) {
         QPieSlice *slice = series->append("Chưa có sản phẩm", 1);
-        slice->setBrush(QColor("#9CA3AF"));
+        //slice->setBrush(QColor("#9CA3AF"));
     }
     
     QChart *chart = new QChart();
@@ -453,3 +457,10 @@ void ThongKe::onBillDoubleClicked(const QModelIndex &index)
         detailDialog.exec();
     }
 }
+
+void ThongKe::showStockDetails()
+{
+    StockProductDialog stockDialog(m_store, this);
+    stockDialog.exec();
+}
+

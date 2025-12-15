@@ -3,8 +3,6 @@
 
 #include "Product.h"
 
-// ✅ COMPILER GUARD: Removed 'using namespace std;' from header
-
 class BillItem
 {
 private:

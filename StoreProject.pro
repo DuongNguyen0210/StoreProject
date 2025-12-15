@@ -21,6 +21,7 @@ SOURCES += \
     Manager.cpp \
     Payment.cpp \
     Product.cpp \
+    StockProductDialog.cpp \
     Store.cpp \
     ThongKe.cpp \
     User.cpp \
@@ -46,6 +47,7 @@ HEADERS += \
     Manager.h \
     Payment.h \
     Product.h \
+    StockProductDialog.h \
     Store.h \
     ThongKe.h \
     User.h \
@@ -65,7 +67,8 @@ FORMS += \
     editproductdialog.ui \
     logindialog.ui \
     mainwindow.ui \
-    manageinventory.ui
+    manageinventory.ui \
+    stockProductdialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -4,7 +4,6 @@
 #include "Product.h"
 #include <QString>
 
-// ✅ COMPILER GUARD: Removed 'using namespace std;' from header
 
 class Beverage : public Product
 {
