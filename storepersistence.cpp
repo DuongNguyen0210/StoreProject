@@ -80,7 +80,9 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
                               out << c->getId() << '|'
                                   << c->getName() << '|'
                                   << c->getPhone() << '|'
-                                  << c->getPoints() << '\n';
+                                  << c->getEmail() << '|'
+                                  << c->getPoints() << '|'
+                                  << c->getLastVisit().toString("yyyy-MM-dd HH:mm:ss") << '\n';
                           });
     out << "\n";
 
@@ -298,6 +300,7 @@ bool StorePersistence::load(Store &store, const QString &filePath)
 
         case Customers:
         {
+            // Support both old format (4 fields) and new format (6 fields)
             if (parts.size() < 4)
             {
                 QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu khách hàng không đúng định dạng");
@@ -307,9 +310,27 @@ bool StorePersistence::load(Store &store, const QString &filePath)
             QString id = parts[0];
             QString name = parts[1];
             QString phone = parts[2];
-            int points = parts[3].toInt();
+            
+            QString email = "";
+            int points = 0;
+            QDateTime lastVisit = QDateTime::currentDateTime();
+            
+            if (parts.size() >= 6) {  // New format with email and lastVisit
+                email = parts[3];
+                points = parts[4].toInt();
+                lastVisit = QDateTime::fromString(parts[5], "yyyy-MM-dd HH:mm:ss");
+                if (!lastVisit.isValid()) {
+                    lastVisit = QDateTime::currentDateTime();
+                }
+            } else {  // Old format (backward compatibility)
+                points = parts[3].toInt();
+            }
 
-            Customer* c = new Customer(id, name, phone, points);
+            Customer* c = new Customer(id, name, phone, email, points);
+            if (parts.size() >= 6) {
+                // Manually set lastVisit for loaded customers
+                const_cast<QDateTime&>(c->getLastVisit()) = lastVisit;
+            }
             store.addCustomer(c);
             break;
         }

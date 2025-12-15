@@ -121,6 +121,14 @@ void ThongKe::updateKPICards()
     double totalProfit = calculateTotalProfit();
     ui->lblProfit->setText(QString("%1 đ")
                                .arg(QString::number(totalProfit, 'f', 0)));
+    
+    // Tính tỉ lệ lợi nhuận %
+    double profitMargin = 0.0;
+    if (totalRevenue > 0) {
+        profitMargin = (totalProfit / totalRevenue) * 100.0;
+    }
+    QString marginText = QString("Tỉ lệ lời: %1%").arg(QString::number(profitMargin, 'f', 1));
+    ui->lblProfitMargin->setText(marginText);
 
     // Số hóa đơn
     int billCount = m_store->getBillHistory().size();
@@ -363,37 +371,38 @@ void ThongKe::createWarningsChart()
         }
     });
     
+    // Update legend labels with counts
+    ui->lblCountGreen->setText(QString::number(adequate));
+    ui->lblCountYellow->setText(QString::number(low));
+    ui->lblCountOrange->setText(QString::number(criticalLow));
+    ui->lblCountRed->setText(QString::number(outOfStock));
+    
     // Create pie chart
     QPieSeries *series = new QPieSeries();
     
     if (outOfStock > 0) {
         QPieSlice *slice = series->append(QString("Hết hàng (%1)").arg(outOfStock), outOfStock);
         slice->setBrush(QColor("#EF4444"));  // Red
-        //slice->setLabelVisible(true);
     }
     
     if (criticalLow > 0) {
         QPieSlice *slice = series->append(QString("Gần hết (%1)").arg(criticalLow), criticalLow);
         slice->setBrush(QColor("#F59E0B"));  // Orange
-        //slice->setLabelVisible(true);
     }
     
     if (low > 0) {
         QPieSlice *slice = series->append(QString("Sắp hết (%1)").arg(low), low);
         slice->setBrush(QColor("#EAB308"));  // Yellow
-        //slice->setLabelVisible(true);
     }
     
     if (adequate > 0) {
         QPieSlice *slice = series->append(QString("Đủ hàng (%1)").arg(adequate), adequate);
         slice->setBrush(QColor("#10B981"));  // Green
-        //slice->setLabelVisible(true);
     }
     
     // If no products
     if (outOfStock == 0 && criticalLow == 0 && low == 0 && adequate == 0) {
         QPieSlice *slice = series->append("Chưa có sản phẩm", 1);
-        //slice->setBrush(QColor("#9CA3AF"));
     }
     
     QChart *chart = new QChart();

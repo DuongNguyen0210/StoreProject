@@ -20,15 +20,25 @@ public:
     ~CustomerDialog();
 
 private slots:
-    void on_btnAddCustomer_clicked();
+    void on_btnAddNewMember_clicked();
+    void on_searchBar_textChanged(const QString& text);
+    void on_filterTier_currentIndexChanged(int index);
+    void on_sortBy_currentIndexChanged(int index);
 
 private:
     void setupTable();
     void loadCustomers();
+    void updateStatistics();
+    void applyFiltersAndSort();
+    int getTierCount(const QString& tier);
+    QString getTierColor(const QString& tier);
 
     Ui::CustomerDialog *ui;
     Store* m_store;
     QStandardItemModel* m_model;
+    QString m_currentSearchText;
+    QString m_currentTierFilter;
+    int m_currentSortIndex;
 };
 
 #endif

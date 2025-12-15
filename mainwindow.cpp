@@ -82,6 +82,7 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     connect(ui->btnCancelOrder, &QPushButton::clicked, this, &MainWindow::onCancelOrderClicked);
     connect(ui->tableViewProduct, &QTableView::doubleClicked, this, &MainWindow::onAddSanPham);
     connect(ui->SearchText, &QLineEdit::returnPressed, this, &MainWindow::on_BtnSearch_clicked);
+    connect(ui->SearchText, &QLineEdit::textChanged, this, &MainWindow::on_SearchText_changed);
     connect(ui->tableViewOrder, &QTableView::doubleClicked, this, &MainWindow::onEditSanPhamDoubleClicked);
     connect(ui->txtSearchCustomer, &QLineEdit::returnPressed, this, &MainWindow::onTimKhachPressed);
     connect(ui->txtSearchPhoneCustomer, &QLineEdit::returnPressed, this, &MainWindow::onTimKhachPressed);
@@ -211,7 +212,7 @@ void MainWindow::setupTable()
     modelTable->setHeaderData(4, Qt::Horizontal, "Số lượng");
     modelTable->setHeaderData(5, Qt::Horizontal, "Thể tích");
     modelTable->setHeaderData(6, Qt::Horizontal, "Hạn sử dụng");
-    modelTable->setHeaderData(7, Qt::Horizontal, "Thời hạn bảo hành");
+    modelTable->setHeaderData(7, Qt::Horizontal, "Thời hạn bảo hành (tháng)");
     ui->tableViewProduct->setModel(modelTable);
     ui->tableViewProduct->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableViewProduct->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -282,7 +283,15 @@ void MainWindow::updateHoaDonView()
         Customer* c = currentBill->getCustomer();
         if(c)
         {
-            ui->lblTenKhach->setText(c->getName());
+            // Add tier icon before name
+            QString tierIcon;
+            QString tier = c->getTier();
+            if (tier == "Diamond") tierIcon = "💎";
+            else if (tier == "Gold") tierIcon = "🥇";
+            else if (tier == "Silver") tierIcon = "🥈";
+            else tierIcon = "🥉";  // Bronze
+            
+            ui->lblTenKhach->setText(QString("%1 %2").arg(tierIcon, c->getName()));
             ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));
 
             ui->btnDungDiem->setVisible(true); // Hiện nút
@@ -304,14 +313,14 @@ void MainWindow::updateHoaDonView()
                 ui->btnDungDiem->setStyleSheet("");
 
                 int currentPoints = c->getPoints();
-                double maxAllowedDiscount = subTotal - 1000.0;
-
-                if (currentPoints >= 10 && maxAllowedDiscount > 0)
+                
+                // Use finalTotal (after tier discount) for calculation
+                if (currentPoints >= 10 && finalTotal > 1000.0)
                 {
-                    double pointsValue = currentPoints * 100.0;
-                    double actualDiscount = (pointsValue > maxAllowedDiscount) ? maxAllowedDiscount : pointsValue;
-                    int ptsToUse = qRound(actualDiscount / 100.0);
-                    double priceAfterDiscount = subTotal - (ptsToUse * 100.0);
+                    // Calculate max points: floor((total - 1000) / 100)
+                    int maxPointsToUse = static_cast<int>((finalTotal - 1000.0) / 100.0);
+                    int ptsToUse = qMin(maxPointsToUse, currentPoints);
+                    double priceAfterDiscount = finalTotal - (ptsToUse * 100.0);
 
                     ui->btnDungDiem->setEnabled(true);
                     ui->btnDungDiem->setText(QString("Dùng %1 điểm (Còn: %2 đ)")
@@ -321,7 +330,7 @@ void MainWindow::updateHoaDonView()
                 else
                 {
                     ui->btnDungDiem->setEnabled(false);
-                    if (subTotal <= 1000)
+                    if (finalTotal <= 1000)
                         ui->btnDungDiem->setText("Hóa đơn quá thấp");
                     else
                         ui->btnDungDiem->setText("Không đủ điểm (Min 10)");
@@ -339,6 +348,17 @@ void MainWindow::updateHoaDonView()
 
         ui->TotalAfter->setText(QString("Tổng tiền thanh toán: %1 đ")
                                     .arg(QString::number(finalTotal, 'f', 0)));
+        ui->TotalAfter->setStyleSheet(
+            "QLabel { "
+            "  border: 2px solid #10B981; "
+            "  border-radius: 8px; "
+            "  background-color: #ECFDF5; "
+            "  padding: 10px; "
+            "  font-size: 14pt; "
+            "  font-weight: bold; "
+            "  color: #059669; "
+            "}"
+        );
     }
 }
 
@@ -371,6 +391,17 @@ void MainWindow::updateLastBillView()
     double finalTotal = currentBill->getTotal();
     ui->TotalBefore_2->setText(QString("Tổng tiền ban đầu: %1").arg(QString::number(subTotal, 'f', 0)));
     ui->TotalAfter_2->setText(QString("Tổng tiền thanh toán: %1").arg(QString::number(finalTotal, 'f', 0)));
+    ui->TotalAfter_2->setStyleSheet(
+        "QLabel { "
+        "  border: 2px solid #10B981; "
+        "  border-radius: 8px; "
+        "  background-color: #ECFDF5; "
+        "  padding: 10px; "
+        "  font-size: 14pt; "
+        "  font-weight: bold; "
+        "  color: #059669; "
+        "}"
+    );
 }
 
 void MainWindow::resetHoaDon()
@@ -676,7 +707,7 @@ void MainWindow::loadProductsFromStore(int typeFilter)
 
 void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
 {
-    QString kw = keyword.trimmed();
+    QString kw = keyword.trimmed().toLower();
     if (kw.isEmpty())
     {
         loadAndSortProducts(0);
@@ -685,8 +716,18 @@ void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
 
     modelTable->removeRows(0, modelTable->rowCount());
 
-    store->forEachProductByName(kw, [&](const QString&, Product* p) {
+    // Search like manageinventory - iterate all and filter with contains
+    store->forEachProduct([&](const QString&, Product* p) {
         if (!p) return;
+        
+        // Filter active products with stock
+        if (!p->getIsActive()) return;
+        if (p->getQuantity() <= 0) return;
+        
+        // Search filter: check if name or ID contains keyword
+        QString name = p->getName().toLower();
+        QString id = p->getId().toLower();
+        if (!name.contains(kw) && !id.contains(kw)) return;
 
         Food* f = dynamic_cast<Food*>(p);
         Beverage* b = dynamic_cast<Beverage*>(p);
@@ -745,6 +786,12 @@ void MainWindow::on_DoGiaDung_clicked()
 void MainWindow::on_BtnSearch_clicked()
 {
     loadProductsFromStoreWithKeyWord(ui->SearchText->text());
+}
+
+void MainWindow::on_SearchText_changed(const QString& text)
+{
+    // Auto-search as user types (like manageinventory)
+    loadProductsFromStoreWithKeyWord(text);
 }
 
 void MainWindow::onAddSanPham(const QModelIndex &index)
@@ -911,7 +958,16 @@ void MainWindow::onTimKhachPressed()
         if (currentBill == nullptr) currentBill = new Bill(nullptr, "", currentUser);
         currentBill->setCustomer(c);
         ui->lblTenKhach->setStyleSheet("");
-        ui->lblTenKhach->setText(c->getName());
+        
+        // Add tier icon
+        QString tierIcon;
+        QString tier = c->getTier();
+        if (tier == "Diamond") tierIcon = "💎";
+        else if (tier == "Gold") tierIcon = "🥇";
+        else if (tier == "Silver") tierIcon = "🥈";
+        else tierIcon = "🥉";  // Bronze
+        
+        ui->lblTenKhach->setText(QString("%1 %2").arg(tierIcon, c->getName()));
         ui->lblTenKhach->setStyleSheet("color: #0284C7; font-weight: 600;");
         ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));
         updateHoaDonView();

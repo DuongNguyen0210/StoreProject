@@ -62,6 +62,9 @@
        <property name="frameShadow">
         <enum>QFrame::Shadow::Raised</enum>
        </property>
+       <property name="styleSheet">
+        <string notr="true">QFrame#frameRevenue { border: 2px solid #E5E7EB; border-radius: 8px; background-color: #F9FAFB; }</string>
+       </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QLabel" name="lblRevenueTit">
@@ -97,49 +100,70 @@
        </layout>
       </widget>
      </item>
-     <item>
-      <widget class="QFrame" name="frameProfit">
-       <property name="frameShape">
-        <enum>QFrame::Shape::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Shadow::Raised</enum>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QLabel" name="lblProfitTitle">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>📈 Lợi Nhuận Ước Tính</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignmentFlag::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="lblProfit">
-          <property name="font">
-           <font>
-            <pointsize>20</pointsize>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>0 đ</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignmentFlag::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
+      <item>
+       <widget class="QFrame" name="frameProfit">
+        <property name="frameShape">
+         <enum>QFrame::Shape::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QFrame#frameProfit { border: 2px solid #E5E7EB; border-radius: 8px; background-color: #F9FAFB; }</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="lblProfitTitle">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>📈 Lợi Nhuận Ước Tính</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="lblProfit">
+           <property name="font">
+            <font>
+             <pointsize>20</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>0 đ</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="lblProfitMargin">
+           <property name="font">
+            <font>
+             <pointsize>9</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Tỉ lệ lời: 0.0%</string>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: #059669;</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
      <item>
       <widget class="QFrame" name="frameBills">
        <property name="frameShape">
@@ -147,6 +171,9 @@
        </property>
        <property name="frameShadow">
         <enum>QFrame::Shadow::Raised</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QFrame#frameBills { border: 2px solid #E5E7EB; border-radius: 8px; background-color: #F9FAFB; }</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
@@ -174,7 +201,7 @@
           </property>
           <property name="text">
            <string>0</string>
-          </property>
+           </property>
           <property name="alignment">
            <set>Qt::AlignmentFlag::AlignCenter</set>
           </property>
@@ -276,14 +303,267 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_7">
         <item>
-         <widget class="QChartView" name="chartWarnings">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>200</height>
-           </size>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="chartLegendLayout">
+          <item>
+           <widget class="QChartView" name="chartWarnings">
+            <property name="minimumSize">
+             <size>
+              <width>250</width>
+              <height>200</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frameLegend">
+            <property name="frameShape">
+             <enum>QFrame::Shape::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Shadow::Raised</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QFrame#frameLegend { border: 1px solid #E5E7EB; border-radius: 5px; background-color: white; }</string>
+            </property>
+            <layout class="QVBoxLayout" name="legendLayout">
+             <item>
+              <widget class="QLabel" name="lblLegendTitle">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Chú Thích:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="legendGreen">
+               <item>
+                <widget class="QLabel" name="lblColorGreen">
+                 <property name="maximumSize">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: #10B981; border: 1px solid #059669; border-radius: 3px;</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lblLegendGreen">
+                 <property name="text">
+                  <string>Đủ hàng (>10)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_1">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="lblCountGreen">
+                 <property name="font">
+                  <font>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="legendYellow">
+               <item>
+                <widget class="QLabel" name="lblColorYellow">
+                 <property name="maximumSize">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: #EAB308; border: 1px solid #CA8A04; border-radius: 3px;</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lblLegendYellow">
+                 <property name="text">
+                  <string>Sắp hết (6-10)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="lblCountYellow">
+                 <property name="font">
+                  <font>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="legendOrange">
+               <item>
+                <widget class="QLabel" name="lblColorOrange">
+                 <property name="maximumSize">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: #F59E0B; border: 1px solid #D97706; border-radius: 3px;</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lblLegendOrange">
+                 <property name="text">
+                  <string>Gần hết (1-5)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="lblCountOrange">
+                 <property name="font">
+                  <font>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="legendRed">
+               <item>
+                <widget class="QLabel" name="lblColorRed">
+                 <property name="maximumSize">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: #EF4444; border: 1px solid #DC2626; border-radius: 3px;</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lblLegendRed">
+                 <property name="text">
+                  <string>Hết hàng (0)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="lblCountRed">
+                 <property name="font">
+                  <font>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QPushButton" name="btnStockDetails">

@@ -159,6 +159,14 @@ double Bill::getSubTotal() const
 double Bill::getTotal() const
 {
     double subTotal = getSubTotal();
+    
+    // Apply tier discount first
+    if (customer) {
+        double tierDiscountPercent = customer->getTierDiscountPercent();
+        subTotal = subTotal * (1.0 - (tierDiscountPercent / 100.0));
+    }
+    
+    // Then apply point discount
     return subTotal * (1.0 - discountPercent);
 }
 
@@ -170,41 +178,44 @@ bool Bill::applyPointsDiscount(int pointsRequired)
         return false;
 
     int currentPoints = customer->getPoints();
-    double subTotal = getSubTotal();
+    
+    // Get current total (after tier discount)
+    double currentTotal = getTotal();
 
-    // 1. Kiểm tra điểm tối thiểu (10 điểm = 1000đ)
+    // Kiểm tra điểm tối thiểu (10 điểm = 1000đ)
     if (currentPoints < 10)
         return false;
 
-    // Quy tắc: Hóa đơn phải còn ít nhất 1.000đ sau khi giảm
-    // Nghĩa là số tiền tối đa được phép giảm = Tổng tiền - 1.000đ
-    double maxAllowedDiscount = subTotal - 1000.0;
-
-    // Nếu hóa đơn quá nhỏ (<= 1000đ), không cho giảm
-    if (maxAllowedDiscount <= 0)
+    // Nếu hóa đơn <= 1000đ, không cho giảm
+    if (currentTotal <= 1000.0)
         return false;
-    if (maxAllowedDiscount <= 0) return false;
 
-    // Tính giá trị tiền của toàn bộ số điểm khách đang có
-    double pointsValueInMoney = currentPoints * 100.0;
+    // Tính số điểm tối đa có thể dùng để còn đúng 1000đ
+    // Công thức: pointsToUse = floor((currentTotal - 1000) / 100)
+    int maxPointsToUse = static_cast<int>((currentTotal - 1000.0) / 100.0);
+    
+    // Giới hạn bởi số điểm khách có
+    int actualPointsToUse = qMin(maxPointsToUse, currentPoints);
+    
+    // Phải dùng ít nhất 10 điểm
+    if (actualPointsToUse < 10)
+        return false;
 
-    // Số tiền giảm thực tế là số nhỏ hơn giữa (Tiền của điểm) và (Tiền được phép giảm)
-    double actualDiscountMoney = (pointsValueInMoney > maxAllowedDiscount)
-                                     ? maxAllowedDiscount
-                                     : pointsValueInMoney;
+    // Tính số tiền giảm
+    double discountMoney = actualPointsToUse * 100.0;
+    double subTotal = getSubTotal();
+    
+    // Apply tier discount to subtotal first
+    if (customer) {
+        double tierDiscountPercent = customer->getTierDiscountPercent();
+        subTotal = subTotal * (1.0 - (tierDiscountPercent / 100.0));
+    }
 
-    // Tính ra số điểm cần dùng (chia 100)
-   int actualPointsToUse = qRound(actualDiscountMoney / 100.0);
-
-    // Tính lại chính xác số tiền giảm từ số điểm chẵn
-    double finalDiscountMoney = actualPointsToUse * 100.0;
-
-    if (actualPointsToUse > 0 && finalDiscountMoney > 0)
+    if (actualPointsToUse > 0 && discountMoney > 0)
     {
         customer->setPoints(customer->getPoints() - actualPointsToUse);
-
         this->pointsUsed = actualPointsToUse;
-        this->discountPercent = finalDiscountMoney / subTotal;
+        this->discountPercent = discountMoney / subTotal;
         this->check = true;
         return true;
     }
