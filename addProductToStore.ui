@@ -73,43 +73,67 @@
        <widget class="QSpinBox" name="Quantity"/>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="labelAddProductPrice">
+       <widget class="QLabel" name="labelAddProductImportPrice">
         <property name="text">
-         <string>Giá tiền:</string>
+         <string>Giá gốc (Nhập):</string>
         </property>
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QDoubleSpinBox" name="Price"/>
+       <widget class="QDoubleSpinBox" name="ImportPrice"/>
       </item>
       <item row="4" column="0">
+       <widget class="QLabel" name="labelAddProductProfitMargin">
+        <property name="text">
+         <string>% Lợi nhuận:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QDoubleSpinBox" name="ProfitMargin"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="labelAddProductPrice">
+        <property name="text">
+         <string>Giá bán (Tự động):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QDoubleSpinBox" name="Price">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
        <widget class="QLabel" name="labelAddProductVolume">
         <property name="text">
          <string>Thể tích:</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="6" column="1">
        <widget class="QDoubleSpinBox" name="Volume"/>
       </item>
-      <item row="5" column="0">
+      <item row="7" column="0">
        <widget class="QLabel" name="labelAddProductExpiryDate">
         <property name="text">
          <string>Hạn sử dụng:</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
+      <item row="7" column="1">
        <widget class="QDateEdit" name="dateEdit"/>
       </item>
-      <item row="6" column="0">
+      <item row="8" column="0">
        <widget class="QLabel" name="labelAddProducWarranty">
         <property name="text">
          <string>Thời hạn bảo hành:</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
+      <item row="8" column="1">
        <widget class="QSpinBox" name="Warranty"/>
       </item>
      </layout>

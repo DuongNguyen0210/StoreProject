@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
     Store store("Cửa hàng tạp hóa");
 
     QString dataPath = QCoreApplication::applicationDirPath() + QDir::separator() + "store_data.txt";
-
     StorePersistence::load(store, dataPath);
+
     LoginDialog loginDialog(&store);
     if (loginDialog.exec() != QDialog::Accepted)
     {

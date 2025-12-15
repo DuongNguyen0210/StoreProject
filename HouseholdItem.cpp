@@ -4,7 +4,7 @@
 using namespace std;
 
 HouseholdItem::HouseholdItem(const QString &id, const QString &name, double basePrice, int quantity, int warrantyMonths)
-    : Product(id, name, basePrice, quantity), warrantyMonths(warrantyMonths) {}
+    : Product(id, name, basePrice, quantity, 0.0, 0.0), warrantyMonths(warrantyMonths) {}
 
 int HouseholdItem::getWarrantyMonths() const
 {

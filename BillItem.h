@@ -3,7 +3,7 @@
 
 #include "Product.h"
 
-using namespace std;
+// ✅ COMPILER GUARD: Removed 'using namespace std;' from header
 
 class BillItem
 {

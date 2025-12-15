@@ -208,3 +208,40 @@ const std::vector<Bill*>& Store::getBillHistory() const
 {
     return billHistory;
 }
+
+QString Store::generateFoodId()
+{
+    int maxNum = 0;
+    productById.forEach([&](const QString& key, Product* p) {
+        if (!p || !key.startsWith("F")) return;
+        bool ok;
+        int num = key.mid(1).toInt(&ok);
+        if (ok && num > maxNum) maxNum = num;
+    });
+    return QString("F%1").arg(maxNum + 1, 3, 10, QChar('0'));
+}
+
+QString Store::generateBeverageId()
+{
+    int maxNum = 0;
+    productById.forEach([&](const QString& key, Product* p) {
+        if (!p || !key.startsWith("B")) return;
+        bool ok;
+        int num = key.mid(1).toInt(&ok);
+        if (ok && num > maxNum) maxNum = num;
+    });
+    return QString("B%1").arg(maxNum + 1, 3, 10, QChar('0'));
+}
+
+QString Store::generateHouseholdId()
+{
+    int maxNum = 0;
+    productById.forEach([&](const QString& key, Product* p) {
+        if (!p || !key.startsWith("H")) return;
+        bool ok;
+        int num = key.mid(1).toInt(&ok);
+        if (ok && num > maxNum) maxNum = num;
+    });
+    return QString("H%1").arg(maxNum + 1, 3, 10, QChar('0'));
+}
+

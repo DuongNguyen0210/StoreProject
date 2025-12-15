@@ -84,15 +84,50 @@ void Bill::setCustomer(Customer* c)
     this->customer = c;
 }
 
+// ✅ BLUE TEAM FIX: Hardened addItem với validation toàn diện
 void Bill::addItem(Product* p, int quantity)
 {
+    // 🛡️ CHẶN 1: Số lượng phải > 0
+    if (quantity <= 0)
+    {
+        qDebug() << "❌ CHẶN: Số lượng không hợp lệ:" << quantity;
+        return; // Không làm gì cả
+    }
+
+    // 🛡️ CHẶN 2: Tính tổng số lượng trong giỏ hiện tại
+    int currentInCart = 0;
+    for (const auto& item : items)
+    {
+        if (item.getProduct()->getId() == p->getId())
+        {
+            currentInCart = item.getQuantity();
+            break;
+        }
+    }
+
+    // 🛡️ CHẶN 3: Kiểm tra bán khống (Tổng trong giỏ + Mua thêm > Tồn kho)
+    int availableStock = p->getQuantity();
+    if ((currentInCart + quantity) > availableStock)
+    {
+        qDebug() << "❌ CHẶN: Bán khống! Kho:" << availableStock 
+                 << "Trong giỏ:" << currentInCart 
+                 << "Muốn thêm:" << quantity;
+        return; // Không cho thêm
+    }
+
+    // ✅ AN TOÀN: Mới trừ kho (sau khi đã check hết)
     p->setQuantity(p->getQuantity() - quantity);
-    for(size_t i = 0; i < items.size(); i++)
-        if(items[i].getProduct()->getId() == p->getId())
+
+    // Thêm vào giỏ hoặc tăng số lượng
+    for (size_t i = 0; i < items.size(); i++)
+    {
+        if (items[i].getProduct()->getId() == p->getId())
         {
             items[i].setQuantity(items[i].getQuantity() + quantity);
             return;
         }
+    }
+
     items.emplace_back(p, quantity, p->calcFinalPrice());
 }
 
@@ -112,6 +147,17 @@ void Bill::removeItem(Product* p)
 const std::vector<BillItem>& Bill::getItems() const
 {
     return items;
+}
+
+// ✅ Helper: Lấy số lượng của 1 sản phẩm đang trong giỏ
+int Bill::getQuantityInCart(const QString& productId) const
+{
+    for (const auto& item : items)
+    {
+        if (item.getProduct()->getId() == productId)
+            return item.getQuantity();
+    }
+    return 0;
 }
 
 double Bill::getSubTotal() const

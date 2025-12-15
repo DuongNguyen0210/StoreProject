@@ -19,7 +19,9 @@ public:
 
     QString getProductType() const;
     QString getName() const;
-    double getPrice() const;
+    double getPrice() const;              // Giá bán
+    double getImportPrice() const;        // Giá gốc
+    double getProfitMargin() const;       // % Lợi nhuận
     int getQuantity() const;
 
     QString getExpiryDate() const;
@@ -30,6 +32,7 @@ private slots:
     void on_Type_currentIndexChanged();
     void setFieldsForType(int typeIndex);
     void validateForm();
+    void calculateSellingPrice();  // Slot tính giá bán tự động
 
 private:
     Ui::AddProductToStore *ui;

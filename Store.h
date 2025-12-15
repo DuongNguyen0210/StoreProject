@@ -81,6 +81,11 @@ public:
 
     void addBillToHistory(Bill* bill);
     const std::vector<Bill*>& getBillHistory() const;
+
+    // Auto-generate product IDs
+    QString generateFoodId();
+    QString generateBeverageId();
+    QString generateHouseholdId();
 };
 
 #endif

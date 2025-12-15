@@ -139,6 +139,13 @@ void ManageInventory::onProductDoubleClicked(const QModelIndex &index)
                 p->setName(newName);
             }
 
+            // 🛡️ BACKEND VALIDATION: Chặn số âm (không tin UI)
+            if (newQuantity < 0) {
+                QMessageBox::critical(this, "Lỗi", 
+                    "Số lượng không thể âm! (Có thể UI bị bypass)");
+                return;
+            }
+
             p->setBasePrice(newPrice);
             p->setQuantity(newQuantity);
 
@@ -200,10 +207,19 @@ void ManageInventory::onDeleteProductClicked()
                                   QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {
+        QString productId = p->getId();
         QString productName = p->getName();
 
-        QMessageBox::information(this, "Thông báo",
-                                 QString("Đã xóa sản phẩm '%1', đùa thôi chưa có chức năng xóa <(')\n\n") .arg(productName));
+        // ✅ TODO: Implement Store::deleteProduct method
+        // For now, show warning that this needs Store-level implementation
+        QMessageBox::warning(this, "Chức năng chưa hoàn thiện",
+            QString("⚠️ XÓA SẢN PHẨM CẦN TRIỂN KHAI Ở STORE LEVEL\n\n"
+                    "Cần implement:\n"
+                    "1. Store::deleteProduct(productId)\n"
+                    "2. Xóa khỏi HashTable (productById, productByName)\n"
+                    "3. delete p; // Giải phóng bộ nhớ\n"
+                    "4. Product::unregisterUsedId(productId)\n\n"
+                    "❌ HIỆN TẠI: Chức năng bị vô hiệu hóa để tránh memory leak!"));
 
         loadProductsFiltered(ui->cmbFilter->currentIndex(), ui->txtSearch->text());
     }
