@@ -1,0 +1,237 @@
+/* ==================== GROUPBOX ==================== */
+
+QGroupBox
+{
+    background-color: #FFFFFF;
+    border: 1px solid #BFDBFE;
+    border-radius: 20px;
+    margin-top: 12px;
+    padding-top: 16px;
+    font-weight: 600;
+    color: #1E293B;
+}
+
+QGroupBox::title
+{
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 4px 14px;
+    background-color: #E0F2FE;
+    border-radius: 14px;
+    color: #0284C7;
+    font-size: 14px;
+}
+
+/* ==================== CHECKBOX ==================== */
+
+/* Show password checkbox */
+QCheckBox#chkShowPassword
+{
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    spacing: 10px;
+}
+
+QCheckBox#chkShowPassword::indicator
+{
+    width: 16px;
+    height: 16px;
+    background-color: #FFFFFF;
+    border: 2px solid #7DD3FC;
+    border-radius: 5px;
+}
+
+QCheckBox#chkShowPassword::indicator:hover
+{
+    border-color: #38BDF8;
+}
+
+QCheckBox#chkShowPassword::indicator:checked
+{
+    background-color: #0EA5E9;
+    border-color: #0EA5E9;
+}
+
+/* ==================== MENUS & BARS ==================== */
+
+/* Status bar */
+QStatusBar
+{
+    background-color: #FFFFFF;
+    color: #64748B;
+    border-top: 1px solid #E0F2FE;
+}
+
+/* Menu bar */
+QMenuBar
+{
+    background-color: #FFFFFF;
+    color: #1E293B;
+    border-bottom: 1px solid #E0F2FE;
+}
+
+QMenuBar::item
+{
+    padding: 8px 12px;
+}
+
+QMenuBar::item:selected
+{
+    background-color: #E0F2FE;
+}
+
+/* Menu dropdown */
+QMenu
+{
+    background-color: #FFFFFF;
+    color: #1E293B;
+    border: 1px solid #E0F2FE;
+}
+
+QMenu::item
+{
+    padding: 8px 20px;
+}
+
+QMenu::item:selected
+{
+    background-color: #E0F2FE;
+}
+
+/* Tooltip */
+QToolTip
+{
+    background-color: #FFFFFF;
+    color: #1E293B;
+    border: 1px solid #7DD3FC;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+/* ==================== BILL DETAIL DIALOG ==================== */
+
+QDialog#BillDetailDialog
+{
+    background-color: #FFFFFF;
+    border: 1px solid #BFDBFE;
+    border-radius: 20px;
+}
+
+/* Dialog title */
+QDialog#BillDetailDialog QLabel#label
+{
+    font-family: "Urbanist";
+    font-size: 18px;
+    font-weight: 700;
+    color: #0284C7;
+    padding: 8px 0 14px 0;
+}
+
+/* GroupBox in dialog */
+QDialog#BillDetailDialog QGroupBox#groupBox
+{
+    background-color: #F8FCFF;
+    border: 1px solid #BFDBFE;
+    border-radius: 16px;
+    margin-top: 14px;
+    padding-top: 18px;
+}
+
+QDialog#BillDetailDialog QGroupBox#groupBox::title
+{
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 4px 12px;
+    background-color: #E0F2FE;
+    border-radius: 12px;
+    color: #0284C7;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Info labels */
+QDialog#BillDetailDialog QLabel#lblBillId,
+QDialog#BillDetailDialog QLabel#lblCustomer,
+QDialog#BillDetailDialog QLabel#lblDateTime,
+QDialog#BillDetailDialog QLabel#lblEmployee,
+QDialog#BillDetailDialog QLabel#lblPaymentMethod
+{
+    color: #334155;
+    font-size: 13px;
+}
+
+/* Items table */
+QDialog#BillDetailDialog QTableView#tableItems
+{
+    background-color: #FFFFFF;
+    border-radius: 18px;
+    border: 1px solid #BAE6FD;
+}
+
+/* Section label */
+QDialog#BillDetailDialog QLabel#label_2
+{
+    color: #334155;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+/* Total labels */
+QDialog#BillDetailDialog QLabel#lblSubTotal
+{
+    color: #64748B;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+QDialog#BillDetailDialog QLabel#lblDiscount
+{
+    color: #F59E0B;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+QDialog#BillDetailDialog QLabel#lblTotal
+{
+    color: #10B981;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+/* Note label */
+QDialog#BillDetailDialog QLabel#lblNote
+{
+    color: #10B981;
+    font-style: italic;
+    font-size: 13px;
+    padding-top: 4px;
+}
+
+/* Separator line */
+QDialog#BillDetailDialog QFrame#line
+{
+    background-color: #BFDBFE;
+    max-height: 1px;
+}
+
+/* ==================== MANAGE INVENTORY DIALOG ==================== */
+
+QDialog#ManageInventory {
+    background-color: #FFFFFF;
+}
+
+QDialog#ManageInventory QLabel#label {
+    color: #2D71F8;
+    padding: 10px 0;
+}
+
+QDialog#ManageInventory QLabel#lblTotal {
+    color: #1C8370;
+    padding: 5px 0;
+}
+
+QDialog#ManageInventory QLabel#lblInstruction {
+    padding: 5px 0;
+}

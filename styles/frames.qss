@@ -1,0 +1,25 @@
+/* ==================== MAIN FRAMES ==================== */
+
+/* Menu frame */
+QFrame#frameMenu
+{
+    background-color: #F0F9FF;
+    border: 1px solid #BAE6FD;
+    border-radius: 24px;
+}
+
+/* Center frame */
+QFrame#frameCenter
+{
+    background-color: #FFFFFF;
+    border: 1px solid #E0F2FE;
+    border-radius: 24px;
+}
+
+/* Order frame */
+QFrame#frameOrder
+{
+    background-color: #F8FCFF;
+    border: 1px solid #BFDBFE;
+    border-radius: 24px;
+}

@@ -20,7 +20,6 @@ public:
 private slots:
     void onProductDoubleClicked(const QModelIndex &index);
     void onDeleteProductClicked();
-    void onRefreshClicked();
     void onSearchTextChanged(const QString &text);
     void onFilterChanged(int index);
 

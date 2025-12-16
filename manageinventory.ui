@@ -14,7 +14,7 @@
    <string>Quản Lý Hàng Trong Kho</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="Resource.qrc">
+   <iconset>
     <normaloff>:/icons/bag.png</normaloff>:/icons/bag.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -104,19 +104,6 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="btnRefresh">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>45</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Làm mới</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>
@@ -168,23 +155,6 @@
          <height>50</height>
         </size>
        </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton {
-    background-color: #DC3545;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    font-weight: 600;
-}
-
-QPushButton:hover {
-    background-color: #C82333;
-}
-
-QPushButton:pressed {
-    background-color: #BD2130;
-}</string>
-       </property>
        <property name="text">
         <string>Xóa Sản Phẩm</string>
        </property>
@@ -214,9 +184,7 @@ QPushButton:pressed {
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="Resource.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>

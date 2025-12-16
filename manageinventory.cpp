@@ -17,7 +17,6 @@ ManageInventory::ManageInventory(Store* store, QWidget *parent)
 
     connect(ui->tableProducts, &QTableView::doubleClicked, this, &ManageInventory::onProductDoubleClicked);
     connect(ui->btnDelete, &QPushButton::clicked, this, &ManageInventory::onDeleteProductClicked);
-    connect(ui->btnRefresh, &QPushButton::clicked, this, &ManageInventory::onRefreshClicked);
     connect(ui->txtSearch, &QLineEdit::textChanged, this, &ManageInventory::onSearchTextChanged);
     connect(ui->cmbFilter, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ManageInventory::onFilterChanged);
 }
@@ -44,8 +43,19 @@ void ManageInventory::setupTable()
     ui->tableProducts->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableProducts->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableProducts->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->tableProducts->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->tableProducts->setAlternatingRowColors(true);
+    
+    // Setup column resize modes
+    QHeaderView* header = ui->tableProducts->horizontalHeader();
+    
+    // Product name column (index 1): Interactive with min/max limits
+    header->setSectionResizeMode(1, QHeaderView::Interactive);
+    header->setMinimumSectionSize(150);  // Min width for product name
+    header->setMaximumSectionSize(500);  // Max width for product name
+    header->resizeSection(1, 250);       // Initial width: 250px
+    
+    // Other columns: Stretch to fill remaining space
+    header->setSectionResizeMode(QHeaderView::Stretch);
+    header->setAlternatingRowColors(true);
 }
 
 void ManageInventory::loadProducts()
@@ -231,12 +241,6 @@ void ManageInventory::onDeleteProductClicked()
                     .arg(QString::fromStdString(e.what())));
         }
     }
-}
-
-void ManageInventory::onRefreshClicked()
-{
-    loadProductsFiltered(ui->cmbFilter->currentIndex(), ui->txtSearch->text());
-    QMessageBox::information(this, "Thông báo", "Đã làm mới dữ liệu!");
 }
 
 void ManageInventory::onSearchTextChanged(const QString &text)

@@ -62,10 +62,7 @@
        <property name="frameShadow">
         <enum>QFrame::Shadow::Raised</enum>
        </property>
-       <property name="styleSheet">
-        <string notr="true">QFrame#frameRevenue { border: 2px solid #E5E7EB; border-radius: 8px; background-color: #F9FAFB; }</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QLabel" name="lblRevenueTit">
           <property name="font">
@@ -108,10 +105,7 @@
         <property name="frameShadow">
          <enum>QFrame::Shadow::Raised</enum>
         </property>
-        <property name="styleSheet">
-         <string notr="true">QFrame#frameProfit { border: 2px solid #E5E7EB; border-radius: 8px; background-color: #F9FAFB; }</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <widget class="QLabel" name="lblProfitTitle">
            <property name="font">
@@ -153,10 +147,7 @@
            <property name="text">
             <string>Tỉ lệ lời: 0.0%</string>
            </property>
-           <property name="styleSheet">
-            <string notr="true">color: #059669;</string>
-           </property>
-           <property name="alignment">
+                <property name="alignment">
             <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
@@ -172,10 +163,7 @@
        <property name="frameShadow">
         <enum>QFrame::Shadow::Raised</enum>
        </property>
-       <property name="styleSheet">
-        <string notr="true">QFrame#frameBills { border: 2px solid #E5E7EB; border-radius: 8px; background-color: #F9FAFB; }</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QLabel" name="lblBillsTitle">
           <property name="font">
@@ -322,10 +310,7 @@
             <property name="frameShadow">
              <enum>QFrame::Shadow::Raised</enum>
             </property>
-            <property name="styleSheet">
-             <string notr="true">QFrame#frameLegend { border: 1px solid #E5E7EB; border-radius: 5px; background-color: white; }</string>
-            </property>
-            <layout class="QVBoxLayout" name="legendLayout">
+                  <layout class="QVBoxLayout" name="legendLayout">
              <item>
               <widget class="QLabel" name="lblLegendTitle">
                <property name="font">
@@ -349,10 +334,7 @@
                    <height>20</height>
                   </size>
                  </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color: #10B981; border: 1px solid #059669; border-radius: 3px;</string>
-                 </property>
-                 <property name="text">
+                            <property name="text">
                   <string/>
                  </property>
                 </widget>
@@ -401,10 +383,7 @@
                    <height>20</height>
                   </size>
                  </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color: #EAB308; border: 1px solid #CA8A04; border-radius: 3px;</string>
-                 </property>
-                 <property name="text">
+                            <property name="text">
                   <string/>
                  </property>
                 </widget>
@@ -453,10 +432,7 @@
                    <height>20</height>
                   </size>
                  </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color: #F59E0B; border: 1px solid #D97706; border-radius: 3px;</string>
-                 </property>
-                 <property name="text">
+                            <property name="text">
                   <string/>
                  </property>
                 </widget>
@@ -505,10 +481,7 @@
                    <height>20</height>
                   </size>
                  </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color: #EF4444; border: 1px solid #DC2626; border-radius: 3px;</string>
-                 </property>
-                 <property name="text">
+                            <property name="text">
                   <string/>
                  </property>
                 </widget>

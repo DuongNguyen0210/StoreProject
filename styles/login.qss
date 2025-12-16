@@ -1,0 +1,211 @@
+/* ========================================
+   LOGIN DIALOG STYLESHEET
+   Matched to Main App Theme (Light Blue)
+   ======================================== */
+
+/* ========================================
+   MAIN DIALOG - WHITE/LIGHT BLUE GRADIENT
+   ======================================== */
+QDialog#LoginDialog {
+    background: qlineargradient(
+        x1:0, y1:0, x2:1, y2:1,
+        stop:0 #E8F4FD,
+        stop:1 #F0F9FF
+    );
+}
+
+/* ========================================
+   LEFT PANEL - PROJECT INFO SECTION
+   ======================================== */
+
+/* Logo Container */
+QLabel#lblLogo {
+    background: white;
+    border: 2px solid #BAE6FD;
+    border-radius: 18px;
+    padding: 15px;
+}
+
+/* University Info Labels */
+QLabel#lblUniversity,
+QLabel#lblFaculty,
+QLabel#lblDepartment {
+    color: #0284C7;
+    font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+/* Project Title */
+QLabel#lblProjectTitle {
+    color: #0EA5E9;
+    font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+}
+
+/* Subtitle */
+QLabel#lblSubtitle {
+    color: #64748B;
+    font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Project Info Box - Enhanced and Prominent */
+QLabel#lblProjectInfo {
+    color: #1E293B;
+    font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    background: qlineargradient(
+        x1:0, y1:0, x2:1, y2:1,
+        stop:0 #E0F2FE,
+        stop:1 #F0F9FF
+    );
+    border: 2px solid #38BDF8;
+    border-radius: 18px;
+    padding: 20px 18px;
+}
+
+/* ========================================
+   RIGHT PANEL - LOGIN FORM
+   ======================================== */
+
+/* Login Form Container */
+QFrame#loginFrame {
+    background: rgba(255, 255, 255, 0.98);
+    border: 2px solid #BAE6FD;
+    border-radius: 24px;
+    padding: 30px;
+}
+
+/* Login Title */
+QLabel#lblLoginTitle {
+    color: #0EA5E9;
+    font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* Field Labels */
+QLabel#labeUsername,
+QLabel#labePassword {
+    color: #475569;
+    font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Error Message Label */
+QLabel#lblError {
+    color: #DC2626;
+    background-color: #FEE2E2;
+    border: 1px solid #FECACA;
+    border-radius: 10px;
+    padding: 12px;
+    font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* ========================================
+   INPUT FIELDS
+   ======================================== */
+
+/* Text Input Fields - Normal State */
+QLineEdit#txtUsername,
+QLineEdit#txtPassword {
+    background-color: #F0F9FF;
+    color: #1E293B;
+    border: 2px solid #BFDBFE;
+    border-radius: 18px;
+    padding: 12px 16px;
+    font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
+    font-size: 14px;
+}
+
+/* Text Input Fields - Focus State */
+QLineEdit#txtUsername:focus,
+QLineEdit#txtPassword:focus {
+    background-color: #FFFFFF;
+    border: 2px solid #38BDF8;
+}
+
+/* Text Input Fields - Hover State */
+QLineEdit#txtUsername:hover,
+QLineEdit#txtPassword:hover {
+    border-color: #7DD3FC;
+}
+
+/* Placeholder text */
+QLineEdit::placeholder {
+    color: #94A3B8;
+}
+
+/* ========================================
+   CHECKBOX - SHOW PASSWORD
+   ======================================== */
+
+QCheckBox#chkShowPassword {
+    color: #475569;
+    font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    spacing: 10px;
+}
+
+QCheckBox#chkShowPassword::indicator {
+    width: 18px;
+    height: 18px;
+    background-color: #FFFFFF;
+    border: 2px solid #7DD3FC;
+    border-radius: 5px;
+}
+
+QCheckBox#chkShowPassword::indicator:hover {
+    border-color: #38BDF8;
+}
+
+QCheckBox#chkShowPassword::indicator:checked {
+    background-color: #0EA5E9;
+    border-color: #0EA5E9;
+}
+
+/* ========================================
+   LOGIN BUTTON
+   ======================================== */
+
+/* Login Button - Normal State */
+QPushButton#btnLogin {
+    background: qlineargradient(
+        x1:0, y1:0, x2:1, y2:0,
+        stop:0 #0EA5E9,
+        stop:1 #38BDF8
+    );
+    color: white;
+    font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 18px;
+    padding: 14px;
+}
+
+/* Login Button - Hover State */
+QPushButton#btnLogin:hover {
+    background: qlineargradient(
+        x1:0, y1:0, x2:1, y2:0,
+        stop:0 #0284C7,
+        stop:1 #0EA5E9
+    );
+}
+
+/* Login Button - Pressed State */
+QPushButton#btnLogin:pressed {
+    background: #0369A1;
+}
+
+/* ========================================
+   END OF STYLESHEET
+   ======================================== */

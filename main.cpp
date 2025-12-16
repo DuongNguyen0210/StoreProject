@@ -17,13 +17,39 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QFile styleFile(":/styles/stylesheet.qss");
-    if (styleFile.open(QFile::ReadOnly | QFile::Text))
+    // Load modular stylesheets
+    // NOTE: Resource path = prefix + file path
+    // Example: prefix="/styles" + file="styles/base.qss" = ":/styles/styles/base.qss"
+    QStringList styleModules = {
+        ":/styles/styles/base.qss",
+        ":/styles/styles/frames.qss",
+        ":/styles/styles/buttons.qss",
+        ":/styles/styles/inputs.qss",
+        ":/styles/styles/tables.qss",
+        ":/styles/styles/labels.qss",
+        ":/styles/styles/scrollbars.qss",
+        ":/styles/styles/misc.qss",
+        ":/styles/styles/thongke.qss",
+        ":/styles/styles/dialogs.qss"
+    };
+
+    QString combinedStyle;
+    for (const QString& module : styleModules)
     {
-        QTextStream stream(&styleFile);
-        a.setStyleSheet(stream.readAll());
-        styleFile.close();
+        QFile file(module);
+        if (file.open(QFile::ReadOnly | QFile::Text))
+        {
+            QTextStream stream(&file);
+            combinedStyle += stream.readAll() + "\n";
+            file.close();
+        }
+        else
+        {
+            qWarning() << "Failed to load stylesheet module:" << module;
+        }
     }
+    
+    a.setStyleSheet(combinedStyle);
 
     Store store("Cửa hàng tạp hóa");
 

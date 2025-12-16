@@ -13,119 +13,6 @@
   <property name="windowTitle">
    <string>Đăng Nhập - Hệ Thống Quản Lý Quầy Tạp Hóa</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">QDialog {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                                stop:0 #1a237e, stop:0.5 #283593, stop:1 #3949ab);
-}
-
-QLabel#lblLogo {
-    background: white;
-    border-radius: 10px;
-    padding: 15px;
-}
-
-QLabel#lblUniversity, QLabel#lblFaculty, QLabel#lblDepartment {
-    color: white;
-    font-weight: bold;
-    font-size: 16px;
-}
-
-QLabel#lblProjectTitle {
-    color: #ffeb3b;
-    font-weight: bold;
-    font-size: 24px;
-}
-
-QLabel#lblSubtitle {
-    color: #fff9c4;
-    font-size: 14px;
-    font-style: italic;
-}
-
-QFrame#loginFrame {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    padding: 20px;
-}
-
-QLabel#lblLoginTitle {
-    color: #1a237e;
-    font-size: 22px;
-    font-weight: bold;
-}
-
-QLabel#labeUsername, QLabel#labePassword {
-    color: #424242;
-    font-size: 13px;
-    font-weight: 500;
-}
-
-QLineEdit {
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 14px;
-    background: white;
-}
-
-QLineEdit:focus {
-    border: 2px solid #3949ab;
-    background: #f5f5f5;
-}
-
-QPushButton#btnLogin {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                stop:0 #3949ab, stop:1 #5c6bc0);
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    padding: 15px;
-}
-
-QPushButton#btnLogin:hover {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                stop:0 #303f9f, stop:1 #3949ab);
-}
-
-QPushButton#btnLogin:pressed {
-    background: #283593;
-}
-
-QCheckBox {
-    color: #424242;
-    font-size: 12px;
-}
-
-QCheckBox::indicator {
-    width: 18px;
-    height: 18px;
-    border-radius: 3px;
-    border: 2px solid #bdbdbd;
-}
-
-QCheckBox::indicator:checked {
-    background: #3949ab;
-    border: 2px solid #3949ab;
-}
-
-QLabel#lblError {
-    color: #d32f2f;
-    font-size: 13px;
-    font-weight: 500;
-}
-
-QLabel#lblProjectInfo {
-    color: white;
-    font-size: 11px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    padding: 10px;
-}
-</string>
-  </property>
   <layout class="QHBoxLayout" name="horizontalLayout_main">
    <property name="spacing">
     <number>0</number>
@@ -150,150 +37,221 @@ QLabel#lblProjectInfo {
        <height>0</height>
       </size>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_left">
-      <property name="spacing">
-       <number>15</number>
-      </property>
-      <property name="leftMargin">
-       <number>40</number>
-      </property>
-      <property name="topMargin">
-       <number>40</number>
-      </property>
-      <property name="rightMargin">
-       <number>40</number>
-      </property>
-      <property name="bottomMargin">
-       <number>40</number>
-      </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QLabel" name="lblLogo">
-        <property name="minimumSize">
-         <size>
-          <width>150</width>
-          <height>150</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>150</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="pixmap">
-         <pixmap>it_faculty_logo.png</pixmap>
-        </property>
-        <property name="scaledContents">
-         <bool>true</bool>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="lblUniversity">
-        <property name="text">
-         <string>ĐẠI HỌC ĐÀ NẴNG</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="lblFaculty">
-        <property name="text">
-         <string>ĐẠI HỌC BÁCH KHOA</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="lblDepartment">
-        <property name="text">
-         <string>KHOA CÔNG NGHỆ THÔNG TIN</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer_1">
+       <spacer name="horizontalSpacer_3">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>20</width>
-          <height>30</height>
+          <width>67</width>
+          <height>20</height>
          </size>
         </property>
        </spacer>
       </item>
       <item>
-       <widget class="QLabel" name="lblProjectTitle">
-        <property name="text">
-         <string>PBL2: DỰ ÁN CƠ SỞ LẬP TRÌNH</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="lblSubtitle">
-        <property name="text">
-         <string>Đề tài X: QUẢN LÝ QUẦY TẠP HÓA</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="lblProjectInfo">
-        <property name="text">
-         <string>Người hướng dẫn: GVC. ThS. ĐỖ THỊ TUYẾT HOA
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="lblLogo">
+            <property name="minimumSize">
+             <size>
+              <width>150</width>
+              <height>150</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>150</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="pixmap">
+             <pixmap>:/icons/logoitf.jpg</pixmap>
+            </property>
+            <property name="scaledContents">
+             <bool>true</bool>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblUniversity">
+          <property name="text">
+           <string>ĐẠI HỌC ĐÀ NẴNG</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblFaculty">
+          <property name="text">
+           <string>ĐẠI HỌC BÁCH KHOA</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblDepartment">
+          <property name="text">
+           <string>KHOA CÔNG NGHỆ THÔNG TIN</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_1">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Policy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>17</width>
+            <height>27</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblProjectTitle">
+          <property name="text">
+           <string>PBL2: DỰ ÁN CƠ SỞ LẬP TRÌNH</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblSubtitle">
+          <property name="text">
+           <string>Đề tài X: QUẢN LÝ QUẦY TẠP HÓA</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>17</width>
+            <height>76</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblProjectInfo">
+          <property name="text">
+           <string>Người hướng dẫn: GVC. ThS. ĐỖ THỊ TUYẾT HOA
 
 Sinh viên thực hiện:
 • Đinh Nguyễn Anh Khoa - 24T_DT2
 • Nguyễn Đắc Cao Dương - 24T_DT2
 
 Nhóm: 24.11B</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>66</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
         </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -319,7 +277,7 @@ Nhóm: 24.11B</string>
       <item>
        <spacer name="verticalSpacer_top">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Orientation::Vertical</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -332,10 +290,10 @@ Nhóm: 24.11B</string>
       <item>
        <widget class="QFrame" name="loginFrame">
         <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+         <enum>QFrame::Shape::StyledPanel</enum>
         </property>
         <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
+         <enum>QFrame::Shadow::Raised</enum>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_form">
          <property name="spacing">
@@ -359,17 +317,17 @@ Nhóm: 24.11B</string>
             <string>ĐĂNG NHẬP HỆ THỐNG</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item>
           <spacer name="spacer1">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Orientation::Vertical</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
+            <enum>QSizePolicy::Policy::Fixed</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -415,7 +373,7 @@ Nhóm: 24.11B</string>
             </size>
            </property>
            <property name="echoMode">
-            <enum>QLineEdit::Password</enum>
+            <enum>QLineEdit::EchoMode::Password</enum>
            </property>
            <property name="placeholderText">
             <string>Nhập mật khẩu</string>
@@ -438,7 +396,7 @@ Nhóm: 24.11B</string>
             <string/>
            </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
            <property name="wordWrap">
             <bool>true</bool>
@@ -464,7 +422,7 @@ Nhóm: 24.11B</string>
       <item>
        <spacer name="verticalSpacer_bottom">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Orientation::Vertical</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>

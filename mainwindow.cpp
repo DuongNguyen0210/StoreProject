@@ -1039,7 +1039,7 @@ void MainWindow::onThanhToanTienMatClicked()
 void MainWindow::onThanhToanTheClicked()
 {
     currentBill->setPayment(new CardPayment());
-    QMessageBox::information(this, "Thông Báo: ", "Đã Chọn phương thức thanh toán là quẹt thẻ");
+    QMessageBox::information(this, "Thông Báo: ", "Đã Chọn phương thức thanh toán là chuyển khoản");
 }
 
 void MainWindow::onThanhToanClicked()

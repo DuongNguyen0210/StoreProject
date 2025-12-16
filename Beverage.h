@@ -4,7 +4,6 @@
 #include "Product.h"
 #include <QString>
 
-
 class Beverage : public Product
 {
 private:

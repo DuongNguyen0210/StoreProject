@@ -6,9 +6,21 @@
         <file>report.png</file>
         <file>add-product.png</file>
         <file>rating.png</file>
+        <file>logoitf.jpg</file>
     </qresource>
     
     <qresource prefix="/styles">
-        <file>stylesheet.qss</file>
+        <!-- Modular stylesheets -->
+        <file>styles/base.qss</file>
+        <file>styles/frames.qss</file>
+        <file>styles/buttons.qss</file>
+        <file>styles/inputs.qss</file>
+        <file>styles/tables.qss</file>
+        <file>styles/labels.qss</file>
+        <file>styles/scrollbars.qss</file>
+        <file>styles/misc.qss</file>
+        <file>styles/login.qss</file>
+        <file>styles/thongke.qss</file>
+        <file>styles/dialogs.qss</file>
     </qresource>
 </RCC>

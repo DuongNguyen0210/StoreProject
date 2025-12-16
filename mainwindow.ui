@@ -455,7 +455,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidgeOrder">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="ChuanBiHoaDon">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -631,7 +631,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>Thẻ</string>
+                <string>Chuyển Khoản</string>
                </property>
               </widget>
              </item>

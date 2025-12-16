@@ -49,6 +49,6 @@ const QString& CardPayment::getBankName() const
 
 QString CardPayment::getMethodName() const
 {
-    return "Thẻ";
+    return "Chuyển Khoản";
 }
 
