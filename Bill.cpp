@@ -1,7 +1,6 @@
 #include "Bill.h"
 #include "Customer.h"
 #include "User.h"
-#include "Exceptions.h"
 #include <sstream>
 
 QSet<int> Bill::usedIds;

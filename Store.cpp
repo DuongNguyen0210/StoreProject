@@ -6,7 +6,6 @@
 #include "HouseholdItem.h"
 #include "Customer.h"
 #include "User.h"
-#include "Exceptions.h"
 
 #include <cctype>
 #include <typeinfo>
@@ -141,14 +140,14 @@ void Store::addCustomer(Customer* c)
         return;
     if (customerById.containsKey(c->getId()))
     {
-        throw DuplicateException("Customer ID already exists: " + c->getId());
         delete c;
+        return;
     }
 
     if (!c->getPhone().isEmpty() && customerByPhone.containsKey(c->getPhone()))
     {
-        throw DuplicateException("Customer Phone already exists: " + c->getPhone());
         delete c;
+        return;
     }
 
     Customer* existingCustomerToMerge = customerByPhone.getFirst(c->getPhone());
@@ -191,8 +190,9 @@ void Store::addUser(User* u)
 
     if (userById.containsKey(u->getId()))
     {
-        throw DuplicateException("User ID already exists: " + u->getId());
+        // Duplicate ID - delete and return
         delete u;
+        return;
     }
     userById.insert(u->getId(), u);
     userByName.insert(u->getName(), u);
@@ -294,7 +294,8 @@ void Store::softDeleteProduct(const QString& productId)
 {
     Product* p = findProductById(productId);
     if (!p) {
-        throw std::runtime_error("Product not found: " + productId.toStdString());
+        // Product not found - return early
+        return;
     }
     
     // Soft delete: Mark inactive + set quantity to 0

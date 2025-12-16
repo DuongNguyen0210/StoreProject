@@ -1,7 +1,6 @@
 #include "AddCustomerToStore.h"
 #include "ui_AddCustomerToStore.h"
 #include "Customer.h"
-#include "Exceptions.h"
 #include <QMessageBox>
 #include <QHeaderView>
 #include <QFileDialog>
@@ -307,20 +306,14 @@ void CustomerDialog::on_btnAddNewMember_clicked()
             return;
         }
         
-        try {
-            Customer* c = new Customer("", name, phone, "", 0);
-            m_store->addCustomer(c);
-            
-            QMessageBox::information(&addDialog, "Thành công", "Đã thêm khách hàng thành công!");
-            addDialog.accept();
-            
-            loadCustomers();
-            updateStatistics();
-        }
-        catch (const std::exception& e) {
-            lblMessage->setText(QString("Lỗi: %1").arg(e.what()));
-            lblMessage->setVisible(true);
-        }
+        Customer* c = new Customer("", name, phone, "", 0);
+        m_store->addCustomer(c);
+        
+        QMessageBox::information(&addDialog, "Thành công", "Đã thêm khách hàng thành công!");
+        addDialog.accept();
+        
+        loadCustomers();
+        updateStatistics();
     });
     
     addDialog.exec();

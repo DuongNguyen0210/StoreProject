@@ -1,6 +1,5 @@
 #include "EditProductDialog.h"
 #include "ui_EditProductDialog.h"
-#include "Exceptions.h"
 #include <QMessageBox>
 #include <QPushButton>
 #include <QDate>

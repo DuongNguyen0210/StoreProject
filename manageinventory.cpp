@@ -4,7 +4,6 @@
 #include "Food.h"
 #include "Beverage.h"
 #include "HouseholdItem.h"
-#include "Exceptions.h"
 #include <QMessageBox>
 #include <QHeaderView>
 
@@ -150,61 +149,39 @@ void ManageInventory::onProductDoubleClicked(const QModelIndex &index)
     EditProductDialog dialog(p, this);
 
     if (dialog.exec() == QDialog::Accepted) {
-        try {
-            // Cập nhật thông tin sản phẩm
-            QString newName = dialog.getName();
-            double newPrice = dialog.getPrice();
-            int newQuantity = dialog.getQuantity();
+        QString newName = dialog.getName();
+        double newPrice = dialog.getPrice();
+        int newQuantity = dialog.getQuantity();
 
-            if (!newName.isEmpty()) {
-                p->setName(newName);
-            }
-
-            // 🛡️ BACKEND VALIDATION: Chặn số âm (không tin UI)
-            if (newQuantity < 0) {
-                QMessageBox::critical(this, "Lỗi", 
-                    "Số lượng không thể âm! (Có thể UI bị bypass)");
-                return;
-            }
-
-            p->setBasePrice(newPrice);
-            p->setQuantity(newQuantity);
-
-            // Cập nhật các trường đặc biệt theo loại sản phẩm
-            if (Food* f = dynamic_cast<Food*>(p)) {
-                QString newExpiry = dialog.getExpiryDate();
-                try {
-                    Validation::validateDateDDMMYYYY(newExpiry);
-                    f->setExpiryDate(newExpiry);
-                } catch (const InvalidDateException& e) {
-                    QMessageBox::warning(this, "Cảnh báo",
-                                         QString("Ngày không hợp lệ: %1").arg(e.what()));
-                }
-            }
-            else if (Beverage* b = dynamic_cast<Beverage*>(p)) {
-                QString newExpiry = dialog.getExpiryDate();
-                try {
-                    Validation::validateDateDDMMYYYY(newExpiry);
-                    b->setExpiryDate(newExpiry);
-                } catch (const InvalidDateException& e) {
-                    QMessageBox::warning(this, "Cảnh báo",
-                                         QString("Ngày không hợp lệ: %1").arg(e.what()));
-                }
-                b->setVolume(dialog.getVolume());
-            }
-            else if (HouseholdItem* h = dynamic_cast<HouseholdItem*>(p)) {
-                h->setWarrantyMonths(dialog.getWarranty());
-            }
-
-            QMessageBox::information(this, "Thành công",
-                                     "Đã cập nhật thông tin sản phẩm thành công!");
-
-            loadProductsFiltered(ui->cmbFilter->currentIndex(), ui->txtSearch->text());
-
-        } catch (const std::exception& e) {
-            QMessageBox::critical(this, "Lỗi",
-                                  QString("Không thể cập nhật: %1").arg(e.what()));
+        if (!newName.isEmpty()) {
+            p->setName(newName);
         }
+
+        if (newQuantity < 0) {
+            QMessageBox::critical(this, "Lỗi", 
+                "Số lượng không thể âm! (Có thể UI bị bypass)");
+            return;
+        }
+
+        p->setBasePrice(newPrice);
+        p->setQuantity(newQuantity);
+
+        if (Food* f = dynamic_cast<Food*>(p)) {
+            QString newExpiry = dialog.getExpiryDate();
+            f->setExpiryDate(newExpiry);
+        }
+        else if (Beverage* b = dynamic_cast<Beverage*>(p)) {
+            QString newExpiry = dialog.getExpiryDate();
+            b->setExpiryDate(newExpiry);
+            b->setVolume(dialog.getVolume());
+        }
+        else if (HouseholdItem* h = dynamic_cast<HouseholdItem*>(p)) {
+            h->setWarrantyMonths(dialog.getWarranty());
+        }
+
+        QMessageBox::information(this, "Thành công", "Đã cập nhật thông tin sản phẩm thành công!");
+
+        loadProductsFiltered(ui->cmbFilter->currentIndex(), ui->txtSearch->text());
     }
 }
 
@@ -220,34 +197,18 @@ void ManageInventory::onDeleteProductClicked()
     if (!p) return;
 
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Xác nhận xóa",
-                                  QString("Bạn có chắc muốn xóa sản phẩm '%1'?\n\n"
-                                          "💡 Lưu ý: Sản phẩm sẽ được đánh dấu đã xóa.\n"
-                                          "Khi thêm lại sản phẩm này, hệ thống sẽ tự động khôi phục!")
-                                      .arg(p->getName()),
-                                  QMessageBox::Yes | QMessageBox::No);
+    reply = QMessageBox::question(this, "Xác nhận xóa", QString("Bạn có chắc muốn xóa sản phẩm '%1'?\n\n") .arg(p->getName()), QMessageBox::Yes | QMessageBox::No);
 
-    if (reply == QMessageBox::Yes) {
+    if (reply == QMessageBox::Yes)
+    {
         QString productId = p->getId();
         QString productName = p->getName();
 
-        try {
-            // Call soft delete
-            m_store->softDeleteProduct(productId);
-            
-            QMessageBox::information(this, "Thành công",
-                QString("✅ Đã xóa sản phẩm '%1' thành công!\n\n"
-                        "💡 Tip: Khi thêm lại sản phẩm này trong tương lai,\n"
-                        "hệ thống sẽ tự động khôi phục thay vì tạo mới.")
-                    .arg(productName));
-            
-            loadProductsFiltered(ui->cmbFilter->currentIndex(), ui->txtSearch->text());
-            
-        } catch (const std::runtime_error& e) {
-            QMessageBox::critical(this, "Lỗi",
-                QString("❌ Không thể xóa sản phẩm!\n\nChi tiết: %1")
-                    .arg(QString::fromStdString(e.what())));
-        }
+        m_store->softDeleteProduct(productId);
+        
+        QMessageBox::information(this, "Thành công", QString("✅ Đã xóa sản phẩm '%1' thành công!\n\n").arg(productName));
+        
+        loadProductsFiltered(ui->cmbFilter->currentIndex(), ui->txtSearch->text());
     }
 }
 

@@ -25,7 +25,6 @@
 #include <QSize>
 
 #include "BillItem.h"
-#include "Exceptions.h"
 #include "Payment.h"
 #include "Customer.h"
 #include "HashTable.h"

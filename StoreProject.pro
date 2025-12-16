@@ -41,7 +41,6 @@ HEADERS += \
     BillItem.h \
     Cashier.h \
     Customer.h \
-    Exceptions.h \
     Food.h \
     HouseholdItem.h \
     Manager.h \
