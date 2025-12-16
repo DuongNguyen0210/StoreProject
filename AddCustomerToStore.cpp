@@ -44,8 +44,11 @@ void CustomerDialog::setupTable()
     m_model->setHeaderData(4, Qt::Horizontal, "Hạng");
 
     ui->tableCustomers->setModel(m_model);
-    ui->tableCustomers->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableCustomers->setEditTriggers(QAbstractItemView::DoubleClicked);
     ui->tableCustomers->setSelectionBehavior(QAbstractItemView::SelectRows);
+    
+    // Connect itemChanged signal for inline editing
+    connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
     
     // Setup header resize modes similar to mainwindow.cpp
     QHeaderView* header = ui->tableCustomers->horizontalHeader();
@@ -126,21 +129,30 @@ void CustomerDialog::loadCustomers()
     for (Customer* c : filteredCustomers) {
         QList<QStandardItem*> row;
         
-        // ID (column 0)
-        row << new QStandardItem(c->getId());
+        // ID (column 0) - Read-only
+        QStandardItem* idItem = new QStandardItem(c->getId());
+        idItem->setEditable(false);
+        row << idItem;
         
-        // Name (column 1)
-        row << new QStandardItem(c->getName());
+        // Name (column 1) - Editable
+        QStandardItem* nameItem = new QStandardItem(c->getName());
+        nameItem->setEditable(true);
+        row << nameItem;
         
-        // Phone (column 2)
-        row << new QStandardItem(c->getPhone());
+        // Phone (column 2) - Editable
+        QStandardItem* phoneItem = new QStandardItem(c->getPhone());
+        phoneItem->setEditable(true);
+        row << phoneItem;
         
-        // Points (column 3)
-        row << new QStandardItem(QString::number(c->getPoints()));
+        // Points (column 3) - Read-only
+        QStandardItem* pointsItem = new QStandardItem(QString::number(c->getPoints()));
+        pointsItem->setEditable(false);
+        row << pointsItem;
         
-        // Tier with color
+        // Tier with color (column 4) - Read-only
         QString tier = c->getTier();
         QStandardItem* tierItem = new QStandardItem(tier);
+        tierItem->setEditable(false);
         QString color = getTierColor(tier);
         tierItem->setForeground(QBrush(QColor(color)));
         QFont font = tierItem->font();
@@ -338,4 +350,96 @@ void CustomerDialog::on_sortBy_currentIndexChanged(int index)
 {
     m_currentSortIndex = index;
     applyFiltersAndSort();
+}
+
+void CustomerDialog::onCustomerItemChanged(QStandardItem* item)
+{
+    if (!item) return;
+    
+    int row = item->row();
+    int column = item->column();
+    
+    // Only handle Name (column 1) and Phone (column 2) edits
+    if (column != 1 && column != 2) return;
+    
+    // Disconnect to prevent recursive signals
+    disconnect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
+    
+    // Get customer ID from column 0
+    QString customerId = m_model->item(row, 0)->text();
+    Customer* customer = m_store->findCustomerById(customerId);
+    
+    if (!customer) {
+        QMessageBox::warning(this, "Lỗi", "Không tìm thấy khách hàng!");
+        loadCustomers();
+        connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
+        return;
+    }
+    
+    QString newValue = item->text().trimmed();
+    
+    // Validate and update based on column
+    if (column == 1) { // Name column
+        if (newValue.isEmpty() || newValue.length() < 2) {
+            QMessageBox::warning(this, "Lỗi", "Tên khách hàng phải có ít nhất 2 ký tự!");
+            loadCustomers();
+            connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
+            return;
+        }
+        
+        // Check for digits
+        for (QChar c : newValue) {
+            if (c.isDigit()) {
+                QMessageBox::warning(this, "Lỗi", "Tên khách hàng không được chứa số!");
+                loadCustomers();
+                connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
+                return;
+            }
+        }
+        
+        // Update customer name
+        customer->setName(newValue);
+        QMessageBox::information(this, "Thành công", QString("Đã cập nhật tên thành '%1'").arg(newValue));
+    }
+    else if (column == 2) { // Phone column
+        // Validate phone format
+        for (QChar c : newValue) {
+            if (!c.isDigit()) {
+                QMessageBox::warning(this, "Lỗi", "Số điện thoại chỉ được chứa chữ số!");
+                loadCustomers();
+                connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
+                return;
+            }
+        }
+        
+        if (newValue.length() < 10 || newValue.length() > 11) {
+            QMessageBox::warning(this, "Lỗi", "Số điện thoại phải có 10-11 chữ số!");
+            loadCustomers();
+            connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
+            return;
+        }
+        
+        if (!newValue.startsWith('0')) {
+            QMessageBox::warning(this, "Lỗi", "Số điện thoại phải bắt đầu bằng số 0!");
+            loadCustomers();
+            connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
+            return;
+        }
+        
+        // Check uniqueness
+        Customer* existingCustomer = m_store->findCustomerByPhone(newValue);
+        if (existingCustomer && existingCustomer->getId() != customerId) {
+            QMessageBox::warning(this, "Lỗi", "Số điện thoại này đã tồn tại!");
+            loadCustomers();
+            connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
+            return;
+        }
+        
+        // Update customer phone
+        customer->setPhone(newValue);
+        QMessageBox::information(this, "Thành công", QString("Đã cập nhật SĐT thành '%1'").arg(newValue));
+    }
+    
+    // Reconnect signal
+    connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
 }

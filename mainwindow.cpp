@@ -101,7 +101,7 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     applyPermissions();
     QHeaderView* header = ui->tableViewProduct->horizontalHeader();
     header->setMaximumSectionSize(500);
-    header->setMinimumSectionSize(100);
+    header->setMinimumSectionSize(200);
     header->setStretchLastSection(false);
     header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(1, QHeaderView::Interactive);
@@ -223,11 +223,19 @@ void MainWindow::setupHoaDonTable()
 {
     modelHoaDon = new QStandardItemModel(this);
     modelHoaDon->setColumnCount(3);
-    modelHoaDon->setHeaderData(0, Qt::Horizontal, "Tên SP");
-    modelHoaDon->setHeaderData(1, Qt::Horizontal, "SL");
+    modelHoaDon->setHeaderData(0, Qt::Horizontal, "Tên sản phẩm");
+    modelHoaDon->setHeaderData(1, Qt::Horizontal, "Số lượng");
     modelHoaDon->setHeaderData(2, Qt::Horizontal, "Thành tiền");
     ui->tableViewOrder->setModel(modelHoaDon);
-    ui->tableViewOrder->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    QHeaderView* header = ui->tableViewOrder->horizontalHeader();
+    header->setStretchLastSection(false);
+    header->setSectionResizeMode(0, QHeaderView::Interactive);
+    header->setMinimumSectionSize(150);
+    header->setMaximumSectionSize(300);
+    header->resizeSection(0, 200);
+    header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(2, QHeaderView::Stretch);
 }
 
 void MainWindow::setupLastBill()
@@ -290,7 +298,7 @@ void MainWindow::updateHoaDonView()
             else if (tier == "Gold") tierIcon = "🥇";
             else if (tier == "Silver") tierIcon = "🥈";
             else tierIcon = "🥉";  // Bronze
-            
+
             ui->lblTenKhach->setText(QString("%1 %2").arg(tierIcon, c->getName()));
             ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));
 
@@ -313,7 +321,7 @@ void MainWindow::updateHoaDonView()
                 ui->btnDungDiem->setStyleSheet("");
 
                 int currentPoints = c->getPoints();
-                
+
                 // Use finalTotal (after tier discount) for calculation
                 if (currentPoints >= 10 && finalTotal > 1000.0)
                 {
@@ -451,7 +459,7 @@ void MainWindow::loadAndSortProducts(int typeFilter)
 
     store->forEachProduct([&](const QString&, Product* p) {
         if (!p) return;
-        
+
         // ✅ FILTER: Only show active products with stock > 0
         if (!p->getIsActive()) return;
         if (p->getQuantity() <= 0) return;
@@ -719,11 +727,11 @@ void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
     // Search like manageinventory - iterate all and filter with contains
     store->forEachProduct([&](const QString&, Product* p) {
         if (!p) return;
-        
+
         // Filter active products with stock
         if (!p->getIsActive()) return;
         if (p->getQuantity() <= 0) return;
-        
+
         // Search filter: check if name or ID contains keyword
         QString name = p->getName().toLower();
         QString id = p->getId().toLower();
@@ -830,6 +838,14 @@ void MainWindow::onAddSanPham(const QModelIndex &index)
     {
         if(currentBill == nullptr)
             currentBill = new Bill(nullptr, "", currentUser);
+
+        // ✅ FIX: Nếu đã dùng điểm, tự động hủy khi thêm sản phẩm
+        if (currentBill->getCheck()) {
+            currentBill->removePointsDiscount();
+            QMessageBox::information(this, "Thông báo",
+                "Đã hủy giảm giá điểm do thay đổi giỏ hàng. Bạn có thể áp dụng lại sau.");
+        }
+
         currentBill->addItem(p, quantityToAdd);
         ui->stackedWidgeOrder->setCurrentIndex(0);
         loadAndSortProducts(curTableProduct);
@@ -876,6 +892,13 @@ void MainWindow::onEditSanPhamDoubleClicked(const QModelIndex &index)
 
     if (ok)
     {
+        // ✅ FIX: Nếu đã dùng điểm, tự động hủy khi edit số lượng
+        if (currentBill->getCheck()) {
+            currentBill->removePointsDiscount();
+            QMessageBox::information(this, "Thông báo",
+                "Đã hủy giảm giá điểm do thay đổi giỏ hàng. Bạn có thể áp dụng lại sau.");
+        }
+
         if (newQty == 0)
         {
             // === TRƯỜNG HỢP 1: Nhập 0 -> Xóa sản phẩm (Trả hàng) ===
@@ -958,7 +981,7 @@ void MainWindow::onTimKhachPressed()
         if (currentBill == nullptr) currentBill = new Bill(nullptr, "", currentUser);
         currentBill->setCustomer(c);
         ui->lblTenKhach->setStyleSheet("");
-        
+
         // Add tier icon
         QString tierIcon;
         QString tier = c->getTier();
@@ -966,7 +989,7 @@ void MainWindow::onTimKhachPressed()
         else if (tier == "Gold") tierIcon = "🥇";
         else if (tier == "Silver") tierIcon = "🥈";
         else tierIcon = "🥉";  // Bronze
-        
+
         ui->lblTenKhach->setText(QString("%1 %2").arg(tierIcon, c->getName()));
         ui->lblTenKhach->setStyleSheet("color: #0284C7; font-weight: 600;");
         ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));

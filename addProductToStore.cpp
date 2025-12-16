@@ -42,9 +42,8 @@ AddProductToStore::AddProductToStore(QWidget *parent) :
     ui->Volume->setSuffix(" ml");
 
     ui->dateEdit->setDisplayFormat("dd/MM/yyyy");
-    QDate minDate(2025, 11, 17);
-    ui->dateEdit->setMinimumDate(minDate.addDays(1));
-    ui->dateEdit->setDate(minDate.addDays(1));
+    ui->dateEdit->setMinimumDate(QDate::currentDate().addDays(1));
+    ui->dateEdit->setDate(QDate::currentDate().addDays(1));
 
     // Kết nối tự động tính giá bán khi nhập Giá gốc hoặc % Lợi nhuận
     connect(ui->ImportPrice, QOverload<double>::of(&QDoubleSpinBox::valueChanged), 

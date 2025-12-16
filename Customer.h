@@ -36,6 +36,7 @@ public:
     void setEmail(const QString& e);
     void setPoints(int p);
     void addPoints(int p);
+    void setTier(const QString& tier);  // Load tier from file
     void updateLastVisit();
     void updateTierBasedOnPoints();  // Update tier based on current points (upgrade only)
 

@@ -28,12 +28,17 @@ QTableView::item:hover
 /* Horizontal header (column names) */
 QHeaderView::section:horizontal
 {
-    background-color: #0EA5E9;
-    color: #FFFFFF;
-    padding: 8px 6px;
+    background-color: #00A8E8;
+    color: white;
+    padding: 8px 4px;  /* Reduced padding */
+    font-weight: bold;
+    font-size: 11pt;
     border: none;
-    font-weight: 600;
-    font-size: 13px;
+    border-right: 1px solid white;  /* Thinner separator */
+}
+
+QHeaderView::section:horizontal:last {
+    border-right: none;  /* No border on last column */
 }
 
 /* Rounded corners for horizontal header */

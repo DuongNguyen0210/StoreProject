@@ -20,6 +20,7 @@ public:
     ~CustomerDialog();
 
 private slots:
+    void onCustomerItemChanged(QStandardItem* item);
     void on_btnAddNewMember_clicked();
     void on_searchBar_textChanged(const QString& text);
     void on_filterTier_currentIndexChanged(int index);

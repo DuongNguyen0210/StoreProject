@@ -160,3 +160,10 @@ void Customer::addPoints(int p)
     points += p;
     updateTierBasedOnPoints();  // Check for tier upgrade
 }
+
+void Customer::setTier(const QString& tier)
+{
+    // Directly set tier (used when loading from file)
+    // This bypasses the upgrade-only logic and restores saved tier
+    m_tier = tier;
+}

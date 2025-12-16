@@ -58,8 +58,10 @@ void ThongKe::loadBillHistory()
 
     const auto& history = m_store->getBillHistory();
 
-    for (const Bill* bill : history)
+    // Iterate in reverse order - newest bills first
+    for (auto it = history.rbegin(); it != history.rend(); ++it)
     {
+        const Bill* bill = *it;
         if (!bill) continue;
 
         QList<QStandardItem*> row;

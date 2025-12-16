@@ -43,19 +43,27 @@ void ManageInventory::setupTable()
     ui->tableProducts->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableProducts->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableProducts->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableProducts->setAlternatingRowColors(true);
     
     // Setup column resize modes
     QHeaderView* header = ui->tableProducts->horizontalHeader();
     
-    // Product name column (index 1): Interactive with min/max limits
-    header->setSectionResizeMode(1, QHeaderView::Interactive);
-    header->setMinimumSectionSize(150);  // Min width for product name
-    header->setMaximumSectionSize(500);  // Max width for product name
-    header->resizeSection(1, 250);       // Initial width: 250px
+    // Column 0 (Mã SP): Stretch
+    header->setSectionResizeMode(0, QHeaderView::Stretch);
     
-    // Other columns: Stretch to fill remaining space
-    header->setSectionResizeMode(QHeaderView::Stretch);
-    header->setAlternatingRowColors(true);
+    // Column 1 (Tên Sản Phẩm): Interactive with min/max limits
+    header->setSectionResizeMode(1, QHeaderView::Interactive);
+    header->setMinimumSectionSize(150);
+    header->setMaximumSectionSize(500);
+    header->resizeSection(1, 250);
+    
+    // Columns 2-7: Stretch
+    header->setSectionResizeMode(2, QHeaderView::Stretch);
+    header->setSectionResizeMode(3, QHeaderView::Stretch);
+    header->setSectionResizeMode(4, QHeaderView::Stretch);
+    header->setSectionResizeMode(5, QHeaderView::Stretch);
+    header->setSectionResizeMode(6, QHeaderView::Stretch);
+    header->setSectionResizeMode(7, QHeaderView::Stretch);
 }
 
 void ManageInventory::loadProducts()

@@ -82,6 +82,7 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
                                   << c->getPhone() << '|'
                                   << c->getEmail() << '|'
                                   << c->getPoints() << '|'
+                                  << c->getTier() << '|'  // Save tier!
                                   << c->getLastVisit().toString("yyyy-MM-dd HH:mm:ss") << '\n';
                           });
     out << "\n";
@@ -300,7 +301,7 @@ bool StorePersistence::load(Store &store, const QString &filePath)
 
         case Customers:
         {
-            // Support both old format (4 fields) and new format (6 fields)
+            // Support old format (6 fields) and new format (7 fields with tier)
             if (parts.size() < 4)
             {
                 QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu khách hàng không đúng định dạng");
@@ -313,20 +314,37 @@ bool StorePersistence::load(Store &store, const QString &filePath)
             
             QString email = "";
             int points = 0;
+            QString tier = "Bronze";  // Default tier
             QDateTime lastVisit = QDateTime::currentDateTime();
             
-            if (parts.size() >= 6) {  // New format with email and lastVisit
+            if (parts.size() >= 7) {  // New format with tier
+                email = parts[3];
+                points = parts[4].toInt();
+                tier = parts[5];  // Load tier from file
+                lastVisit = QDateTime::fromString(parts[6], "yyyy-MM-dd HH:mm:ss");
+                if (!lastVisit.isValid()) {
+                    lastVisit = QDateTime::currentDateTime();
+                }
+            } else if (parts.size() >= 6) {  // Old format without tier
                 email = parts[3];
                 points = parts[4].toInt();
                 lastVisit = QDateTime::fromString(parts[5], "yyyy-MM-dd HH:mm:ss");
                 if (!lastVisit.isValid()) {
                     lastVisit = QDateTime::currentDateTime();
                 }
-            } else {  // Old format (backward compatibility)
+                // Tier will be calculated by constructor
+            } else {  // Very old format (backward compatibility)
                 points = parts[3].toInt();
+                // Tier will be calculated by constructor
             }
 
             Customer* c = new Customer(id, name, phone, email, points);
+            
+            // Restore saved tier if available (new format)
+            if (parts.size() >= 7) {
+                c->setTier(tier);  // Override tier with saved value
+            }
+            
             if (parts.size() >= 6) {
                 // Manually set lastVisit for loaded customers
                 const_cast<QDateTime&>(c->getLastVisit()) = lastVisit;
