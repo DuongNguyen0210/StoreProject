@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
-    <height>844</height>
+    <width>1146</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -62,7 +62,7 @@
        <property name="frameShadow">
         <enum>QFrame::Shadow::Raised</enum>
        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QLabel" name="lblRevenueTit">
           <property name="font">
@@ -97,64 +97,64 @@
        </layout>
       </widget>
      </item>
-      <item>
-       <widget class="QFrame" name="frameProfit">
-        <property name="frameShape">
-         <enum>QFrame::Shape::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Shadow::Raised</enum>
-        </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <widget class="QLabel" name="lblProfitTitle">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>📈 Lợi Nhuận Ước Tính</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="lblProfit">
-           <property name="font">
-            <font>
-             <pointsize>20</pointsize>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>0 đ</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="lblProfitMargin">
-           <property name="font">
-            <font>
-             <pointsize>9</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Tỉ lệ lời: 0.0%</string>
-           </property>
-                <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
+     <item>
+      <widget class="QFrame" name="frameProfit">
+       <property name="frameShape">
+        <enum>QFrame::Shape::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="lblProfitTitle">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>📈 Lợi Nhuận Ước Tính</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblProfit">
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>0 đ</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblProfitMargin">
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Tỉ lệ lời: 0.0%</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
      <item>
       <widget class="QFrame" name="frameBills">
        <property name="frameShape">
@@ -163,7 +163,7 @@
        <property name="frameShadow">
         <enum>QFrame::Shadow::Raised</enum>
        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
+       <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QLabel" name="lblBillsTitle">
           <property name="font">
@@ -189,7 +189,7 @@
           </property>
           <property name="text">
            <string>0</string>
-           </property>
+          </property>
           <property name="alignment">
            <set>Qt::AlignmentFlag::AlignCenter</set>
           </property>
@@ -250,7 +250,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>250</height>
+            <height>0</height>
            </size>
           </property>
          </widget>
@@ -269,7 +269,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>250</height>
+            <height>0</height>
            </size>
           </property>
          </widget>
@@ -296,8 +296,8 @@
            <widget class="QChartView" name="chartWarnings">
             <property name="minimumSize">
              <size>
-              <width>250</width>
-              <height>200</height>
+              <width>0</width>
+              <height>0</height>
              </size>
             </property>
            </widget>
@@ -310,7 +310,7 @@
             <property name="frameShadow">
              <enum>QFrame::Shadow::Raised</enum>
             </property>
-                  <layout class="QVBoxLayout" name="legendLayout">
+            <layout class="QVBoxLayout" name="legendLayout">
              <item>
               <widget class="QLabel" name="lblLegendTitle">
                <property name="font">
@@ -334,7 +334,7 @@
                    <height>20</height>
                   </size>
                  </property>
-                            <property name="text">
+                 <property name="text">
                   <string/>
                  </property>
                 </widget>
@@ -342,7 +342,7 @@
                <item>
                 <widget class="QLabel" name="lblLegendGreen">
                  <property name="text">
-                  <string>Đủ hàng (>10)</string>
+                  <string>Đủ hàng (&gt;10)</string>
                  </property>
                 </widget>
                </item>
@@ -383,7 +383,7 @@
                    <height>20</height>
                   </size>
                  </property>
-                            <property name="text">
+                 <property name="text">
                   <string/>
                  </property>
                 </widget>
@@ -432,7 +432,7 @@
                    <height>20</height>
                   </size>
                  </property>
-                            <property name="text">
+                 <property name="text">
                   <string/>
                  </property>
                 </widget>
@@ -481,7 +481,7 @@
                    <height>20</height>
                   </size>
                  </property>
-                            <property name="text">
+                 <property name="text">
                   <string/>
                  </property>
                 </widget>
@@ -559,7 +559,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>200</height>
+            <height>0</height>
            </size>
           </property>
           <property name="alternatingRowColors">
