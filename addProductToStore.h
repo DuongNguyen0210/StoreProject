@@ -32,7 +32,7 @@ private slots:
     void on_Type_currentIndexChanged();
     void setFieldsForType(int typeIndex);
     void validateForm();
-    void calculateSellingPrice();  // Slot tính giá bán tự động
+    void calculateSellingPrice();  //tính giá bán hiển thị trên cửa hàng
 
 private:
     Ui::AddProductToStore *ui;

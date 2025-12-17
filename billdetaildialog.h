@@ -19,8 +19,8 @@ public:
 
 private:
     Ui::BillDetailDialog *ui;
-    Bill* m_bill;
-    QStandardItemModel* m_model;
+    Bill* bill;
+    QStandardItemModel* model;
 
     void setupTable();
     void loadBillDetails();
