@@ -7,12 +7,11 @@
 #include <QMessageBox>
 #include <QHeaderView>
 
-ManageInventory::ManageInventory(Store* store, QWidget *parent)
-    : QDialog(parent), ui(new Ui::ManageInventory), m_store(store)
+ManageInventory::ManageInventory(Store* store, QWidget *parent) : QDialog(parent), ui(new Ui::ManageInventory), store(store)
 {
     ui->setupUi(this);
     setupTable();
-    loadProducts();
+    loadProductsFiltered(0, "");
 
     connect(ui->tableProducts, &QTableView::doubleClicked, this, &ManageInventory::onProductDoubleClicked);
     connect(ui->btnDelete, &QPushButton::clicked, this, &ManageInventory::onDeleteProductClicked);
@@ -27,76 +26,66 @@ ManageInventory::~ManageInventory()
 
 void ManageInventory::setupTable()
 {
-    m_model = new QStandardItemModel(this);
-    m_model->setColumnCount(8);
-    m_model->setHeaderData(0, Qt::Horizontal, "Mã SP");
-    m_model->setHeaderData(1, Qt::Horizontal, "Tên Sản Phẩm");
-    m_model->setHeaderData(2, Qt::Horizontal, "Loại");
-    m_model->setHeaderData(3, Qt::Horizontal, "Giá (đ)");
-    m_model->setHeaderData(4, Qt::Horizontal, "Số Lượng");
-    m_model->setHeaderData(5, Qt::Horizontal, "Thể Tích (ml)");
-    m_model->setHeaderData(6, Qt::Horizontal, "Hạn SD");
-    m_model->setHeaderData(7, Qt::Horizontal, "Bảo Hành (tháng)");
+    model = new QStandardItemModel(this);
+    model->setColumnCount(8);
+    model->setHeaderData(0, Qt::Horizontal, "Mã SP");
+    model->setHeaderData(1, Qt::Horizontal, "Tên Sản Phẩm");
+    model->setHeaderData(2, Qt::Horizontal, "Loại");
+    model->setHeaderData(3, Qt::Horizontal, "Giá (đ)");
+    model->setHeaderData(4, Qt::Horizontal, "Số Lượng");
+    model->setHeaderData(5, Qt::Horizontal, "Thể Tích (ml)");
+    model->setHeaderData(6, Qt::Horizontal, "Hạn SD");
+    model->setHeaderData(7, Qt::Horizontal, "Bảo Hành (tháng)");
 
-    ui->tableProducts->setModel(m_model);
+    ui->tableProducts->setModel(model);
     ui->tableProducts->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableProducts->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableProducts->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableProducts->setAlternatingRowColors(true);
     
-    // Setup column resize modes
     QHeaderView* header = ui->tableProducts->horizontalHeader();
     
-    // Column 0 (Mã SP): Stretch
     header->setSectionResizeMode(0, QHeaderView::Stretch);
-    
-    // Column 1 (Tên Sản Phẩm): Interactive with min/max limits
     header->setSectionResizeMode(1, QHeaderView::Interactive);
-    header->setMinimumSectionSize(150);
-    header->setMaximumSectionSize(500);
-    header->resizeSection(1, 250);
-    
-    // Columns 2-7: Stretch
     header->setSectionResizeMode(2, QHeaderView::Stretch);
     header->setSectionResizeMode(3, QHeaderView::Stretch);
     header->setSectionResizeMode(4, QHeaderView::Stretch);
     header->setSectionResizeMode(5, QHeaderView::Stretch);
     header->setSectionResizeMode(6, QHeaderView::Stretch);
     header->setSectionResizeMode(7, QHeaderView::Stretch);
-}
 
-void ManageInventory::loadProducts()
-{
-    loadProductsFiltered(0, "");
+    header->setMinimumSectionSize(150);
+    header->setMaximumSectionSize(500);
+    header->resizeSection(1, 250);
 }
 
 void ManageInventory::loadProductsFiltered(int filterType, const QString& searchText)
 {
-    m_model->removeRows(0, m_model->rowCount());
+    model->removeRows(0, model->rowCount());
 
     QString search = searchText.trimmed().toLower();
 
-    m_store->forEachProduct([&](const QString&, Product* p) {
-        if (!p) return;
-        
-        // ✅ FILTER OUT INACTIVE PRODUCTS (soft deleted)
-        if (!p->getIsActive()) return;
+    store->forEachProduct([&](const QString&, Product* p) {
+        if (!p)
+            return;
+        if (!p->getIsActive())
+            return;
 
         Food* f = dynamic_cast<Food*>(p);
         Beverage* b = dynamic_cast<Beverage*>(p);
         HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
 
-        // Lọc theo loại
         bool typeMatch = false;
         if (filterType == 0) typeMatch = true;
         else if (filterType == 1 && f) typeMatch = true;
         else if (filterType == 2 && b) typeMatch = true;
         else if (filterType == 3 && h) typeMatch = true;
 
-        if (!typeMatch) return;
+        if (!typeMatch)
+            return;
 
-        // Lọc theo tìm kiếm
-        if (!search.isEmpty()) {
+        if (!search.isEmpty())
+        {
             QString name = p->getName().toLower();
             QString id = p->getId().toLower();
             if (!name.contains(search) && !id.contains(search))
@@ -124,19 +113,16 @@ void ManageInventory::loadProductsFiltered(int filterType, const QString& search
 
         row << new QStandardItem(h ? QString::number(h->getWarrantyMonths()) : "");
 
-        m_model->appendRow(row);
+        model->appendRow(row);
     });
 
-    ui->lblTotal->setText(QString("Tổng số sản phẩm: %1").arg(m_model->rowCount()));
+    ui->lblTotal->setText(QString("Tổng số sản phẩm: %1").arg(model->rowCount()));
 }
 
 Product* ManageInventory::getProductFromRow(int row)
 {
-    if (row < 0 || row >= m_model->rowCount())
-        return nullptr;
-
-    QString productId = m_model->item(row, 0)->text();
-    return m_store->findProductById(productId);
+    QString productId = model->item(row, 0)->text();
+    return store->findProductById(productId);
 }
 
 void ManageInventory::onProductDoubleClicked(const QModelIndex &index)
@@ -148,39 +134,35 @@ void ManageInventory::onProductDoubleClicked(const QModelIndex &index)
 
     EditProductDialog dialog(p, this);
 
-    if (dialog.exec() == QDialog::Accepted) {
+    if (dialog.exec() == QDialog::Accepted)
+    {
         QString newName = dialog.getName();
         double newPrice = dialog.getPrice();
         int newQuantity = dialog.getQuantity();
 
-        if (!newName.isEmpty()) {
+        if (!newName.isEmpty())
             p->setName(newName);
-        }
 
-        if (newQuantity < 0) {
-            QMessageBox::critical(this, "Lỗi", 
-                "Số lượng không thể âm! (Có thể UI bị bypass)");
-            return;
-        }
-
+        p->setImportPrice(dialog.getImportPrice());
+        p->setProfitMargin(dialog.getProfitMargin());
         p->setBasePrice(newPrice);
         p->setQuantity(newQuantity);
 
-        if (Food* f = dynamic_cast<Food*>(p)) {
+        if (Food* f = dynamic_cast<Food*>(p))
+        {
             QString newExpiry = dialog.getExpiryDate();
             f->setExpiryDate(newExpiry);
         }
-        else if (Beverage* b = dynamic_cast<Beverage*>(p)) {
+        else if (Beverage* b = dynamic_cast<Beverage*>(p))
+        {
             QString newExpiry = dialog.getExpiryDate();
             b->setExpiryDate(newExpiry);
             b->setVolume(dialog.getVolume());
         }
-        else if (HouseholdItem* h = dynamic_cast<HouseholdItem*>(p)) {
+        else if (HouseholdItem* h = dynamic_cast<HouseholdItem*>(p))
             h->setWarrantyMonths(dialog.getWarranty());
-        }
 
         QMessageBox::information(this, "Thành công", "Đã cập nhật thông tin sản phẩm thành công!");
-
         loadProductsFiltered(ui->cmbFilter->currentIndex(), ui->txtSearch->text());
     }
 }
@@ -188,7 +170,8 @@ void ManageInventory::onProductDoubleClicked(const QModelIndex &index)
 void ManageInventory::onDeleteProductClicked()
 {
     QModelIndex index = ui->tableProducts->currentIndex();
-    if (!index.isValid()) {
+    if (!index.isValid())
+    {
         QMessageBox::warning(this, "Cảnh báo", "Vui lòng chọn sản phẩm cần xóa!");
         return;
     }
@@ -203,11 +186,8 @@ void ManageInventory::onDeleteProductClicked()
     {
         QString productId = p->getId();
         QString productName = p->getName();
-
-        m_store->softDeleteProduct(productId);
-        
-        QMessageBox::information(this, "Thành công", QString("✅ Đã xóa sản phẩm '%1' thành công!\n\n").arg(productName));
-        
+        store->softDeleteProduct(productId);
+        QMessageBox::information(this, "Thành công", QString("Đã xóa sản phẩm '%1' thành công!\n\n").arg(productName));
         loadProductsFiltered(ui->cmbFilter->currentIndex(), ui->txtSearch->text());
     }
 }

@@ -21,6 +21,8 @@ public:
 
     QString getName() const;
     double getPrice() const;
+    double getImportPrice() const;
+    double getProfitMargin() const;
     int getQuantity() const;
     QString getExpiryDate() const;
     double getVolume() const;
@@ -28,6 +30,7 @@ public:
 
 private slots:
     void validateForm();
+    void calculateSellingPrice();
 
 private:
     Ui::EditProductDialog *ui;

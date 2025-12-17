@@ -139,14 +139,14 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="labelPrice">
+       <widget class="QLabel" name="labelImportPrice">
         <property name="text">
-         <string>Giá tiền:</string>
+         <string>Giá nhập:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="Price">
+       <widget class="QDoubleSpinBox" name="ImportPrice">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -156,14 +156,14 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="labelQuantity">
+       <widget class="QLabel" name="labelProfitMargin">
         <property name="text">
-         <string>Số lượng:</string>
+         <string>% Lợi nhuận:</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QSpinBox" name="Quantity">
+       <widget class="QDoubleSpinBox" name="ProfitMargin">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -173,14 +173,14 @@
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="labelExpiryDate">
+       <widget class="QLabel" name="labelPrice">
         <property name="text">
-         <string>Hạn sử dụng:</string>
+         <string>Giá bán:</string>
         </property>
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QDateEdit" name="dateEdit">
+       <widget class="QDoubleSpinBox" name="Price">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -190,14 +190,14 @@
        </widget>
       </item>
       <item row="4" column="0">
-       <widget class="QLabel" name="labelVolume">
+       <widget class="QLabel" name="labelQuantity">
         <property name="text">
-         <string>Thể tích:</string>
+         <string>Số lượng:</string>
         </property>
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="QDoubleSpinBox" name="Volume">
+       <widget class="QSpinBox" name="Quantity">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -207,13 +207,47 @@
        </widget>
       </item>
       <item row="5" column="0">
+       <widget class="QLabel" name="labelExpiryDate">
+        <property name="text">
+         <string>Hạn sử dụng:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QDateEdit" name="dateEdit">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="labelVolume">
+        <property name="text">
+         <string>Thể tích:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QDoubleSpinBox" name="Volume">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
        <widget class="QLabel" name="labelWarranty">
         <property name="text">
          <string>Thời hạn bảo hành:</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
+      <item row="7" column="1">
        <widget class="QSpinBox" name="Warranty">
         <property name="minimumSize">
          <size>

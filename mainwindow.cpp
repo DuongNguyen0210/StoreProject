@@ -160,6 +160,9 @@ void MainWindow::onCancelOrderClicked()
     if(currentBill == nullptr)
         return;
 
+    if(currentBill->getItems().empty() && !currentBill->getCustomer())
+        return;
+
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, "Xác nhận hủy","Bạn có chắc muốn hủy hóa đơn này?\nTất cả sản phẩm sẽ được trả về kho.",QMessageBox::Yes | QMessageBox::No);
 

@@ -8,16 +8,20 @@ EditProductDialog::EditProductDialog(Product* product, QWidget *parent)
     : QDialog(parent), ui(new Ui::EditProductDialog), m_product(product)
 {
     ui->setupUi(this);
+    ui->ImportPrice->setMinimum(0.0);
+    ui->ImportPrice->setMaximum(1000000.0);
+    ui->ImportPrice->setSuffix(" đ");
 
-    if (!product) {
-        QMessageBox::critical(this, "Lỗi", "Sản phẩm không hợp lệ!");
-        reject();
-        return;
-    }
+    ui->ProfitMargin->setMinimum(0.0);
+    ui->ProfitMargin->setMaximum(1000.0);
+    ui->ProfitMargin->setSuffix(" %");
+    ui->ProfitMargin->setDecimals(1);
 
     ui->Price->setMinimum(0.0);
     ui->Price->setMaximum(1000000000.0);
     ui->Price->setSuffix(" đ");
+    ui->Price->setReadOnly(true);
+    ui->Price->setButtonSymbols(QAbstractSpinBox::NoButtons);
 
     ui->Quantity->setMinimum(0);
     ui->Quantity->setMaximum(100000);
@@ -31,19 +35,16 @@ EditProductDialog::EditProductDialog(Product* product, QWidget *parent)
     ui->Warranty->setSuffix(" tháng");
 
     ui->dateEdit->setDisplayFormat("dd/MM/yyyy");
-    QDate minDate = QDate::currentDate();
-    ui->dateEdit->setMinimumDate(minDate);
+
+    connect(ui->ImportPrice, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &EditProductDialog::calculateSellingPrice);
+    connect(ui->ProfitMargin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &EditProductDialog::calculateSellingPrice);
 
     connect(ui->Name, &QLineEdit::textChanged, this, &EditProductDialog::validateForm);
-    connect(ui->Quantity, QOverload<int>::of(&QSpinBox::valueChanged),
-            this, &EditProductDialog::validateForm);
-    connect(ui->Price, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-            this, &EditProductDialog::validateForm);
+    connect(ui->Quantity, QOverload<int>::of(&QSpinBox::valueChanged), this, &EditProductDialog::validateForm);
+    connect(ui->ImportPrice, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &EditProductDialog::validateForm);
     connect(ui->dateEdit, &QDateEdit::dateChanged, this, &EditProductDialog::validateForm);
-    connect(ui->Volume, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-            this, &EditProductDialog::validateForm);
-    connect(ui->Warranty, QOverload<int>::of(&QSpinBox::valueChanged),
-            this, &EditProductDialog::validateForm);
+    connect(ui->Volume, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &EditProductDialog::validateForm);
+    connect(ui->Warranty, QOverload<int>::of(&QSpinBox::valueChanged), this, &EditProductDialog::validateForm);
 
     setupFormForProductType();
     validateForm();
@@ -62,53 +63,42 @@ void EditProductDialog::setupFormForProductType()
 
     ui->lblProductId->setText(QString("Mã sản phẩm: %1").arg(m_product->getId()));
     ui->Name->setText(m_product->getName());
-    ui->Price->setValue(m_product->getBasePrice());
+    ui->ImportPrice->setValue(m_product->getImportPrice());
+    ui->ProfitMargin->setValue(m_product->getProfitMargin());
     ui->Quantity->setValue(m_product->getQuantity());
 
-    if (f) {
+    if (f)
+    {
         ui->lblType->setText("Loại: Đồ ăn");
-
         ui->labelExpiryDate->setVisible(true);
         ui->dateEdit->setVisible(true);
         ui->labelVolume->setVisible(false);
         ui->Volume->setVisible(false);
         ui->labelWarranty->setVisible(false);
         ui->Warranty->setVisible(false);
-
-        QDate expiryDate = QDate::fromString(f->getExpiryDate(), "dd/MM/yyyy");
-        if (expiryDate.isValid())
-            ui->dateEdit->setDate(expiryDate);
-        else
-            ui->dateEdit->setDate(QDate::currentDate().addDays(1));
+        ui->dateEdit->setDate(QDate::fromString(f->getExpiryDate(), "dd/MM/yyyy"));
     }
-    else if (b) {
+    else if (b)
+    {
         ui->lblType->setText("Loại: Thức uống");
-
         ui->labelExpiryDate->setVisible(true);
         ui->dateEdit->setVisible(true);
         ui->labelVolume->setVisible(true);
         ui->Volume->setVisible(true);
         ui->labelWarranty->setVisible(false);
         ui->Warranty->setVisible(false);
-
-        QDate expiryDate = QDate::fromString(b->getExpiryDate(), "dd/MM/yyyy");
-        if (expiryDate.isValid())
-            ui->dateEdit->setDate(expiryDate);
-        else
-            ui->dateEdit->setDate(QDate::currentDate().addDays(1));
-
+        ui->dateEdit->setDate(QDate::fromString(b->getExpiryDate(), "dd/MM/yyyy"));
         ui->Volume->setValue(b->getVolume());
     }
-    else if (h) {
+    else if (h)
+    {
         ui->lblType->setText("Loại: Đồ gia dụng");
-
         ui->labelExpiryDate->setVisible(false);
         ui->dateEdit->setVisible(false);
         ui->labelVolume->setVisible(false);
         ui->Volume->setVisible(false);
         ui->labelWarranty->setVisible(true);
         ui->Warranty->setVisible(true);
-
         ui->Warranty->setValue(h->getWarrantyMonths());
     }
 }
@@ -120,27 +110,21 @@ void EditProductDialog::validateForm()
     if (ui->Name->text().trimmed().isEmpty())
         isValid = false;
 
-    if (ui->Price->value() <= 0)
+    if (ui->ImportPrice->value() <= 0)
         isValid = false;
 
     Food* f = dynamic_cast<Food*>(m_product);
     Beverage* b = dynamic_cast<Beverage*>(m_product);
     HouseholdItem* h = dynamic_cast<HouseholdItem*>(m_product);
 
-    if (f || b) {
-        if (!ui->dateEdit->date().isValid() || ui->dateEdit->date() < QDate::currentDate())
-            isValid = false;
-    }
+    if ((f || b) && ui->dateEdit->date() < QDate::currentDate())
+        isValid = false;
 
-    if (b) {
-        if (ui->Volume->value() <= 0)
-            isValid = false;
-    }
+    if (b && ui->Volume->value() <= 0)
+        isValid = false;
 
-    if (h) {
-        if (ui->Warranty->value() < 0)
-            isValid = false;
-    }
+    if (h && ui->Warranty->value() < 0)
+        isValid = false;
 
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(isValid);
 }
@@ -173,4 +157,22 @@ double EditProductDialog::getVolume() const
 int EditProductDialog::getWarranty() const
 {
     return ui->Warranty->value();
+}
+
+void EditProductDialog::calculateSellingPrice()
+{
+    double importPrice = ui->ImportPrice->value();
+    double profitMargin = ui->ProfitMargin->value();
+    double sellingPrice = importPrice + (importPrice * profitMargin / 100.0);
+    ui->Price->setValue(sellingPrice);
+}
+
+double EditProductDialog::getImportPrice() const
+{
+    return ui->ImportPrice->value();
+}
+
+double EditProductDialog::getProfitMargin() const
+{
+    return ui->ProfitMargin->value();
 }

@@ -25,11 +25,10 @@ private slots:
 
 private:
     Ui::ManageInventory *ui;
-    Store* m_store;
-    QStandardItemModel* m_model;
+    Store* store;
+    QStandardItemModel* model;
 
     void setupTable();
-    void loadProducts();
     void loadProductsFiltered(int filterType, const QString& searchText = "");
     Product* getProductFromRow(int row);
 };

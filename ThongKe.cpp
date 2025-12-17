@@ -17,6 +17,7 @@ ThongKe::ThongKe(Store* store, QWidget *parent)
     : QDialog(parent), ui(new Ui::ThongKe), m_store(store)
 {
     ui->setupUi(this);
+    
     setupTable();
     loadBillHistory();
 
