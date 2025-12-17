@@ -105,9 +105,8 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(1, QHeaderView::Interactive);
     header->resizeSection(1, 300);
-    for (int i = 2; i <= 6; i++) {
+    for (int i = 2; i <= 6; i++)
         header->setSectionResizeMode(i, QHeaderView::Stretch);
-    }
     header->setSectionResizeMode(7, QHeaderView::ResizeToContents);
 }
 
@@ -161,34 +160,13 @@ void MainWindow::onCancelOrderClicked()
     if(currentBill == nullptr)
         return;
 
-    bool isBillEmpty = currentBill->getItems().empty();
-    if (isBillEmpty)
-    {
-        // Chỉ cần gọi reset giao diện
-        // Hàm resetHoaDon() sẽ không trả hàng vì không có item nào trong bill.
-        resetHoaDon();
-        updateHoaDonView();
-
-        // Cập nhật lại giao diện chung
-        ui->txtSearchPhoneCustomer->clear();
-        ui->lblTenKhach->setText("Khách Lẻ");
-
-        loadAndSortProducts(curTableProduct);
-        return;
-    }
-
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Xác nhận hủy",
-                                  "Bạn có chắc muốn hủy hóa đơn này?\nTất cả sản phẩm sẽ được trả về kho.",
-                                  QMessageBox::Yes | QMessageBox::No);
+    reply = QMessageBox::question(this, "Xác nhận hủy","Bạn có chắc muốn hủy hóa đơn này?\nTất cả sản phẩm sẽ được trả về kho.",QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes)
     {
         resetHoaDon();
         updateHoaDonView();
-        ui->txtSearchPhoneCustomer->clear();
-        ui->lblTenKhach->setText("Khách Lẻ");
-
         loadAndSortProducts(curTableProduct);
         QMessageBox::information(this, "Thành công", "Đã hủy hóa đơn và trả hàng về kho.");
     }
@@ -248,36 +226,27 @@ void MainWindow::setupLastBill()
     ui->tableLastBill->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
-// Trong file mainwindow.cpp
-
 void MainWindow::updateHoaDonView()
 {
     modelHoaDon->removeRows(0, modelHoaDon->rowCount());
 
     if(currentBill)
     {
-        // 1. Cập nhật bảng hàng hóa (Giữ nguyên)
         const auto& items = currentBill->getItems();
         for (const BillItem& item : items)
         {
             QList<QStandardItem*> row;
 
-            // Lấy item Tên Sản Phẩm
             QStandardItem* nameItem = new QStandardItem(item.getProduct()->getName());
-            // KHÓA CHỈNH SỬA: Bỏ cờ cho phép chỉnh sửa
-            nameItem->setFlags(nameItem->flags() & ~Qt::ItemIsEditable); // <--- QUAN TRỌNG
+            nameItem->setFlags(nameItem->flags() & ~Qt::ItemIsEditable);
             row << nameItem;
 
-            // Lấy item Số Lượng
             QStandardItem* qtyItem = new QStandardItem(QString::number(item.getQuantity()));
-            // KHÓA CHỈNH SỬA
-            qtyItem->setFlags(qtyItem->flags() & ~Qt::ItemIsEditable); // <--- QUAN TRỌNG
+            qtyItem->setFlags(qtyItem->flags() & ~Qt::ItemIsEditable);
             row << qtyItem;
 
-            // Lấy item Thành Tiền
             QStandardItem* totalItem = new QStandardItem(QString::number(item.getLineTotal(), 'f', 0));
-            // KHÓA CHỈNH SỬA
-            totalItem->setFlags(totalItem->flags() & ~Qt::ItemIsEditable); // <--- QUAN TRỌNG
+            totalItem->setFlags(totalItem->flags() & ~Qt::ItemIsEditable);
             row << totalItem;
 
             modelHoaDon->appendRow(row);
@@ -286,53 +255,40 @@ void MainWindow::updateHoaDonView()
         double subTotal = currentBill->getSubTotal();
         double finalTotal = currentBill->getTotal();
 
-        // 2. Cập nhật thông tin khách và Nút dùng điểm
         Customer* c = currentBill->getCustomer();
         if(c)
         {
-            // Add tier icon before name
             QString tierIcon;
             QString tier = c->getTier();
             if (tier == "Diamond") tierIcon = "💎";
             else if (tier == "Gold") tierIcon = "🥇";
             else if (tier == "Silver") tierIcon = "🥈";
-            else tierIcon = "🥉";  // Bronze
+            else tierIcon = "🥉";
 
             ui->lblTenKhach->setText(QString("%1 %2").arg(tierIcon, c->getName()));
             ui->lblDiemKhach->setText(QString("Điểm Tích Lũy: %1").arg(c->getPoints()));
 
-            ui->btnDungDiem->setVisible(true); // Hiện nút
+            ui->btnDungDiem->setVisible(true);
 
-            // === LOGIC MỚI CHO NÚT DÙNG ĐIỂM ===
             if (currentBill->getCheck())
             {
-                // TRƯỜNG HỢP 1: ĐÃ ÁP DỤNG GIẢM GIÁ -> HIỆN NÚT HỦY
-                ui->btnDungDiem->setEnabled(true); // Vẫn cho bấm để hủy
-                ui->btnDungDiem->setText(QString("Hủy giảm giá (Trả lại %1 điểm)")
-                                             .arg(currentBill->getPointsUsed()));
-                // Có thể set style đỏ để cảnh báo đây là nút hủy
+                ui->btnDungDiem->setEnabled(true);
+                ui->btnDungDiem->setText(QString("Hủy giảm giá (Trả lại %1 điểm)").arg(currentBill->getPointsUsed()));
                 ui->btnDungDiem->setStyleSheet("QPushButton { color: red; border-color: red; }");
             }
             else
             {
-                // TRƯỜNG HỢP 2: CHƯA ÁP DỤNG -> TÍNH TOÁN XEM CÓ ĐƯỢC DÙNG KHÔNG
-                // Reset style về mặc định (Xanh)
                 ui->btnDungDiem->setStyleSheet("");
 
                 int currentPoints = c->getPoints();
-
-                // Use finalTotal (after tier discount) for calculation
                 if (currentPoints >= 10 && finalTotal > 1000.0)
                 {
-                    // Calculate max points: floor((total - 1000) / 100)
                     int maxPointsToUse = static_cast<int>((finalTotal - 1000.0) / 100.0);
                     int ptsToUse = qMin(maxPointsToUse, currentPoints);
                     double priceAfterDiscount = finalTotal - (ptsToUse * 100.0);
 
                     ui->btnDungDiem->setEnabled(true);
-                    ui->btnDungDiem->setText(QString("Dùng %1 điểm (Còn: %2 đ)")
-                                                 .arg(ptsToUse)
-                                                 .arg(QString::number(priceAfterDiscount, 'f', 0)));
+                    ui->btnDungDiem->setText(QString("Dùng %1 điểm (Còn: %2 đ)").arg(ptsToUse).arg(QString::number(priceAfterDiscount, 'f', 0)));
                 }
                 else
                 {
@@ -345,16 +301,11 @@ void MainWindow::updateHoaDonView()
             }
         }
         else
-        {
-            ui->btnDungDiem->setVisible(false); // Không khách -> Ẩn
-        }
+            ui->btnDungDiem->setVisible(false);
 
-        // 3. Cập nhật tổng tiền
-        ui->TotalBefore->setText(QString("Tổng tiền ban đầu: %1 đ")
-                                     .arg(QString::number(subTotal, 'f', 0)));
+        ui->TotalBefore->setText(QString("Tổng tiền ban đầu: %1 đ").arg(QString::number(subTotal, 'f', 0)));
 
-        ui->TotalAfter->setText(QString("Tổng tiền thanh toán: %1 đ")
-                                    .arg(QString::number(finalTotal, 'f', 0)));
+        ui->TotalAfter->setText(QString("Tổng tiền thanh toán: %1 đ").arg(QString::number(finalTotal, 'f', 0)));
         ui->TotalAfter->setStyleSheet(
             "QLabel { "
             "  border: 2px solid #10B981; "
@@ -376,19 +327,16 @@ void MainWindow::updateLastBillView()
     for (const BillItem& item : items)
     {
         QList<QStandardItem*> row;
-        // Cột 1: Tên SP
         QStandardItem* nameItem = new QStandardItem(item.getProduct()->getName());
-        nameItem->setFlags(nameItem->flags() & ~Qt::ItemIsEditable); // KHÓA CHỈNH SỬA
+        nameItem->setFlags(nameItem->flags() & ~Qt::ItemIsEditable);
         row << nameItem;
 
-        // Cột 2: Số lượng
         QStandardItem* qtyItem = new QStandardItem(QString::number(item.getQuantity()));
-        qtyItem->setFlags(qtyItem->flags() & ~Qt::ItemIsEditable); // KHÓA CHỈNH SỬA
+        qtyItem->setFlags(qtyItem->flags() & ~Qt::ItemIsEditable);
         row << qtyItem;
 
-        // Cột 3: Thành tiền
         QStandardItem* totalItem = new QStandardItem(QString::number(item.getLineTotal(), 'f', 0));
-        totalItem->setFlags(totalItem->flags() & ~Qt::ItemIsEditable); // KHÓA CHỈNH SỬA
+        totalItem->setFlags(totalItem->flags() & ~Qt::ItemIsEditable);
         row << totalItem;
 
         modelLastBill->appendRow(row);
@@ -422,27 +370,21 @@ void MainWindow::resetHoaDon()
     ui->TotalBefore->setText("");
     ui->TotalAfter->setText("");
 
-    // ✅ TRẢ HÀNG VỀ KHO khi hủy đơn
     const std::vector<BillItem>& billitems = currentBill->getItems();
     for(const BillItem& item : billitems)
     {
-        // 🛡️ FIX: Dùng ID thay vì Name (tránh trả nhầm sản phẩm cùng tên)
         Product* p = store->findProductById(item.getProduct()->getId());
-        if(p) {
+        if(p)
             p->setQuantity(p->getQuantity() + item.getQuantity());
-        }
     }
 
     Customer* c = currentBill->getCustomer();
 
-    // Lấy đúng số điểm đã trừ lúc nãy từ Bill::getPointsUsed()
     int used = currentBill->getPointsUsed();
-    if (c && currentBill->getCheck() && used > 0) {
+    if (c && currentBill->getCheck())
         c->setPoints(c->getPoints() + used);
-    }
 
-    delete currentBill;
-    currentBill = new Bill(nullptr, "", currentUser);
+    currentBill->clear();
 
     ui->btnDungDiem->setVisible(false);
     ui->btnDungDiem->setEnabled(false);
@@ -458,8 +400,6 @@ void MainWindow::loadAndSortProducts(int typeFilter)
 
     store->forEachProduct([&](const QString&, Product* p) {
         if (!p) return;
-
-        // ✅ FILTER: Only show active products with stock > 0
         if (!p->getIsActive()) return;
         if (p->getQuantity() <= 0) return;
 
@@ -468,19 +408,17 @@ void MainWindow::loadAndSortProducts(int typeFilter)
         Beverage* b = dynamic_cast<Beverage*>(p);
         HouseholdItem* h = dynamic_cast<HouseholdItem*>(p);
 
-        if (typeFilter == 0) {
+        if (typeFilter == 0)
             shouldInclude = true;
-        } else if (typeFilter == 1 && f) {
+        else if (typeFilter == 1 && f)
             shouldInclude = true;
-        } else if (typeFilter == 2 && b) {
+        else if (typeFilter == 2 && b)
             shouldInclude = true;
-        } else if (typeFilter == 3 && h) {
+        else if (typeFilter == 3 && h)
             shouldInclude = true;
-        }
 
-        if (shouldInclude) {
+        if (shouldInclude)
             products.push_back(p);
-        }
     });
 
     applySortingAndFiltering(products);
@@ -505,7 +443,7 @@ void MainWindow::loadAndSortProducts(int typeFilter)
         else typeName = "Khác";
         row << new QStandardItem(typeName);
 
-        row << new QStandardItem(QString::number(p->calcFinalPrice()));
+        row << new QStandardItem(QString::number(p->calcFinalPrice(), 'f', 0));
         row << new QStandardItem(QString::number(p->getQuantity()));
         row << new QStandardItem(b ? QString::number(b->getVolume()) : "");
 
@@ -523,67 +461,68 @@ void MainWindow::loadAndSortProducts(int typeFilter)
 
 void MainWindow::applySortingAndFiltering(std::vector<Product*>& products)
 {
-    switch (currentSortCriteria) {
-    case SORT_DEFAULT:
-        std::sort(products.begin(), products.end(), compareNameAsc);
-        break;
+    switch (currentSortCriteria)
+    {
+        case SORT_DEFAULT:
+            std::sort(products.begin(), products.end(), compareNameAsc);
+            break;
 
-    case SORT_PRICE_ASC:
-        std::sort(products.begin(), products.end(), comparePriceAsc);
-        break;
+        case SORT_PRICE_ASC:
+            std::sort(products.begin(), products.end(), comparePriceAsc);
+            break;
 
-    case SORT_PRICE_DESC:
-        std::sort(products.begin(), products.end(), comparePriceDesc);
-        break;
+        case SORT_PRICE_DESC:
+            std::sort(products.begin(), products.end(), comparePriceDesc);
+            break;
 
-    case SORT_QUANTITY_ASC:
-        std::sort(products.begin(), products.end(), compareQuantityAsc);
-        break;
+        case SORT_QUANTITY_ASC:
+            std::sort(products.begin(), products.end(), compareQuantityAsc);
+            break;
 
-    case SORT_QUANTITY_DESC:
-        std::sort(products.begin(), products.end(), compareQuantityDesc);
-        break;
+        case SORT_QUANTITY_DESC:
+            std::sort(products.begin(), products.end(), compareQuantityDesc);
+            break;
 
-    case SORT_EXPIRY_ASC:
-    case SORT_EXPIRY_DESC:
-        products.erase(
-            std::remove_if(products.begin(), products.end(), [](Product* p) {
-                return dynamic_cast<HouseholdItem*>(p);
-            }),
-            products.end()
-            );
-        if(currentSortCriteria == SORT_EXPIRY_ASC)
-            std::sort(products.begin(), products.end(), compareExpiryAsc);
-        else
-            std::sort(products.begin(), products.end(), compareExpiryDesc);
-        break;
-    case SORT_VOLUME_ASC:
-    case SORT_VOLUME_DESC:
-        products.erase(
-            std::remove_if(products.begin(), products.end(), [](Product* p) {
-                return dynamic_cast<Beverage*>(p) == nullptr;
-            }),
-            products.end()
-            );
-        if (currentSortCriteria == SORT_VOLUME_ASC)
-            std::sort(products.begin(), products.end(), compareVolumeAsc);
-        else
-            std::sort(products.begin(), products.end(), compareVolumeDesc);
-        break;
+        case SORT_EXPIRY_ASC:
+        case SORT_EXPIRY_DESC:
+            products.erase(
+                std::remove_if(products.begin(), products.end(), [](Product* p) {
+                    return dynamic_cast<HouseholdItem*>(p);
+                }),
+                products.end()
+                );
+            if(currentSortCriteria == SORT_EXPIRY_ASC)
+                std::sort(products.begin(), products.end(), compareExpiryAsc);
+            else
+                std::sort(products.begin(), products.end(), compareExpiryDesc);
+            break;
+        case SORT_VOLUME_ASC:
+        case SORT_VOLUME_DESC:
+            products.erase(
+                std::remove_if(products.begin(), products.end(), [](Product* p) {
+                    return dynamic_cast<Beverage*>(p) == nullptr;
+                }),
+                products.end()
+                );
+            if (currentSortCriteria == SORT_VOLUME_ASC)
+                std::sort(products.begin(), products.end(), compareVolumeAsc);
+            else
+                std::sort(products.begin(), products.end(), compareVolumeDesc);
+            break;
 
-    case SORT_WARRANTY_ASC:
-    case SORT_WARRANTY_DESC:
-        products.erase(
-            std::remove_if(products.begin(), products.end(), [](Product* p) {
-                return dynamic_cast<HouseholdItem*>(p) == nullptr;
-            }),
-            products.end()
-            );
-        if (currentSortCriteria == SORT_WARRANTY_ASC)
-            std::sort(products.begin(), products.end(), compareWarrantyAsc);
-        else
-            std::sort(products.begin(), products.end(), compareWarrantyDesc);
-        break;
+        case SORT_WARRANTY_ASC:
+        case SORT_WARRANTY_DESC:
+            products.erase(
+                std::remove_if(products.begin(), products.end(), [](Product* p) {
+                    return dynamic_cast<HouseholdItem*>(p) == nullptr;
+                }),
+                products.end()
+                );
+            if (currentSortCriteria == SORT_WARRANTY_ASC)
+                std::sort(products.begin(), products.end(), compareWarrantyAsc);
+            else
+                std::sort(products.begin(), products.end(), compareWarrantyDesc);
+            break;
     }
 }
 bool MainWindow::compareNameAsc(Product* a, Product* b)
@@ -750,7 +689,7 @@ void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
         else if (h) typeName = "Đồ gia dụng";
         row << new QStandardItem(typeName);
 
-        row << new QStandardItem(QString::number(p->calcFinalPrice()));
+        row << new QStandardItem(QString::number(p->calcFinalPrice(), 'f', 0));
         row << new QStandardItem(QString::number(p->getQuantity()));
         row << new QStandardItem(b ? QString::number(b->getVolume()) : "");
 
@@ -1173,9 +1112,9 @@ void MainWindow::on_ThemHang_clicked()
     {
         QString type = dialog.getProductType();
         QString name = dialog.getName();
-        double price = dialog.getPrice();              // Giá bán (tự động tính)
-        double importPrice = dialog.getImportPrice();  // Giá gốc
-        double profitMargin = dialog.getProfitMargin();// % Lợi nhuận
+        double price = dialog.getPrice();
+        double importPrice = dialog.getImportPrice();
+        double profitMargin = dialog.getProfitMargin();
         int quantity = dialog.getQuantity();
 
         if (type == "Đồ ăn")

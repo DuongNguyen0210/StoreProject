@@ -274,3 +274,17 @@ void Bill::setCreatedBy(User* user)
 {
     createdBy = user;
 }
+
+void Bill::clear()
+{
+    items.clear();
+    
+    customer = nullptr;
+    
+    delete payment;
+    payment = nullptr;
+    
+    discountPercent = 0.0;
+    pointsUsed = 0;
+    check = false;
+}

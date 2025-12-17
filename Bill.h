@@ -64,6 +64,8 @@ public:
 
     int getPointsUsed() const { return pointsUsed; }
     void setPointsUsed(int p) { pointsUsed = p; }
+    
+    void clear();
 };
 
 #endif
