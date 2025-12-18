@@ -79,7 +79,7 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     connect(ui->btnCancelOrder, &QPushButton::clicked, this, &MainWindow::onCancelOrderClicked);
     connect(ui->tableViewProduct, &QTableView::doubleClicked, this, &MainWindow::onAddSanPham);
     connect(ui->SearchText, &QLineEdit::returnPressed, this, &MainWindow::on_BtnSearch_clicked);
-    connect(ui->SearchText, &QLineEdit::textChanged, this, &MainWindow::on_SearchText_changed);
+    // connect(ui->SearchText, &QLineEdit::textChanged, this, &MainWindow::on_SearchText_changed);
     connect(ui->tableViewOrder, &QTableView::doubleClicked, this, &MainWindow::onEditSanPhamDoubleClicked);
     connect(ui->txtSearchCustomer, &QLineEdit::returnPressed, this, &MainWindow::onTimKhachPressed);
     connect(ui->txtSearchPhoneCustomer, &QLineEdit::returnPressed, this, &MainWindow::onTimKhachPressed);
@@ -637,15 +637,10 @@ void MainWindow::loadProductsFromStoreWithKeyWord(const QString &keyword)
 
     modelTable->removeRows(0, modelTable->rowCount());
 
-    // Search like manageinventory - iterate all and filter with contains
     store->forEachProduct([&](const QString&, Product* p) {
         if (!p) return;
-
-        // Filter active products with stock
         if (!p->getIsActive()) return;
         if (p->getQuantity() <= 0) return;
-
-        // Search filter: check if name or ID contains keyword
         QString name = p->getName().toLower();
         QString id = p->getId().toLower();
         if (!name.contains(kw) && !id.contains(kw)) return;
@@ -709,10 +704,10 @@ void MainWindow::on_BtnSearch_clicked()
     loadProductsFromStoreWithKeyWord(ui->SearchText->text());
 }
 
-void MainWindow::on_SearchText_changed(const QString& text)
-{
-    loadProductsFromStoreWithKeyWord(text);
-}
+// void MainWindow::on_SearchText_changed(const QString& text)
+// {
+//     loadProductsFromStoreWithKeyWord(text);
+// }
 
 void MainWindow::onAddSanPham(const QModelIndex &index)
 {
