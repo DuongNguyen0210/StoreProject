@@ -18,26 +18,11 @@
     <normaloff>:/icons/icons/report.png</normaloff>:/icons/icons/report.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>20</number>
-   </property>
-   <property name="leftMargin">
-    <number>20</number>
-   </property>
-   <property name="topMargin">
-    <number>20</number>
-   </property>
-   <property name="rightMargin">
-    <number>20</number>
-   </property>
-   <property name="bottomMargin">
-    <number>20</number>
-   </property>
    <item>
     <widget class="QLabel" name="lblDashboardTitlel">
      <property name="font">
       <font>
-       <pointsize>18</pointsize>
+       <pointsize>9</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -65,11 +50,6 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QLabel" name="lblRevenueTit">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Tổng Doanh Thu</string>
           </property>
@@ -80,12 +60,6 @@
         </item>
         <item>
          <widget class="QLabel" name="lblRevenue">
-          <property name="font">
-           <font>
-            <pointsize>20</pointsize>
-            <bold>true</bold>
-           </font>
-          </property>
           <property name="text">
            <string>0 đ</string>
           </property>
@@ -108,11 +82,6 @@
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QLabel" name="lblProfitTitle">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Lợi Nhuận Ước Tính</string>
           </property>
@@ -123,12 +92,6 @@
         </item>
         <item>
          <widget class="QLabel" name="lblProfit">
-          <property name="font">
-           <font>
-            <pointsize>20</pointsize>
-            <bold>true</bold>
-           </font>
-          </property>
           <property name="text">
            <string>0 đ</string>
           </property>
@@ -139,11 +102,6 @@
         </item>
         <item>
          <widget class="QLabel" name="lblProfitMargin">
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Tỉ lệ lời: 0.0%</string>
           </property>
@@ -166,11 +124,6 @@
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QLabel" name="lblBillsTitle">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Số Hóa Đơn</string>
           </property>
@@ -181,12 +134,6 @@
         </item>
         <item>
          <widget class="QLabel" name="lblBillCount">
-          <property name="font">
-           <font>
-            <pointsize>20</pointsize>
-            <bold>true</bold>
-           </font>
-          </property>
           <property name="text">
            <string>0</string>
           </property>
@@ -208,7 +155,7 @@
      <item>
       <widget class="QGroupBox" name="groupRevenue">
        <property name="title">
-        <string>Doanh Thu Theo Ngày (30 ngày gần nhất)</string>
+        <string>Doanh Thu</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
@@ -250,7 +197,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>250</height>
+            <height>0</height>
            </size>
           </property>
          </widget>
@@ -265,14 +212,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <widget class="QChartView" name="chartTop5">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
+         <widget class="QChartView" name="chartTop5"/>
         </item>
        </layout>
       </widget>
@@ -293,14 +233,7 @@
         <item>
          <layout class="QHBoxLayout" name="chartLegendLayout">
           <item>
-           <widget class="QChartView" name="chartWarnings">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-           </widget>
+           <widget class="QChartView" name="chartWarnings"/>
           </item>
           <item>
            <widget class="QFrame" name="frameLegend">
@@ -556,12 +489,6 @@
        <layout class="QVBoxLayout" name="verticalLayout_8">
         <item>
          <widget class="QTableView" name="billHistoryTable">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
           <property name="alternatingRowColors">
            <bool>true</bool>
           </property>
@@ -571,16 +498,6 @@
       </widget>
      </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Orientation::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::StandardButton::Close</set>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>
@@ -594,22 +511,5 @@
  <resources>
   <include location="../resources/Resource.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>ThongKe</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -4,8 +4,6 @@
 #include "ui_ThongKe.h"
 #include "dialogs/billdetaildialog.h"
 #include "dialogs/StockProductDialog.h"
-#include "models/Food.h"
-#include "models/Beverage.h"
 #include <QString>
 #include <QHeaderView>
 #include <QDateTime>
@@ -125,10 +123,13 @@ void ThongKe::updateKPICards()
     ui->lblProfit->setText(QString("%1 đ")
                                .arg(QString::number(totalProfit, 'f', 0)));
     
-    // Tính tỉ lệ lợi nhuận %
+    // Tính tổng giá vốn (cost)
+    double totalCost = calculateTotalCost();
+    
+    // Tính tỉ lệ lợi nhuận trên vốn (ROI)
     double profitMargin = 0.0;
-    if (totalRevenue > 0) {
-        profitMargin = (totalProfit / totalRevenue) * 100.0;
+    if (totalCost > 0) {
+        profitMargin = (totalProfit / totalCost) * 100.0;
     }
     QString marginText = QString("Tỉ lệ lời: %1%").arg(QString::number(profitMargin, 'f', 1));
     ui->lblProfitMargin->setText(marginText);
@@ -429,19 +430,47 @@ double ThongKe::calculateTotalProfit()
         if (!bill) continue;
 
         const auto& items = bill->getItems();
+        double tierDiscount = bill->getTierDiscountPercent();
+        
         for (const BillItem& item : items)
         {
             Product* p = item.getProduct();
             if (p)
             {
-                // Lợi nhuận = (Giá bán - Giá gốc) * Số lượng
-                double profit = (item.getUnitPrice() - p->getImportPrice()) * item.getQuantity();
+                // Giá thực tế khách trả = giá gốc * (1 - tier discount%)
+                double actualUnitPrice = item.getUnitPrice() * (1.0 - tierDiscount / 100.0);
+                
+                // Lợi nhuận = (Giá thực tế - Giá nhập) * Số lượng
+                double profit = (actualUnitPrice - p->getImportPrice()) * item.getQuantity();
                 totalProfit += profit;
             }
         }
     }
 
     return totalProfit;
+}
+
+double ThongKe::calculateTotalCost()
+{
+    double totalCost = 0.0;
+    const auto& history = m_store->getBillHistory();
+    for (const Bill* bill : history)
+    {
+        if (!bill) continue;
+        
+        const auto& items = bill->getItems();
+        for (const BillItem& item : items)
+        {
+            Product* p = item.getProduct();
+            if (p)
+            {
+                double cost = p->getImportPrice() * item.getQuantity();
+                totalCost += cost;
+            }
+        }
+    }
+    
+    return totalCost;
 }
 
 void ThongKe::onBillDoubleClicked(const QModelIndex &index)

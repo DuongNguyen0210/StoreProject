@@ -141,10 +141,10 @@ void StockProductDialog::loadProductData()
     });
     
     // Update tab labels with counts
-    ui->tabWidget->setTabText(0, QString("❌ Hết Hàng (%1)").arg(outOfStockCount));
-    ui->tabWidget->setTabText(1, QString("⚠️ Gần Hết (1-5) (%1)").arg(criticalLowCount));
-    ui->tabWidget->setTabText(2, QString("⚡ Sắp Hết (6-10) (%1)").arg(lowCount));
-    ui->tabWidget->setTabText(3, QString("✅ Đủ Hàng (>10) (%1)").arg(adequateCount));
+    ui->tabWidget->setTabText(0, QString("Hết Hàng (%1)").arg(outOfStockCount));
+    ui->tabWidget->setTabText(1, QString("Gần Hết (1-5) (%1)").arg(criticalLowCount));
+    ui->tabWidget->setTabText(2, QString("Sắp Hết (6-10) (%1)").arg(lowCount));
+    ui->tabWidget->setTabText(3, QString("Đủ Hàng (>10) (%1)").arg(adequateCount));
 }
 
 void StockProductDialog::populateTable(QStandardItemModel* model, int minQty, int maxQty)

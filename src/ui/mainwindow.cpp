@@ -13,21 +13,19 @@
 #include <QLabel>
 #include <algorithm>
 
-#include <qstring.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
-#include <qlabel.h>
-#include <qtableview.h>
-
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QSize>
+#include <QCloseEvent>
+#include <QDir>
+#include <QCoreApplication>
 
 #include "models/BillItem.h"
 #include "models/Payment.h"
 #include "models/Customer.h"
 #include "core/HashTable.h"
+#include "core/StorePersistence.h"
 
 #include "dialogs/AddProductToStore.h"
 #include "ui/ThongKe.h"
@@ -178,6 +176,15 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete currentBill;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    // Save data before closing
+    QString dataPath = QCoreApplication::applicationDirPath() + QDir::separator() + "store_data.txt";
+    StorePersistence::save(*store, dataPath);
+    
+    event->accept();
 }
 
 void MainWindow::setupTable()

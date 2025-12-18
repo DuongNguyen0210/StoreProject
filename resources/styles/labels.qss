@@ -150,35 +150,29 @@ QLabel#lblCustomerTitle
 /* ==================== STATISTIC CARDS ==================== */
 
 /* Card title labels */
-QLabel#lblRevenueTitle,
+QLabel#lblRevenueTit,
 QLabel#lblProfitTitle,
 QLabel#lblBillsTitle
 {
     color: #94A3B8;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 4px 0;
+    font-size: 10px;
+    font-weight: 700;
     qproperty-alignment: AlignCenter;
 }
-
 /* Card value labels */
 QLabel#lblRevenue,
 QLabel#lblProfit,
 QLabel#lblBillCount
 {
     color: #1E293B;
-    font-size: 24px;
+    font-size: 10px;
     font-weight: 700;
-    padding: 8px 0;
     qproperty-alignment: AlignCenter;
 }
-
-/* Card sub-label (Profit margin) */
 QLabel#lblProfitMargin
 {
     color: #10B981;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 4px 0;
+    font-size: 10px;
+    font-weight: 700;
     qproperty-alignment: AlignCenter;
 }

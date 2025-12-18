@@ -135,9 +135,6 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
     }
     out << "\n";
 
-    out << "[REVENUE]\n";
-    out << QString::number(store.getTotalRevenue(), 'f', 2) << "\n";
-
     return true;
 }
 
@@ -154,8 +151,7 @@ bool StorePersistence::load(Store &store, const QString &filePath)
         Products,
         Customers,
         Users,
-        Bills,
-        Revenue
+        Bills
     };
 
     Section current = None;
@@ -172,21 +168,6 @@ bool StorePersistence::load(Store &store, const QString &filePath)
         if (line == "[CUSTOMERS]") { current = Customers; continue; }
         if (line == "[USERS]")     { current = Users;     continue; }
         if (line == "[BILLS]")     { current = Bills;     continue; }
-        if (line == "[REVENUE]")   { current = Revenue;   continue; }
-
-        if (current == Revenue)
-        {
-            bool ok = false;
-            double totalRev = line.toDouble(&ok);
-            if (ok)
-                store.addRevenue(totalRev);
-            else
-            {
-                QMessageBox::warning(nullptr, "Lỗi", "Có vấn đề khi đọc doanh thu từ file");
-                return false;
-            }
-            continue;
-        }
 
         QStringList parts = line.split('|');
 
@@ -384,6 +365,14 @@ bool StorePersistence::load(Store &store, const QString &filePath)
 
         default:
             break;
+        }
+    }
+
+    // Calculate revenue from bills
+    for (const Bill* bill : store.getBillHistory())
+    {
+        if (bill) {
+            store.addRevenue(bill->getTotal());
         }
     }
 

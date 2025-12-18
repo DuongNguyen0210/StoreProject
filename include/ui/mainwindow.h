@@ -62,6 +62,9 @@ public:
     MainWindow(User* user, Store* store, QWidget *parent = nullptr);
     ~MainWindow();
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private slots:
     void on_ToanBo_clicked();
     void on_DoAn_clicked();

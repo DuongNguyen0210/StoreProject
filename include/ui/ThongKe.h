@@ -53,6 +53,7 @@ private:
 
     // Hàm tính toán
     double calculateTotalProfit();
+    double calculateTotalCost();
 };
 
 #endif
