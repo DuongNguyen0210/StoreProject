@@ -135,6 +135,7 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
     }
     out << "\n";
 
+    file.close();  // ✅ CRITICAL: Flush buffer to disk
     return true;
 }
 

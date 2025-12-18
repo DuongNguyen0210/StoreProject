@@ -139,6 +139,7 @@ void MainWindow::applyPermissions()
     bool isAdmin = (dynamic_cast<Manager*>(currentUser) != nullptr);
     bool isCashier = (dynamic_cast<Cashier*>(currentUser) != nullptr);
     ui->ThemHang->setVisible(isAdmin);
+    ui->QuanLyKho->setVisible(isAdmin);
     ui->ThongKe->setVisible(isAdmin || isCashier);
     ui->KhachHang->setVisible(isAdmin || isCashier);
 
@@ -180,9 +181,17 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    // Save data before closing
-    QString dataPath = QCoreApplication::applicationDirPath() + QDir::separator() + "store_data.txt";
-    StorePersistence::save(*store, dataPath);
+    qDebug() << "========================================";
+    qDebug() << "MainWindow closing, saving data...";
+    
+    // Relative path: works on any machine
+    QString dataPath = QCoreApplication::applicationDirPath() + "/../../../data/store_data.txt";
+    dataPath = QDir::cleanPath(dataPath); // Normalize path
+    qDebug() << "Data path:" << dataPath;
+    
+    bool success = StorePersistence::save(*store, dataPath);
+    qDebug() << "Save result:" << (success ? "SUCCESS " : "FAILED");
+    qDebug() << "========================================";
     
     event->accept();
 }
