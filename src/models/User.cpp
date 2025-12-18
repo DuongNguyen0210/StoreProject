@@ -7,9 +7,7 @@ QString User::generateId()
 {
     int mex = 0;
     while (usedIds.contains(mex))
-    {
         mex++;
-    }
 
     usedIds.insert(mex);
 
@@ -18,40 +16,22 @@ QString User::generateId()
 
 void User::registerUsedId(const QString& id)
 {
-    // Kiểm tra nếu ID có format Uxxxx
     if (id.startsWith('U', Qt::CaseInsensitive) && id.length() > 1)
     {
         bool ok = false;
         int idNum = id.mid(1).toInt(&ok);
 
         if (ok && idNum >= 0)
-        {
             usedIds.insert(idNum);
-        }
     }
 }
 
-void User::unregisterUsedId(const QString& id)
-{
-    if (id.startsWith('U', Qt::CaseInsensitive) && id.length() > 1)
-    {
-        bool ok = false;
-        int idNum = id.mid(1).toInt(&ok);
-
-        if (ok && idNum >= 0)
-        {
-            usedIds.remove(idNum);
-        }
-    }
-}
 
 User::User(const QString& id, const QString& name, const QString& password)
     : name(name), password(password)
 {
     if (id.isEmpty())
-    {
         this->id = generateId();
-    }
     else
     {
         this->id = id;
@@ -59,10 +39,7 @@ User::User(const QString& id, const QString& name, const QString& password)
     }
 }
 
-User::~User()
-{
-    unregisterUsedId(id);
-}
+User::~User() {}
 
 const QString& User::getId() const
 {

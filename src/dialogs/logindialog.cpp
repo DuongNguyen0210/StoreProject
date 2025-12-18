@@ -7,8 +7,6 @@ LoginDialog::LoginDialog(Store* store, QWidget *parent)
     : QDialog(parent), ui(new Ui::LoginDialog), m_store(store), m_loggedInUser(nullptr)
 {
     ui->setupUi(this);
-
-    // Load external stylesheet from styles directory
     QFile styleFile(":/styles/styles/login.qss");
     if (styleFile.open(QFile::ReadOnly))
     {

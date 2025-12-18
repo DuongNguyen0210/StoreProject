@@ -21,9 +21,7 @@ void Customer::registerUsedId(const QString& id)
         int idNum = id.mid(1).toInt(&ok);
 
         if (ok && idNum >= 0)
-        {
             usedIds.insert(idNum);
-        }
     }
 }
 
@@ -31,9 +29,7 @@ Customer::Customer(const QString& id, const QString& name, const QString& phone,
     : name(name), phone(phone), points(points), tier("Bronze")
 {
     if (id.isEmpty())
-    {
         this->id = generateId();
-    }
     else
     {
         this->id = id;
@@ -57,10 +53,6 @@ const QString& Customer::getPhone() const
     return phone;
 }
 
-
-
-
-
 QString Customer::getTier() const
 {
     return tier;
@@ -69,11 +61,11 @@ QString Customer::getTier() const
 void Customer::updateTierBasedOnPoints()
 {
     QString newTier = "Bronze";
-    if (points >= 3000)
+    if (points >= 30000)
         newTier = "Diamond";
-    else if (points >= 1000)
+    else if (points >= 10000)
         newTier = "Gold";
-    else if (points >= 500)
+    else if (points >= 5000)
         newTier = "Silver";
     
     if (tier == "Bronze")
@@ -86,9 +78,9 @@ void Customer::updateTierBasedOnPoints()
 
 double Customer::getTierDiscountPercent() const
 {
-    if (points >= 3000) return 10.0;
-    if (points >= 1000) return 5.0;
-    if (points >= 500) return 2.0;
+    if (points >= 30000) return 10.0;
+    if (points >= 10000) return 5.0;
+    if (points >= 5000) return 2.0;
     return 0.0;
 }
 
@@ -106,10 +98,6 @@ void Customer::setPhone(const QString& p)
 {
     phone = p;
 }
-
-
-
-
 
 void Customer::setPoints(int p)
 {

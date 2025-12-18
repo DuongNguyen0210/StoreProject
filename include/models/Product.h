@@ -5,18 +5,17 @@
 #include <QSet>
 #include <iostream>
 
-// ✅ COMPILER GUARD: Removed 'using namespace std;' from header
 
 class Product
 {
 protected:
     QString id;
     QString name;
-    double basePrice;        // Giá bán (Selling Price)
-    double importPrice;      // Giá gốc (Import Price)
-    double profitMargin;     // % Lợi nhuận (Profit Margin %)
+    double basePrice;
+    double importPrice;
+    double profitMargin;
     int quantity;
-    bool isActive;           // Soft delete flag
+    bool isActive;
 
     static QSet<int> usedIds;
     static QString generateId();
@@ -26,14 +25,13 @@ public:
             double importPrice = 0.0, double profitMargin = 0.0);
 
     virtual ~Product();
-
     const QString& getId() const;
     const QString& getName() const;
-    double getBasePrice() const;        // Giá bán
-    double getImportPrice() const;      // Giá gốc
-    double getProfitMargin() const;     // % Lợi nhuận
+    double getBasePrice() const;
+    double getImportPrice() const;
+    double getProfitMargin() const;
     int getQuantity() const;
-    bool getIsActive() const;           // Check if active
+    bool getIsActive() const;
 
     void setId(const QString& i);
     void setName(const QString& n);
@@ -41,12 +39,11 @@ public:
     void setImportPrice(double ip);
     void setProfitMargin(double pm);
     void setQuantity(int q);
-    void setActive(bool active);        // Soft delete/restore
+    void setActive(bool active);
 
     virtual double calcFinalPrice() const = 0;
 
     static void registerUsedId(const QString& id);
-    static void unregisterUsedId(const QString& id);
 };
 
 #endif

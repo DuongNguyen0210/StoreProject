@@ -30,4 +30,4 @@ private:
     void loadProductData();
 };
 
-#endif // STOCKPRODUCTDIALOG_H
+#endif

@@ -65,7 +65,8 @@ void ManageInventory::loadProductsFiltered(int filterType, const QString& search
 
     QString search = searchText.trimmed().toLower();
 
-    store->forEachProduct([&](const QString&, Product* p) {
+    store->forEachProduct([&](const QString&, Product* p)
+    {
         if (!p)
             return;
         if (!p->getIsActive())

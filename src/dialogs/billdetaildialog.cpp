@@ -70,18 +70,15 @@ void BillDetailDialog::loadBillDetails()
         model->appendRow(row);
     }
 
-    // Hiển thị tổng tiền
     double subTotal = bill->getSubTotal();
     double total = bill->getTotal();
 
-    ui->lblSubTotal->setText(QString("Tổng tiền: %1 đ")
-                                 .arg(QString::number(subTotal, 'f', 0)));
+    ui->lblSubTotal->setText(QString("Tổng tiền: %1 đ").arg(QString::number(subTotal, 'f', 0)));
 
     if (subTotal != total)
     {
         double discount = subTotal - total;
-        ui->lblDiscount->setText(QString("Giảm giá: -%1 đ")
-                                     .arg(QString::number(discount, 'f', 0)));
+        ui->lblDiscount->setText(QString("Giảm giá: -%1 đ").arg(QString::number(discount, 'f', 0)));
         ui->lblDiscount->setVisible(true);
     }
     else
@@ -89,6 +86,5 @@ void BillDetailDialog::loadBillDetails()
         ui->lblDiscount->setVisible(false);
     }
 
-    ui->lblTotal->setText(QString("Thành tiền: %1 đ")
-                              .arg(QString::number(total, 'f', 0)));
+    ui->lblTotal->setText(QString("Thành tiền: %1 đ").arg(QString::number(total, 'f', 0)));
 }

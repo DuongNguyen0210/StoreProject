@@ -123,8 +123,7 @@ void MainWindow::setupSortComboBox()
     ui->sortComboBox->addItem("Bảo hành: Tăng dần", SORT_WARRANTY_ASC);
     ui->sortComboBox->addItem("Bảo hành: Giảm dần", SORT_WARRANTY_DESC);
 
-    connect(ui->sortComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &MainWindow::onSortCriteriaChanged);
+    connect(ui->sortComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onSortCriteriaChanged);
 }
 
 void MainWindow::onSortCriteriaChanged(int index)
@@ -485,7 +484,6 @@ void MainWindow::applySortingAndFiltering(std::vector<Product*>& products)
 bool MainWindow::compareNameAsc(Product* a, Product* b)
 {
     if (!a || !b) return false;
-    // So sánh tên không phân biệt hoa thường (localeAwareCompare hoặc compare)
     return QString::localeAwareCompare(a->getName(), b->getName()) < 0;
 }
 
@@ -876,57 +874,19 @@ void MainWindow::onThanhToanClicked()
 
 void MainWindow::finalizeThanhToan(const QString& paymentMethod)
 {
-    // Mục đích: Đảm bảo an toàn dữ liệu, đề phòng kho bị âm trước khi chốt đơn
-    const std::vector<BillItem>& billItems = currentBill->getItems();
-    for (const BillItem& item : billItems)
-    {
-        Product* p = item.getProduct();
-        int available = p->getQuantity();
-
-        // Nếu kho bị âm (nghĩa là đã trừ quá tay ở bước trước đó)
-        if (available < 0)
-        {
-            QMessageBox::critical(this, "Lỗi Nghiêm Trọng",
-                                  QString("Sản phẩm '%1' có tồn kho bất thường (%2). Hủy giao dịch để bảo toàn dữ liệu!")
-                                      .arg(p->getName()).arg(available));
-
-            // Rollback: Trả lại số lượng hàng đã trừ vào kho
-            for (const BillItem& rollbackItem : billItems)
-            {
-                Product* rp = rollbackItem.getProduct();
-                if(rp) {
-                    rp->setQuantity(rp->getQuantity() + rollbackItem.getQuantity());
-                }
-            }
-
-            // Cập nhật lại giao diện kho hàng để người dùng thấy số lượng đúng
-            loadAndSortProducts(curTableProduct);
-
-            return; // DỪNG GIAO DỊCH NGAY LẬP TỨC
-        }
-    }
-
     double finalTotal = currentBill->getTotal();
-
     store->addRevenue(finalTotal);
 
-    // Xử lý cộng điểm tích lũy
     Customer* c = currentBill->getCustomer();
     int pointsAdded = 0;
     if (c != nullptr)
     {
-        // LOGIC MỚI: 1.000đ chi tiêu = 1 điểm
         double finalTotal = currentBill->getTotal();
         pointsAdded = qRound(finalTotal / 1000.0);
 
         if (pointsAdded> 0)
             c->addPoints(pointsAdded);
-
     }
-
-    // Lưu tier discount của khách hàng tại thời điểm mua (QUAN TRỌNG!)
-    // Điều này đảm bảo hóa đơn lịch sử giữ nguyên giá khi khách lên hạng sau này
-    // NHƯNG chỉ lưu nếu CHƯA được set (vì applyPointsDiscount có thể đã lưu rồi)
     if (currentBill->getTierDiscountPercent() == 0.0)
     {
         if (c != nullptr)
@@ -935,44 +895,31 @@ void MainWindow::finalizeThanhToan(const QString& paymentMethod)
             currentBill->setTierDiscountPercent(tierDiscount);
         }
         else
-        {
             currentBill->setTierDiscountPercent(0.0);
-        }
     }
 
     store->addBillToHistory(currentBill);
 
-    // Tạo thông báo chi tiết
     QString msg = QString("Thanh toán thành công!\n\n" "Tổng tiền: %1 đ\n" "Hình thức: %2").arg(QString::number(finalTotal, 'f', 0)).arg(paymentMethod);
-
-
-    // Nếu có khách hàng thì báo thêm về điểm
     if (c != nullptr && pointsAdded > 0)
-    {
         msg += QString("\n--------------------\n" "Đã cộng: +%1 điểm\n" "Tổng điểm hiện tại: %2 điểm").arg(pointsAdded).arg(c->getPoints());
-    }
-
     QMessageBox::information(this, "Hoàn tất giao dịch", msg);
 
-    // --- Reset giao diện để sẵn sàng cho đơn mới ---
-    ui->stackedWidgeOrder->setCurrentIndex(0); // Quay về màn hình bán hàng
 
-    // Tạo hóa đơn mới (rỗng)
+    ui->stackedWidgeOrder->setCurrentIndex(0);
     currentBill = new Bill(nullptr, "", currentUser);
 
-    // Cập nhật lại view hóa đơn (trống)
     updateHoaDonView();
-
-    // QUAN TRỌNG: Tải lại danh sách sản phẩm để cập nhật số lượng tồn kho mới lên bảng
     loadAndSortProducts(curTableProduct);
 
-    // Xóa trắng thông tin khách hàng trên giao diện
     ui->txtSearchCustomer->clear();
-    ui->txtSearchCustomer->setVisible(false); // Ẩn ô nhập tên đi cho gọn
+    ui->txtSearchCustomer->setVisible(false);
     ui->txtSearchPhoneCustomer->clear();
     ui->lblTenKhach->setText("Khách Lẻ");
     ui->lblDiemKhach->setText("");
     ui->btnDungDiem->setEnabled(false);
+    ui->TotalAfter->setVisible(false);
+    ui->TotalBefore->setVisible(false);
 }
 
 void MainWindow::on_ThemHang_clicked()

@@ -8,9 +8,7 @@ QString Product::generateId()
 {
     int mex = 0;
     while (usedIds.contains(mex))
-    {
         mex++;
-    }
     usedIds.insert(mex);
 
     return QString("P%1").arg(mex);
@@ -24,34 +22,16 @@ void Product::registerUsedId(const QString& id)
         int idNum = id.mid(1).toInt(&ok);
 
         if (ok && idNum >= 0)
-        {
             usedIds.insert(idNum);
-        }
     }
 }
 
-void Product::unregisterUsedId(const QString& id)
-{
-    if (id.startsWith('P', Qt::CaseInsensitive) && id.length() > 1)
-    {
-        bool ok = false;
-        int idNum = id.mid(1).toInt(&ok);
-
-        if (ok && idNum >= 0)
-        {
-            usedIds.remove(idNum);
-        }
-    }
-}
-
-Product::Product(const QString& id, const QString& name, double basePrice, int quantity,
-                 double importPrice, double profitMargin)
-    : basePrice(basePrice), importPrice(importPrice), profitMargin(profitMargin), quantity(quantity), isActive(true)
+Product::Product(const QString& id, const QString& name, double basePrice, int quantity, double importPrice, double profitMargin)
+    : basePrice(basePrice), importPrice(importPrice), profitMargin(profitMargin),
+    quantity(quantity), isActive(true)
 {
     if (id.isEmpty())
-    {
         this->id = generateId();
-    }
     else
     {
         this->id = id;
@@ -60,10 +40,7 @@ Product::Product(const QString& id, const QString& name, double basePrice, int q
     this->name = name;
 }
 
-Product::~Product()
-{
-    unregisterUsedId(id);
-}
+Product::~Product() {}
 
 const QString& Product::getId() const
 {
@@ -105,7 +82,6 @@ void Product::setQuantity(int q)
     quantity = q;
 }
 
-// Getter/Setter cho Giá gốc (Import Price)
 double Product::getImportPrice() const
 {
     return importPrice;
@@ -116,7 +92,6 @@ void Product::setImportPrice(double ip)
     importPrice = ip;
 }
 
-// Getter/Setter cho % Lợi nhuận (Profit Margin)
 double Product::getProfitMargin() const
 {
     return profitMargin;
@@ -127,7 +102,6 @@ void Product::setProfitMargin(double pm)
     profitMargin = pm;
 }
 
-// Getter/Setter for isActive (Soft delete)
 bool Product::getIsActive() const
 {
     return isActive;

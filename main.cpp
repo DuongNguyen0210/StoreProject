@@ -53,9 +53,7 @@ int main(int argc, char *argv[])
 
     LoginDialog loginDialog(&store);
     if (loginDialog.exec() != QDialog::Accepted)
-    {
         return 0;
-    }
 
     User* loggedInUser = loginDialog.getLoggedInUser();
     MainWindow w(loggedInUser, &store);

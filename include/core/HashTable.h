@@ -17,7 +17,6 @@ private:
         QString key;
         V value;
         Node* next;
-
         Node(const QString& k, const V& v, Node* n = nullptr)
             : key(k), value(v), next(n) {}
     };
@@ -56,7 +55,6 @@ public:
         for (int i = 0; i < bucketCount; ++i)
             buckets[i] = nullptr;
     }
-
     ~HashTable()
     {
         clear();

@@ -2,37 +2,36 @@
 
 using namespace std;
 
-BillItem::BillItem(Product* p,
-                   int quantity,
-                   double unitPrice,
-                   double importPrice)
-    : product(p),
-    quantity(quantity),
-    unitPrice(unitPrice),
-    importPrice(importPrice) {
-}
+BillItem::BillItem(Product* p, int quantity, double unitPrice, double importPrice)
+    : product(p), quantity(quantity), unitPrice(unitPrice), importPrice(importPrice) {}
 
-Product* BillItem::getProduct() const {
+Product* BillItem::getProduct() const
+{
     return product;
 }
 
-int BillItem::getQuantity() const {
+int BillItem::getQuantity() const
+{
     return quantity;
 }
 
-double BillItem::getUnitPrice() const {
+double BillItem::getUnitPrice() const
+{
     return unitPrice;
 }
 
-double BillItem::getImportPrice() const {
+double BillItem::getImportPrice() const
+{
     return importPrice;
 }
 
-void BillItem::setImportPrice(double price) {
+void BillItem::setImportPrice(double price)
+{
     importPrice = price;
 }
 
-double BillItem::getLineTotal() const {
+double BillItem::getLineTotal() const
+{
     return unitPrice * quantity;
 }
 

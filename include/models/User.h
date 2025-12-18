@@ -10,9 +10,8 @@ protected:
     QString name;
     QString password;
 
-    static QSet<int> usedIds;  // Lưu các ID đã dùng
-    static QString generateId();  // Tạo ID theo MEX
-
+    static QSet<int> usedIds;
+    static QString generateId();
 public:
     User(const QString& id = "", const QString& name = "", const QString& password = "");
 
@@ -27,9 +26,7 @@ public:
 
     virtual QString getRole() const = 0;
 
-    // Đăng ký ID đã sử dụng
     static void registerUsedId(const QString& id);
-    // Hủy đăng ký ID
     static void unregisterUsedId(const QString& id);
 };
 

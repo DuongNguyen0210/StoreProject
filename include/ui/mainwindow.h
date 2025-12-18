@@ -42,7 +42,8 @@ private:
 
     QComboBox* sortComboBox;
 
-    enum SortCriteria {
+    enum SortCriteria
+    {
         SORT_DEFAULT,
         SORT_PRICE_ASC,
         SORT_PRICE_DESC,

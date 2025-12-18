@@ -32,69 +32,62 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
 
     out << "[PRODUCTS]\n";
     store.forEachProduct([&](const QString&, Product* p)
-                         {
-                             if (!p) return;
+    {
+        if (!p) return;
 
-                             if (auto f = dynamic_cast<Food*>(p))
-                             {
-                                 out << "Food|"
-                                     << f->getId() << '|'
-                                     << f->getName() << '|'
-                                     << QString::number(f->getBasePrice(), 'f', 2) << '|'
-                                     << QString::number(f->getImportPrice(), 'f', 2) << '|'     // Giá gốc
-                                     << QString::number(f->getProfitMargin(), 'f', 2) << '|'    // % Lợi nhuận
-                                     << f->getQuantity() << '|'
-                                     << f->getExpiryDate() << '\n';
-                             }
-                             else if (auto b = dynamic_cast<Beverage*>(p))
-                             {
-                                 out << "Beverage|"
-                                     << b->getId() << '|'
-                                     << b->getName() << '|'
-                                     << QString::number(b->getBasePrice(), 'f', 2) << '|'
-                                     << QString::number(b->getImportPrice(), 'f', 2) << '|'     // Giá gốc
-                                     << QString::number(b->getProfitMargin(), 'f', 2) << '|'    // % Lợi nhuận
-                                     << b->getQuantity() << '|'
-                                     << b->getExpiryDate() << '|'
-                                     << QString::number(b->getVolume(), 'f', 2) << '\n';
-                             }
-                             else if (auto h = dynamic_cast<HouseholdItem*>(p))
-                             {
-                                 out << "Household|"
-                                     << h->getId() << '|'
-                                     << h->getName() << '|'
-                                     << QString::number(h->getBasePrice(), 'f', 2) << '|'
-                                     << QString::number(h->getImportPrice(), 'f', 2) << '|'     // Giá gốc
-                                     << QString::number(h->getProfitMargin(), 'f', 2) << '|'    // % Lợi nhuận
-                                     << h->getQuantity() << '|'
-                                     << h->getWarrantyMonths() << '\n';
-                             }
-                         });
+        if (auto f = dynamic_cast<Food*>(p))
+        {
+         out << "Food|"
+             << f->getId() << '|'
+             << f->getName() << '|'
+             << QString::number(f->getBasePrice(), 'f', 2) << '|'
+             << QString::number(f->getImportPrice(), 'f', 2) << '|'     // Giá gốc
+             << QString::number(f->getProfitMargin(), 'f', 2) << '|'    // % Lợi nhuận
+             << f->getQuantity() << '|'
+             << f->getExpiryDate() << '\n';
+        }
+        else if (auto b = dynamic_cast<Beverage*>(p))
+        {
+         out << "Beverage|"
+             << b->getId() << '|'
+             << b->getName() << '|'
+             << QString::number(b->getBasePrice(), 'f', 2) << '|'
+             << QString::number(b->getImportPrice(), 'f', 2) << '|'     // Giá gốc
+             << QString::number(b->getProfitMargin(), 'f', 2) << '|'    // % Lợi nhuận
+             << b->getQuantity() << '|'
+             << b->getExpiryDate() << '|'
+             << QString::number(b->getVolume(), 'f', 2) << '\n';
+        }
+        else if (auto h = dynamic_cast<HouseholdItem*>(p))
+        {
+         out << "Household|"
+             << h->getId() << '|'
+             << h->getName() << '|'
+             << QString::number(h->getBasePrice(), 'f', 2) << '|'
+             << QString::number(h->getImportPrice(), 'f', 2) << '|'     // Giá gốc
+             << QString::number(h->getProfitMargin(), 'f', 2) << '|'    // % Lợi nhuận
+             << h->getQuantity() << '|'
+             << h->getWarrantyMonths() << '\n';
+        }
+    });
     out << "\n";
 
     out << "[CUSTOMERS]\n";
     store.forEachCustomer([&](const QString&, Customer* c)
-                          {
-                              if (!c) return;
-
-                              out << c->getId() << '|'
-                                  << c->getName() << '|'
-                                  << c->getPhone() << '|'
-                                  << c->getPoints() << '\n';
-                          });
+    {
+        if (!c) return;
+        out << c->getId() << '|' << c->getName() << '|' << c->getPhone() << '|' << c->getPoints() << '\n';
+    });
     out << "\n";
 
     out << "[USERS]\n";
     store.forEachUser([&](const QString&, User* u)
-                      {
-                          if (!u) return;
+    {
+        if (!u) return;
 
-                          QString role = u->getRole();
-                          out << role << '|'
-                              << u->getId() << '|'
-                              << u->getName() << '|'
-                              << u->getPassword() << '\n';
-                      });
+        QString role = u->getRole();
+        out << role << '|' << u->getId() << '|' << u->getName() << '|' << u->getPassword() << '\n';
+    });
     out << "\n";
 
     out << "[BILLS]\n";
@@ -115,11 +108,7 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
         QString dateStr = bill->getCreatedDate().toString("yyyy-MM-dd HH:mm:ss");
         double tierDiscount = bill->getTierDiscountPercent();
         
-        out << "BILL|" << billId << '|'
-            << dateStr << '|'
-            << customerId << '|'
-            << userId << '|'
-            << QString::number(tierDiscount, 'f', 2) << '\n';
+        out << "BILL|" << billId << '|' << dateStr << '|' << customerId << '|' << userId << '|' << QString::number(tierDiscount, 'f', 2) << '\n';
 
         const std::vector<BillItem>& items = bill->getItems();
         for (const BillItem& it : items)
@@ -127,10 +116,8 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
             Product* p = it.getProduct();
             QString productId = p ? p->getId() : "";
 
-            out << "ITEM|" << billId << '|'
-                << productId << '|'
-                << it.getQuantity() << '|'
-                << QString::number(it.getUnitPrice(), 'f', 2) << '|'
+            out << "ITEM|" << billId << '|' << productId << '|' << it.getQuantity()
+                << '|' << QString::number(it.getUnitPrice(), 'f', 2) << '|'
                 << QString::number(it.getImportPrice(), 'f', 2) << '\n';
         }
     }
@@ -148,7 +135,8 @@ bool StorePersistence::load(Store &store, const QString &filePath)
     QTextStream in(&file);
     in.setEncoding(QStringConverter::Utf8);
 
-    enum Section {
+    enum Section
+    {
         None,
         Products,
         Customers,
@@ -187,9 +175,10 @@ bool StorePersistence::load(Store &store, const QString &filePath)
             if (type == "Food")
             {
                 // Format: Food|id|name|price|importPrice|profitMargin|quantity|expiry
-                if (parts.size() < 8) {
-                    QMessageBox::warning(nullptr, "Lỗi", "Food không đúng định dạng (cần 8 trường)");
-                    return false;
+                if (parts.size() < 8)
+                {
+                    QMessageBox::warning(nullptr, "Lỗi", "Food không đúng định dạng");
+                    exit(0);
                 }
                 
                 QString id = parts[1];
@@ -209,7 +198,7 @@ bool StorePersistence::load(Store &store, const QString &filePath)
             {
                 // Format: Beverage|id|name|price|importPrice|profitMargin|quantity|expiry|volume
                 if (parts.size() < 9) {
-                    QMessageBox::warning(nullptr, "Lỗi", "Beverage không đúng định dạng (cần 9 trường)");
+                    QMessageBox::warning(nullptr, "Lỗi", "Beverage không đúng định dạng");
                     exit(0);
                 }
                 
@@ -231,7 +220,7 @@ bool StorePersistence::load(Store &store, const QString &filePath)
             {
                 // Format: Household|id|name|price|importPrice|profitMargin|quantity|warranty
                 if (parts.size() < 8) {
-                    QMessageBox::warning(nullptr, "Lỗi", "Household không đúng định dạng (cần 8 trường)");
+                    QMessageBox::warning(nullptr, "Lỗi", "Household không đúng định dạng");
                     exit(0);
                 }
                 
@@ -256,8 +245,8 @@ bool StorePersistence::load(Store &store, const QString &filePath)
             // Format: id|name|phone|points
             if (parts.size() < 4)
             {
-                QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu khách hàng không đúng định dạng (cần 4 trường)");
-                return false;
+                QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu khách hàng không đúng định dạng");
+                exit(0);
             }
 
             QString id = parts[0];
@@ -316,7 +305,7 @@ bool StorePersistence::load(Store &store, const QString &filePath)
             {
                 if (parts.size() < 6)
                 {
-                    QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu BILL không đúng định dạng (cần đúng 6 trường)");
+                    QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu BILL không đúng định dạng");
                     exit(0);
                 }
 

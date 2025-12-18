@@ -3,8 +3,6 @@
 
 #include "models/Product.h"
 
-// ✅ COMPILER GUARD: Removed 'using namespace std;' from header
-
 class HouseholdItem : public Product
 {
 private:

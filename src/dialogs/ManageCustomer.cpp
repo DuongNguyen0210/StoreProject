@@ -47,115 +47,97 @@ void CustomerDialog::setupTable()
     ui->tableCustomers->setEditTriggers(QAbstractItemView::DoubleClicked);
     ui->tableCustomers->setSelectionBehavior(QAbstractItemView::SelectRows);
     
-    // Connect itemChanged signal for inline editing
     connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
     
-    // Setup header resize modes similar to mainwindow.cpp
     QHeaderView* header = ui->tableCustomers->horizontalHeader();
     header->setStretchLastSection(false);
-    
-    // ID: Fixed width (auto-resize to content)
     header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    
-    // Name: Interactive with min/max limits (150-400px)
     header->setSectionResizeMode(1, QHeaderView::Interactive);
-    header->setMinimumSectionSize(150);  // Min width for name
-    header->setMaximumSectionSize(400);  // Max width for name
-    header->resizeSection(1, 250);       // Initial width: 250px
-    
-    // Phone, Points, Tier: Stretch to fill remaining space
+    header->setMinimumSectionSize(150);
+    header->setMaximumSectionSize(400);
+    header->resizeSection(1, 250);
     header->setSectionResizeMode(2, QHeaderView::Stretch);
     header->setSectionResizeMode(3, QHeaderView::Stretch);
     header->setSectionResizeMode(4, QHeaderView::Stretch);
 }
 
+
 void CustomerDialog::loadCustomers()
 {
     m_model->removeRows(0, m_model->rowCount());
 
-    // Get current search text
     QString search = m_currentSearchText.trimmed().toLower();
 
-    // Collect all customers
     std::vector<Customer*> customers;
     m_store->forEachCustomer([&customers](const QString&, Customer* c) {
         if (c) customers.push_back(c);
     });
 
-    // Apply filters
     std::vector<Customer*> filteredCustomers;
-    for (Customer* c : customers) {
-        // Apply tier filter
+    for (Customer* c : customers)
+    {
         if (!m_currentTierFilter.isEmpty()) {
-            if (c->getTier() != m_currentTierFilter) {
+            if (c->getTier() != m_currentTierFilter)
                 continue;
-            }
         }
 
-        // Apply search filter (search in name, ID, and phone)
         if (!search.isEmpty()) {
             QString name = c->getName().toLower();
             QString id = c->getId().toLower();
             QString phone = c->getPhone().toLower();
-            if (!name.contains(search) && !id.contains(search) && !phone.contains(search)) {
+            if (!name.contains(search) && !id.contains(search) && !phone.contains(search))
                 continue;
-            }
         }
 
         filteredCustomers.push_back(c);
     }
-
-    // Apply sorting
     switch (m_currentSortIndex) {
-        case 0: // Highest Points
+        case 0:
             std::sort(filteredCustomers.begin(), filteredCustomers.end(),
                 [](Customer* a, Customer* b) { return a->getPoints() > b->getPoints(); });
             break;
-        case 1: // Lowest Points
+        case 1:
             std::sort(filteredCustomers.begin(), filteredCustomers.end(),
                 [](Customer* a, Customer* b) { return a->getPoints() < b->getPoints(); });
             break;
-        case 2: // Name A-Z
+        case 2:
             std::sort(filteredCustomers.begin(), filteredCustomers.end(),
                 [](Customer* a, Customer* b) { return a->getName() < b->getName(); });
             break;
-        case 3: // Name Z-A
+        case 3:
             std::sort(filteredCustomers.begin(), filteredCustomers.end(),
                 [](Customer* a, Customer* b) { return a->getName() > b->getName(); });
             break;
     }
 
-    // Add to table
     for (Customer* c : filteredCustomers) {
         QList<QStandardItem*> row;
-        
-        // ID (column 0) - Read-only
+
         QStandardItem* idItem = new QStandardItem(c->getId());
         idItem->setEditable(false);
         row << idItem;
-        
-        // Name (column 1) - Editable
+
         QStandardItem* nameItem = new QStandardItem(c->getName());
         nameItem->setEditable(true);
         row << nameItem;
-        
-        // Phone (column 2) - Editable
+
         QStandardItem* phoneItem = new QStandardItem(c->getPhone());
         phoneItem->setEditable(true);
         row << phoneItem;
         
-        // Points (column 3) - Read-only
         QStandardItem* pointsItem = new QStandardItem(QString::number(c->getPoints()));
         pointsItem->setEditable(false);
         row << pointsItem;
-        
-        // Tier with color (column 4) - Read-only
+
         QString tier = c->getTier();
+
         QStandardItem* tierItem = new QStandardItem(tier);
         tierItem->setEditable(false);
+
         QString color = getTierColor(tier);
         tierItem->setForeground(QBrush(QColor(color)));
         QFont font = tierItem->font();
+
         font.setBold(true);
         tierItem->setFont(font);
         row << tierItem;
@@ -163,7 +145,6 @@ void CustomerDialog::loadCustomers()
         m_model->appendRow(row);
     }
 
-    // Update footer
     int total = filteredCustomers.size();
     int showing = qMin(total, 5);
     ui->labelShowing->setText(QString("Hiển thị 1 đến %1 của %2 kết quả").arg(showing).arg(total));
@@ -265,13 +246,10 @@ void CustomerDialog::onCustomerItemChanged(QStandardItem* item)
     int row = item->row();
     int column = item->column();
     
-    // Only handle Name (column 1) and Phone (column 2) edits
     if (column != 1 && column != 2) return;
     
-    // Disconnect to prevent recursive signals
     disconnect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
     
-    // Get customer ID from column 0
     QString customerId = m_model->item(row, 0)->text();
     Customer* customer = m_store->findCustomerById(customerId);
     
@@ -345,7 +323,6 @@ void CustomerDialog::onCustomerItemChanged(QStandardItem* item)
         customer->setPhone(newValue);
         QMessageBox::information(this, "Thành công", QString("Đã cập nhật SĐT thành '%1'").arg(newValue));
     }
-    
-    // Reconnect signal
+
     connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
 }

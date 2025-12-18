@@ -7,13 +7,10 @@
 #include <QHeaderView>
 
 StockProductDialog::StockProductDialog(Store* store, QWidget *parent)
-    : QDialog(parent)
-    , ui(new Ui::StockProductDialog)
-    , m_store(store)
+    : QDialog(parent), ui(new Ui::StockProductDialog), m_store(store)
 {
     ui->setupUi(this);
     setWindowTitle("Chi Tiết Tồn Kho Sản Phẩm");
-    
     setupTables();
     loadProductData();
 }
@@ -61,7 +58,7 @@ void StockProductDialog::setupTables()
         table->setSelectionBehavior(QAbstractItemView::SelectRows);
         table->setSelectionMode(QAbstractItemView::SingleSelection);
         table->setAlternatingRowColors(true);
-        
+
         QHeaderView* header = table->horizontalHeader();
         header->setStretchLastSection(true);
         header->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -111,28 +108,28 @@ void StockProductDialog::loadProductData()
         if (qty == 0)
         {
             for (auto* item : std::as_const(row))
-                item->setForeground(QBrush(QColor(0xEF, 0x44, 0x44))); // #EF4444
+                item->setForeground(QBrush(QColor(0xEF, 0x44, 0x44))); // Đỏ
             m_outOfStockModel->appendRow(row);
             outOfStockCount++;
         }
         else if (qty >= 1 && qty <= 5)
         {
             for (auto* item : std::as_const(row))
-                item->setForeground(QBrush(QColor(0xF5, 0x9E, 0x0B))); // #F59E0B
+                item->setForeground(QBrush(QColor(0xF5, 0x9E, 0x0B))); // Cam
             m_criticalLowModel->appendRow(row);
             criticalLowCount++;
         }
         else if (qty >= 6 && qty <= 10)
         {
             for (auto* item : std::as_const(row))
-                item->setForeground(QBrush(QColor(0xEA, 0xB3, 0x08))); // #EAB308
+                item->setForeground(QBrush(QColor(0xEA, 0xB3, 0x08))); // Vàng
             m_lowModel->appendRow(row);
             lowCount++;
         }
         else
         {
             for (auto* item : std::as_const(row))
-                item->setForeground(QBrush(QColor(0x10, 0xB9, 0x81))); // #10B981
+                item->setForeground(QBrush(QColor(0x10, 0xB9, 0x81))); // Lục
             m_adequateModel->appendRow(row);
             adequateCount++;
         }

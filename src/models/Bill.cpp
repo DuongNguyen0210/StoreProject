@@ -9,9 +9,7 @@ QString Bill::generateId()
 {
     int mex = 0;
     while (usedIds.contains(mex))
-    {
         mex++;
-    }
     usedIds.insert(mex);
     return QString("B%1").arg(mex, 3, 10, QChar('0'));
 }
@@ -24,9 +22,7 @@ void Bill::registerUsedId(const QString& id)
         int idNum = id.mid(1).toInt(&ok);
 
         if (ok && idNum >= 0)
-        {
             usedIds.insert(idNum);
-        }
     }
 }
 
@@ -38,9 +34,7 @@ void Bill::unregisterUsedId(const QString& id)
         int idNum = id.mid(1).toInt(&ok);
 
         if (ok && idNum >= 0)
-        {
             usedIds.remove(idNum);
-        }
     }
 }
 
@@ -48,9 +42,7 @@ Bill::Bill(Customer* customer, const QString& id, User* createdBy, const QDateTi
     : customer(customer), payment(nullptr), tierDiscountPercent(0.0), createdBy(createdBy)
 {
     if (id.isEmpty())
-    {
         this->id = generateId();
-    }
     else
     {
         this->id = id;

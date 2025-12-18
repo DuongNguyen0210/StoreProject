@@ -37,21 +37,17 @@ private:
     Store* m_store;
     QStandardItemModel* m_model;
 
-    // Hàm thiết lập giao diện billHistory
     void setupTable();
     void loadBillHistory();
 
-    // Hàm thiết lập Dashboard mới
     void setupDashboard();
     void updateKPICards();
 
-    // Hàm tạo các biểu đồ
     void createRevenueChart();
     void createTop5ProductsChart();
     void createWarningsChart();
     void showStockDetails();
 
-    // Hàm tính toán
     double calculateTotalProfit();
     double calculateTotalCost();
 };
