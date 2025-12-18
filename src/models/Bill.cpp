@@ -138,16 +138,12 @@ void Bill::setPayment(Payment* p)
 {
     delete payment;
     payment = p;
-    if (payment)
-        payment->setAmount(getTotal());
 }
 
 Payment* Bill::getPayment() const
 {
     return payment;
 }
-
-
 
 const QDateTime& Bill::getCreatedDate() const
 {

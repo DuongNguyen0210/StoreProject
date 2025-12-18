@@ -104,26 +104,20 @@ void ThongKe::setupDashboard()
 
 void ThongKe::updateKPICards()
 {
-    // Tổng doanh thu
     double totalRevenue = m_store->getTotalRevenue();
     ui->lblRevenue->setText(QString("%1 đ").arg(QString::number(totalRevenue, 'f', 0)));
 
-    // Lợi nhuận ước tính
     double totalProfit = calculateTotalProfit();
     ui->lblProfit->setText(QString("%1 đ").arg(QString::number(totalProfit, 'f', 0)));
 
-    // Tính tổng giá vốn
     double totalCost = calculateTotalCost();
 
-    // Tính tỉ lệ lợi nhuận trên vốn
     double profitMargin = 0.0;
     if (totalCost > 0)
         profitMargin = (totalProfit / totalCost) * 100.0;
 
     QString marginText = QString("Tỉ lệ lời: %1%").arg(QString::number(profitMargin, 'f', 1));
     ui->lblProfitMargin->setText(marginText);
-
-    // Số hóa đơn
     int billCount = m_store->getBillHistory().size();
     ui->lblBillCount->setText(QString::number(billCount));
 }
@@ -242,12 +236,11 @@ void ThongKe::createRevenueChart()
     chart->legend()->setAlignment(Qt::AlignBottom);
 
     ui->chartRevenue->setChart(chart);
-    ui->chartRevenue->setRenderHint(QPainter::Antialiasing);// khử răng cưa cho em nó <3
+    ui->chartRevenue->setRenderHint(QPainter::Antialiasing);
 }
 
 void ThongKe::createTop5ProductsChart()
 {
-    // Tính toán số lượng bán của từng sản phẩm
     QMap<QString, int> productSales;
 
     const auto& history = m_store->getBillHistory();
@@ -278,9 +271,9 @@ void ThongKe::createTop5ProductsChart()
         sortedProducts.append(qMakePair(it.key(), it.value()));
 
     std::sort(sortedProducts.begin(), sortedProducts.end(),
-              [](const QPair<QString, int>& a, const QPair<QString, int>& b) {
-                  return a.second > b.second;
-              });
+        [](const QPair<QString, int>& a, const QPair<QString, int>& b) {
+          return a.second > b.second;
+        });
 
     int top = qMin(5, sortedProducts.size());
 
@@ -353,28 +346,26 @@ void ThongKe::createWarningsChart()
 
     if (outOfStock > 0) {
         QPieSlice *slice = series->append(QString("Hết hàng (%1)").arg(outOfStock), outOfStock);
-        slice->setBrush(QColor(0xEF, 0x44, 0x44));  // Red (#EF4444)
+        slice->setBrush(QColor(0xEF, 0x44, 0x44));  // Đỏ (#EF4444)
     }
 
     if (criticalLow > 0) {
         QPieSlice *slice = series->append(QString("Gần hết (%1)").arg(criticalLow), criticalLow);
-        slice->setBrush(QColor(0xF5, 0x9E, 0x0B));  // Orange (#F59E0B)
+        slice->setBrush(QColor(0xF5, 0x9E, 0x0B));  // Cam (#F59E0B)
     }
 
     if (low > 0) {
         QPieSlice *slice = series->append(QString("Sắp hết (%1)").arg(low), low);
-        slice->setBrush(QColor(0xEA, 0xB3, 0x08));  // Yellow (#EAB308)
+        slice->setBrush(QColor(0xEA, 0xB3, 0x08));  // Vàng (#EAB308)
     }
 
     if (adequate > 0) {
         QPieSlice *slice = series->append(QString("Đủ hàng (%1)").arg(adequate), adequate);
-        slice->setBrush(QColor(0x10, 0xB9, 0x81));  // Green (#10B981)
+        slice->setBrush(QColor(0x10, 0xB9, 0x81));  // Lục (#10B981)
     }
 
-    // If no products
-    if (outOfStock == 0 && criticalLow == 0 && low == 0 && adequate == 0) {
+    if (outOfStock == 0 && criticalLow == 0 && low == 0 && adequate == 0)
         series->append("Chưa có sản phẩm", 1);
-    }
 
     QChart *chart = new QChart();
     chart->addSeries(series);

@@ -40,6 +40,8 @@ AddProductToStore::AddProductToStore(QWidget *parent) : QDialog(parent), ui(new 
     ui->dateEdit->setMinimumDate(QDate::currentDate().addDays(1));
     ui->dateEdit->setDate(QDate::currentDate().addDays(1));
 
+    ui->Type->setCurrentIndex(0);
+
     connect(ui->ImportPrice, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &AddProductToStore::calculateSellingPrice);
     connect(ui->ProfitMargin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &AddProductToStore::calculateSellingPrice);
 
