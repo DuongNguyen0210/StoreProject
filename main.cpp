@@ -1,9 +1,9 @@
-#include "mainwindow.h"
-#include "logindialog.h"
-#include "Store.h"
-#include "Manager.h"
-#include "Cashier.h"
-#include "StorePersistence.h"
+#include "ui/mainwindow.h"
+#include "dialogs/logindialog.h"
+#include "core/Store.h"
+#include "models/Manager.h"
+#include "models/Cashier.h"
+#include "core/StorePersistence.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -17,10 +17,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    // Load modular stylesheets
-    // NOTE: Resource path = prefix + file path
-    // Example: prefix="/styles" + file="styles/base.qss" = ":/styles/styles/base.qss"
-    QStringList styleModules = {
+    QStringList styleModules =
+    {
         ":/styles/styles/base.qss",
         ":/styles/styles/frames.qss",
         ":/styles/styles/buttons.qss",
@@ -29,10 +27,10 @@ int main(int argc, char *argv[])
         ":/styles/styles/labels.qss",
         ":/styles/styles/scrollbars.qss",
         ":/styles/styles/misc.qss",
+        ":/styles/styles/login.qss",
         ":/styles/styles/thongke.qss",
         ":/styles/styles/dialogs.qss"
     };
-
     QString combinedStyle;
     for (const QString& module : styleModules)
     {
@@ -43,12 +41,8 @@ int main(int argc, char *argv[])
             combinedStyle += stream.readAll() + "\n";
             file.close();
         }
-        else
-        {
-            qWarning() << "Failed to load stylesheet module:" << module;
-        }
     }
-    
+
     a.setStyleSheet(combinedStyle);
 
     Store store("Cửa hàng tạp hóa");
