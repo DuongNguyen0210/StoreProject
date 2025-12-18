@@ -79,7 +79,6 @@ MainWindow::MainWindow(User* user, Store* storePtr, QWidget *parent)
     connect(ui->btnCancelOrder, &QPushButton::clicked, this, &MainWindow::onCancelOrderClicked);
     connect(ui->tableViewProduct, &QTableView::doubleClicked, this, &MainWindow::onAddSanPham);
     connect(ui->SearchText, &QLineEdit::returnPressed, this, &MainWindow::on_BtnSearch_clicked);
-    // connect(ui->SearchText, &QLineEdit::textChanged, this, &MainWindow::on_SearchText_changed);
     connect(ui->tableViewOrder, &QTableView::doubleClicked, this, &MainWindow::onEditSanPhamDoubleClicked);
     connect(ui->txtSearchCustomer, &QLineEdit::returnPressed, this, &MainWindow::onTimKhachPressed);
     connect(ui->txtSearchPhoneCustomer, &QLineEdit::returnPressed, this, &MainWindow::onTimKhachPressed);
@@ -704,11 +703,6 @@ void MainWindow::on_BtnSearch_clicked()
     loadProductsFromStoreWithKeyWord(ui->SearchText->text());
 }
 
-// void MainWindow::on_SearchText_changed(const QString& text)
-// {
-//     loadProductsFromStoreWithKeyWord(text);
-// }
-
 void MainWindow::onAddSanPham(const QModelIndex &index)
 {
     auto v2 = ui->stackedWidgeOrder->currentIndex();
@@ -727,9 +721,6 @@ void MainWindow::onAddSanPham(const QModelIndex &index)
     {
         if(currentBill == nullptr)
             currentBill = new Bill(nullptr, "", currentUser);
-
-        // Không còn logic dùng điểm
-
         currentBill->addItem(p, quantityToAdd);
         ui->stackedWidgeOrder->setCurrentIndex(0);
         loadAndSortProducts(curTableProduct);
@@ -740,14 +731,10 @@ void MainWindow::onAddSanPham(const QModelIndex &index)
 void MainWindow::onEditSanPhamDoubleClicked(const QModelIndex &index)
 {
     if (!index.isValid()) return;
-
-    // 1. Xác định sản phẩm đang chọn
     QString name = modelHoaDon->item(index.row(), 0)->text();
     Product* p = store->findProductByName(name);
 
     if (!p) return;
-
-    // 2. Tìm số lượng hiện tại đang có trong hóa đơn
     int currentBillQty = 0;
     const auto& items = currentBill->getItems();
     for(const auto& item : items) {
@@ -756,49 +743,27 @@ void MainWindow::onEditSanPhamDoubleClicked(const QModelIndex &index)
             break;
         }
     }
-
-    // 3. Tính toán số lượng tối đa có thể nhập
-    // Max = Số lượng đang giữ trong hóa đơn + Số lượng còn lại trong kho
     int maxAllowed = currentBillQty + p->getQuantity();
-
-    // 4. Hiển thị hộp thoại nhập số lượng
     bool ok;
     int newQty = QInputDialog::getInt(
         this,
         "Cập nhật số lượng",
         QString("Nhập số lượng mới cho %1:\n(Nhập 0 để trả hàng)").arg(p->getName()),
-        currentBillQty, // Giá trị mặc định là số lượng hiện tại
-        0,              // Min = 0 (để cho phép trả hàng)
-        maxAllowed,     // Max = Tổng kho có thể đáp ứng
-        1,
-        &ok
-        );
-
+        currentBillQty, 0, maxAllowed, 1, &ok);
     if (ok)
     {
-        // ✅ FIX: Nếu đã dùng điểm, tự động hủy khi edit số lượng
-        // Không còn logic dùng điểm
-
         if (newQty == 0)
         {
-            // === TRƯỜNG HỢP 1: Nhập 0 -> Xóa sản phẩm (Trả hàng) ===
             currentBill->removeItem(p);
         }
         else if (newQty != currentBillQty)
         {
-            // === TRƯỜNG HỢP 2: Cập nhật số lượng ===
-
-            // Cách xử lý an toàn nhất với cấu trúc class hiện tại:
-            // Bước 1: Xóa sản phẩm khỏi hóa đơn (để hoàn trả toàn bộ số lượng về kho)
             currentBill->removeItem(p);
-
-            // Bước 2: Thêm lại sản phẩm với số lượng mới (trừ kho theo số lượng mới)
             currentBill->addItem(p, newQty);
         }
 
-        // 5. Cập nhật lại giao diện
-        updateHoaDonView();              // Cập nhật bảng hóa đơn
-        loadAndSortProducts(curTableProduct); // Cập nhật số lượng tồn kho bên danh sách sản phẩm
+        updateHoaDonView();
+        loadAndSortProducts(curTableProduct);
     }
 
 }
@@ -807,10 +772,9 @@ void MainWindow::onTimKhachPressed()
 {
     QString phone = ui->txtSearchPhoneCustomer->text().trimmed();
     auto resetErrorDisplay = [this]() {
-        // Chỉ reset nếu nhãn đang hiển thị lỗi (kiểm tra bằng màu đỏ)
         if (ui->lblTenKhach->styleSheet().contains("red")) {
             ui->lblTenKhach->setText("Khách Lẻ");
-            ui->lblTenKhach->setStyleSheet(""); // Xóa style sheet
+            ui->lblTenKhach->setStyleSheet("");
             ui->lblDiemKhach->setText("");
         }
     };
@@ -820,8 +784,6 @@ void MainWindow::onTimKhachPressed()
     }
 
     bool errorOccurred = false;
-
-    // Kiểm tra ký tự số
     for (QChar c : std::as_const(phone))
     {
         if (!c.isDigit())
@@ -849,7 +811,7 @@ void MainWindow::onTimKhachPressed()
         ui->lblTenKhach->setStyleSheet("color: red; font-weight: bold;");
         ui->lblDiemKhach->setText("");
 
-        QTimer::singleShot(3500, this, resetErrorDisplay);
+        QTimer::singleShot(2500, this, resetErrorDisplay);
         return;
     }
 
