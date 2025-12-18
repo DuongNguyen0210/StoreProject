@@ -178,23 +178,6 @@ MainWindow::~MainWindow()
     delete currentBill;
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-    qDebug() << "========================================";
-    qDebug() << "MainWindow closing, saving data...";
-    
-    // Relative path: works on any machine
-    QString dataPath = QCoreApplication::applicationDirPath() + "/../../../data/store_data.txt";
-    dataPath = QDir::cleanPath(dataPath); // Normalize path
-    qDebug() << "Data path:" << dataPath;
-    
-    bool success = StorePersistence::save(*store, dataPath);
-    qDebug() << "Save result:" << (success ? "SUCCESS " : "FAILED");
-    qDebug() << "========================================";
-    
-    event->accept();
-}
-
 void MainWindow::setupTable()
 {
     modelTable = new QStandardItemModel(this);
