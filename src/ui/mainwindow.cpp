@@ -212,6 +212,21 @@ void MainWindow::setupHoaDonTable()
     header->resizeSection(0, 200);
     header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(2, QHeaderView::Stretch);
+
+    ui->TotalBefore->setText(QString("Tổng tiền ban đầu: 0 đ"));
+
+    ui->TotalAfter->setText(QString("Tổng tiền thanh toán: 0 đ"));
+    ui->TotalAfter->setStyleSheet(
+        "QLabel { "
+        "  border: 2px solid #10B981; "
+        "  border-radius: 8px; "
+        "  background-color: #ECFDF5; "
+        "  padding: 10px; "
+        "  font-size: 14pt; "
+        "  font-weight: bold; "
+        "  color: #059669; "
+        "}"
+        );
 }
 
 void MainWindow::setupLastBill()
@@ -726,17 +741,11 @@ void MainWindow::onEditSanPhamDoubleClicked(const QModelIndex &index)
     }
     int maxAllowed = currentBillQty + p->getQuantity();
     bool ok;
-    int newQty = QInputDialog::getInt(
-        this,
-        "Cập nhật số lượng",
-        QString("Nhập số lượng mới cho %1:\n(Nhập 0 để trả hàng)").arg(p->getName()),
-        currentBillQty, 0, maxAllowed, 1, &ok);
+    int newQty = QInputDialog::getInt(this, "Cập nhật số lượng", QString("Nhập số lượng mới cho %1:\n(Nhập 0 để trả hàng)").arg(p->getName()), currentBillQty, 0, maxAllowed, 1, &ok);
     if (ok)
     {
         if (newQty == 0)
-        {
             currentBill->removeItem(p);
-        }
         else if (newQty != currentBillQty)
         {
             currentBill->removeItem(p);
@@ -918,8 +927,6 @@ void MainWindow::finalizeThanhToan(const QString& paymentMethod)
     ui->lblTenKhach->setText("Khách Lẻ");
     ui->lblDiemKhach->setText("");
     ui->btnDungDiem->setEnabled(false);
-    ui->TotalAfter->setVisible(false);
-    ui->TotalBefore->setVisible(false);
 }
 
 void MainWindow::on_ThemHang_clicked()
