@@ -186,7 +186,7 @@ void MainWindow::setupTable()
     modelTable->setHeaderData(2, Qt::Horizontal, "Loại sản phẩm");
     modelTable->setHeaderData(3, Qt::Horizontal, "Giá sản phẩm");
     modelTable->setHeaderData(4, Qt::Horizontal, "Số lượng");
-    modelTable->setHeaderData(5, Qt::Horizontal, "Thể tích");
+    modelTable->setHeaderData(5, Qt::Horizontal, "Thể tích(ml)");
     modelTable->setHeaderData(6, Qt::Horizontal, "Hạn sử dụng");
     modelTable->setHeaderData(7, Qt::Horizontal, "Thời hạn bảo hành (tháng)");
     ui->tableViewProduct->setModel(modelTable);
