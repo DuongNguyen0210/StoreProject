@@ -83,37 +83,15 @@ void Bill::setCustomer(Customer* c)
     this->customer = c;
 }
 
-// ✅ BLUE TEAM FIX: Hardened addItem với validation toàn diện
 void Bill::addItem(Product* p, int quantity)
 {
-    // 🛡️ CHẶN 1: Số lượng phải > 0
-    if (quantity <= 0)
-    {
-        qDebug() << "❌ CHẶN: Số lượng không hợp lệ:" << quantity;
-        return; // Không làm gì cả
-    }
-
-    // 🛡️ CHẶN 3: Kiểm tra bán khống (Số lượng muốn thêm > Tồn kho hiện tại)
-    int availableStock = p->getQuantity();
-    if (quantity > availableStock)
-    {
-        qDebug() << "❌ CHẶN: Bán khống! Kho còn:" << availableStock 
-                 << "Muốn thêm:" << quantity;
-        return; // Không cho thêm
-    }
-
-    // ✅ AN TOÀN: Mới trừ kho (sau khi đã check hết)
     p->setQuantity(p->getQuantity() - quantity);
-
-    // Thêm vào giỏ hoặc tăng số lượng
     for (size_t i = 0; i < items.size(); i++)
-    {
         if (items[i].getProduct()->getId() == p->getId())
         {
             items[i].setQuantity(items[i].getQuantity() + quantity);
             return;
         }
-    }
 
     items.emplace_back(p, quantity, p->calcFinalPrice(), p->getImportPrice());
 }
@@ -136,7 +114,6 @@ const std::vector<BillItem>& Bill::getItems() const
     return items;
 }
 
-// ✅ Helper: Lấy số lượng của 1 sản phẩm đang trong giỏ
 int Bill::getQuantityInCart(const QString& productId) const
 {
     for (const auto& item : items)
@@ -161,11 +138,7 @@ double Bill::getTotal() const
     
     double tierDiscount = tierDiscountPercent;
     if (tierDiscount == 0.0 && customer != nullptr)
-    {
         tierDiscount = customer->getTierDiscountPercent();
-    }
-    
-    // Chỉ áp dụng tier discount
     return subTotal * (1.0 - (tierDiscount / 100.0));
 }
 

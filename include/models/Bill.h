@@ -37,7 +37,7 @@ public:
     void addItem(Product* p, int quantity);
     void removeItem(Product* p);
     const std::vector<BillItem>& getItems() const;
-    int getQuantityInCart(const QString& productId) const; // ✅ Helper: Lấy số lượng trong giỏ
+    int getQuantityInCart(const QString& productId) const;
 
     double getSubTotal() const;
     double getTotal() const;

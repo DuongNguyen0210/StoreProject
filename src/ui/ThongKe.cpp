@@ -11,21 +11,16 @@
 #include <QMap>
 #include <QtCharts>
 
-ThongKe::ThongKe(Store* store, QWidget *parent)
-    : QDialog(parent), ui(new Ui::ThongKe), m_store(store)
+ThongKe::ThongKe(Store* store, QWidget *parent) : QDialog(parent), ui(new Ui::ThongKe), m_store(store)
 {
     ui->setupUi(this);
-    
+
     setupTable();
     loadBillHistory();
-
     setupDashboard();
 
-    connect(ui->billHistoryTable, &QTableView::doubleClicked,
-            this, &ThongKe::onBillDoubleClicked);
-    
-    connect(ui->btnStockDetails, &QPushButton::clicked,
-            this, &ThongKe::showStockDetails);
+    connect(ui->billHistoryTable, &QTableView::doubleClicked, this, &ThongKe::onBillDoubleClicked);
+    connect(ui->btnStockDetails, &QPushButton::clicked, this, &ThongKe::showStockDetails);
 }
 
 ThongKe::~ThongKe()
@@ -57,11 +52,11 @@ void ThongKe::loadBillHistory()
 
     const auto& history = m_store->getBillHistory();
 
-    // Iterate in reverse order - newest bills first
     for (auto it = history.rbegin(); it != history.rend(); ++it)
     {
         const Bill* bill = *it;
-        if (!bill) continue;
+        if (!bill)
+            continue;
 
         QList<QStandardItem*> row;
         row << new QStandardItem(bill->getId());
@@ -92,19 +87,15 @@ void ThongKe::loadBillHistory()
 
 void ThongKe::setupDashboard()
 {
-    // Cập nhật KPI Cards
     updateKPICards();
 
-    // Tạo các biểu đồ
-    // ComboBox chọn thời gian
     ui->cboRevenueTimeframe->clear();
     ui->cboRevenueTimeframe->addItem("1 Tuần");
     ui->cboRevenueTimeframe->addItem("1 Tháng");
     ui->cboRevenueTimeframe->addItem("1 Năm");
-    ui->cboRevenueTimeframe->setCurrentIndex(1); // Mặc định 1 Tháng
+    ui->cboRevenueTimeframe->setCurrentIndex(1);
 
-    connect(ui->cboRevenueTimeframe, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &ThongKe::onRevenueTimeframeChanged);
+    connect(ui->cboRevenueTimeframe, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ThongKe::onRevenueTimeframeChanged);
 
     createRevenueChart();
     createTop5ProductsChart();
@@ -115,22 +106,20 @@ void ThongKe::updateKPICards()
 {
     // Tổng doanh thu
     double totalRevenue = m_store->getTotalRevenue();
-    ui->lblRevenue->setText(QString("%1 đ")
-                                .arg(QString::number(totalRevenue, 'f', 0)));
+    ui->lblRevenue->setText(QString("%1 đ").arg(QString::number(totalRevenue, 'f', 0)));
 
     // Lợi nhuận ước tính
     double totalProfit = calculateTotalProfit();
-    ui->lblProfit->setText(QString("%1 đ")
-                               .arg(QString::number(totalProfit, 'f', 0)));
-    
-    // Tính tổng giá vốn (cost)
+    ui->lblProfit->setText(QString("%1 đ").arg(QString::number(totalProfit, 'f', 0)));
+
+    // Tính tổng giá vốn
     double totalCost = calculateTotalCost();
-    
-    // Tính tỉ lệ lợi nhuận trên vốn (ROI)
+
+    // Tính tỉ lệ lợi nhuận trên vốn
     double profitMargin = 0.0;
-    if (totalCost > 0) {
+    if (totalCost > 0)
         profitMargin = (totalProfit / totalCost) * 100.0;
-    }
+
     QString marginText = QString("Tỉ lệ lời: %1%").arg(QString::number(profitMargin, 'f', 1));
     ui->lblProfitMargin->setText(marginText);
 
@@ -139,7 +128,7 @@ void ThongKe::updateKPICards()
     ui->lblBillCount->setText(QString::number(billCount));
 }
 
-void ThongKe::onRevenueTimeframeChanged(int index)
+void ThongKe::onRevenueTimeframeChanged()
 {
     createRevenueChart();
 }
@@ -147,52 +136,47 @@ void ThongKe::onRevenueTimeframeChanged(int index)
 void ThongKe::createRevenueChart()
 {
     int timeframeIndex = ui->cboRevenueTimeframe->currentIndex();
-    
+
     QDate today = QDate::currentDate();
     QDate startDate;
     QString format;
     bool isMonthly = false;
 
-    // Xác định khoảng thời gian
-    if (timeframeIndex == 0) // 1 Tuần
+    if (timeframeIndex == 0)
     {
         startDate = today.addDays(-6);
         format = "dd/MM";
     }
-    else if (timeframeIndex == 2) // 1 Năm
-    {
-        startDate = today.addMonths(-11);
-        startDate = QDate(startDate.year(), startDate.month(), 1); // Đầu tháng
-        format = "MM/yyyy";
-        isMonthly = true;
-    }
-    else // 1 Tháng (Default)
+    else if(timeframeIndex == 1)
     {
         startDate = today.addDays(-29);
         format = "dd/MM";
     }
+    else
+    {
+        startDate = today.addMonths(-11);
+        startDate = QDate(startDate.year(), startDate.month(), 1);
+        format = "MM/yyyy";
+        isMonthly = true;
+    }
 
-    // Lấy dữ liệu
     QMap<QDate, double> revenueData;
     const std::vector<Bill*>& history = m_store->getBillHistory();
 
     for (const Bill* bill : history)
     {
-        if (!bill) continue;
         QDate date = bill->getCreatedDate().date();
-        
+
         if (date >= startDate && date <= today)
         {
             if (isMonthly)
             {
-                // Gom nhóm theo tháng (ngày đầu tháng)
                 QDate monthKey(date.year(), date.month(), 1);
-                revenueData[monthKey] += bill->getTotal(); // ✅ Fixed: getTotal() instead of getTotalAmount()
+                revenueData[monthKey] += bill->getTotal();
             }
             else
             {
-                // Gom nhóm theo ngày
-                revenueData[date] += bill->getTotal(); // ✅ Fixed: getTotal() instead of getTotalAmount()
+                revenueData[date] += bill->getTotal();
             }
         }
     }
@@ -202,7 +186,6 @@ void ThongKe::createRevenueChart()
 
     double maxVal = 0;
 
-    // Tạo các điểm dữ liệu liên tục
     if (isMonthly)
     {
         QDate current = startDate;
@@ -211,7 +194,8 @@ void ThongKe::createRevenueChart()
             double val = revenueData.value(current, 0.0);
             QDateTime dt(current, QTime(0, 0));
             series->append(dt.toMSecsSinceEpoch(), val);
-            if (val > maxVal) maxVal = val;
+            if (val > maxVal)
+                maxVal = val;
             current = current.addMonths(1);
         }
     }
@@ -222,7 +206,8 @@ void ThongKe::createRevenueChart()
             double val = revenueData.value(date, 0.0);
             QDateTime dt(date, QTime(0, 0));
             series->append(dt.toMSecsSinceEpoch(), val);
-            if (val > maxVal) maxVal = val;
+            if (val > maxVal)
+                maxVal = val;
         }
     }
 
@@ -235,7 +220,7 @@ void ThongKe::createRevenueChart()
     QDateTimeAxis *axisX = new QDateTimeAxis;
     axisX->setFormat(format);
     axisX->setTitleText("Thời gian");
-    axisX->setTickCount(timeframeIndex == 0 ? 7 : (timeframeIndex == 1 ? 6 : 12)); 
+    axisX->setTickCount(timeframeIndex == 0 ? 7 : (timeframeIndex == 1 ? 15 : 12));
     chart->addAxis(axisX, Qt::AlignBottom);
     series->attachAxis(axisX);
 
@@ -243,14 +228,13 @@ void ThongKe::createRevenueChart()
     QValueAxis *axisY = new QValueAxis;
     axisY->setTitleText("Doanh thu (đ)");
     axisY->setLabelFormat("%i");
-    axisY->setRange(0, maxVal > 0 ? maxVal * 1.1 : 1000000); // Thêm 10% đỉnh
+    axisY->setRange(0, maxVal > 0 ? maxVal * 1.1 : 1000000);
     chart->addAxis(axisY, Qt::AlignLeft);
     series->attachAxis(axisY);
 
-    // Màu sắc hiện đại - Teal gradient
     QLinearGradient gradient(0, 0, 0, 1);
-    gradient.setColorAt(0.0, QColor("#14B8A6")); // Teal-500
-    gradient.setColorAt(1.0, QColor("#0D9488")); // Teal-600
+    gradient.setColorAt(0.0, QColor(0x14, 0xB8, 0xA6));
+    gradient.setColorAt(1.0, QColor(0x0D, 0x94, 0x88));
     gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
     series->setPen(QPen(QBrush(gradient), 3));
 
@@ -258,7 +242,7 @@ void ThongKe::createRevenueChart()
     chart->legend()->setAlignment(Qt::AlignBottom);
 
     ui->chartRevenue->setChart(chart);
-    ui->chartRevenue->setRenderHint(QPainter::Antialiasing);
+    ui->chartRevenue->setRenderHint(QPainter::Antialiasing);// khử răng cưa cho em nó <3
 }
 
 void ThongKe::createTop5ProductsChart()
@@ -269,8 +253,6 @@ void ThongKe::createTop5ProductsChart()
     const auto& history = m_store->getBillHistory();
     for (const Bill* bill : history)
     {
-        if (!bill) continue;
-
         const auto& items = bill->getItems();
         for (const BillItem& item : items)
         {
@@ -282,7 +264,6 @@ void ThongKe::createTop5ProductsChart()
         }
     }
 
-    // ✅ SỬA: Kiểm tra nếu không có dữ liệu
     if (productSales.isEmpty())
     {
         QChart *chart = new QChart();
@@ -292,19 +273,15 @@ void ThongKe::createTop5ProductsChart()
         return;
     }
 
-    // Sắp xếp và lấy top 5
     QList<QPair<QString, int>> sortedProducts;
     for (auto it = productSales.begin(); it != productSales.end(); ++it)
-    {
         sortedProducts.append(qMakePair(it.key(), it.value()));
-    }
 
     std::sort(sortedProducts.begin(), sortedProducts.end(),
               [](const QPair<QString, int>& a, const QPair<QString, int>& b) {
                   return a.second > b.second;
               });
 
-    // Lấy top 5
     int top = qMin(5, sortedProducts.size());
 
     QBarSeries *series = new QBarSeries();
@@ -317,10 +294,9 @@ void ThongKe::createTop5ProductsChart()
         categories << sortedProducts[i].first;
     }
 
-    // Gradient cho bar
     QLinearGradient gradient(0, 0, 0, 1);
-    gradient.setColorAt(0.0, QColor("#10B981")); // Emerald-500
-    gradient.setColorAt(1.0, QColor("#059669")); // Emerald-600
+    gradient.setColorAt(0.0, QColor(0x10, 0xB9, 0x81));
+    gradient.setColorAt(1.0, QColor(0x05, 0x96, 0x69));
     gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
     set->setBrush(gradient);
 
@@ -343,85 +319,75 @@ void ThongKe::createTop5ProductsChart()
 
     chart->legend()->setVisible(false);
 
-    // ✅ SỬA: Không xóa widget, chỉ set chart vào QChartView hiện có
     ui->chartTop5->setChart(chart);
     ui->chartTop5->setRenderHint(QPainter::Antialiasing);
 }
 
 void ThongKe::createWarningsChart()
 {
-    // Count products by stock status
-    int outOfStock = 0;        // Quantity = 0
-    int criticalLow = 0;       // 1-5
-    int low = 0;               // 6-10
-    int adequate = 0;          // > 10
-    
+    int outOfStock = 0;
+    int criticalLow = 0;
+    int low = 0;
+    int adequate = 0;
+
     m_store->forEachProduct([&](const QString&, Product* p) {
-        if (!p || !p->getIsActive()) return;
-        
+        if (!p->getIsActive()) return;
         int qty = p->getQuantity();
-        
-        if (qty == 0) {
+
+        if (qty == 0)
             outOfStock++;
-        }
-        else if (qty >= 1 && qty <= 5) {
+        else if (qty >= 1 && qty <= 5)
             criticalLow++;
-        }
-        else if (qty >= 6 && qty <= 10) {
+        else if (qty >= 6 && qty <= 10)
             low++;
-        }
-        else {
+        else
             adequate++;
-        }
     });
-    
-    // Update legend labels with counts
+
     ui->lblCountGreen->setText(QString::number(adequate));
     ui->lblCountYellow->setText(QString::number(low));
     ui->lblCountOrange->setText(QString::number(criticalLow));
     ui->lblCountRed->setText(QString::number(outOfStock));
-    
-    // Create pie chart
+
     QPieSeries *series = new QPieSeries();
-    
+
     if (outOfStock > 0) {
         QPieSlice *slice = series->append(QString("Hết hàng (%1)").arg(outOfStock), outOfStock);
-        slice->setBrush(QColor("#EF4444"));  // Red
+        slice->setBrush(QColor(0xEF, 0x44, 0x44));  // Red (#EF4444)
     }
-    
+
     if (criticalLow > 0) {
         QPieSlice *slice = series->append(QString("Gần hết (%1)").arg(criticalLow), criticalLow);
-        slice->setBrush(QColor("#F59E0B"));  // Orange
+        slice->setBrush(QColor(0xF5, 0x9E, 0x0B));  // Orange (#F59E0B)
     }
-    
+
     if (low > 0) {
         QPieSlice *slice = series->append(QString("Sắp hết (%1)").arg(low), low);
-        slice->setBrush(QColor("#EAB308"));  // Yellow
+        slice->setBrush(QColor(0xEA, 0xB3, 0x08));  // Yellow (#EAB308)
     }
-    
+
     if (adequate > 0) {
         QPieSlice *slice = series->append(QString("Đủ hàng (%1)").arg(adequate), adequate);
-        slice->setBrush(QColor("#10B981"));  // Green
+        slice->setBrush(QColor(0x10, 0xB9, 0x81));  // Green (#10B981)
     }
-    
+
     // If no products
     if (outOfStock == 0 && criticalLow == 0 && low == 0 && adequate == 0) {
-        QPieSlice *slice = series->append("Chưa có sản phẩm", 1);
+        series->append("Chưa có sản phẩm", 1);
     }
-    
+
     QChart *chart = new QChart();
     chart->addSeries(series);
     chart->setTitle("");
     chart->setAnimationOptions(QChart::SeriesAnimations);
     chart->legend()->setVisible(false);
-    
+
     ui->chartWarnings->setChart(chart);
     ui->chartWarnings->setRenderHint(QPainter::Antialiasing);
 }
 
 double ThongKe::calculateTotalProfit()
 {
-    // Tính tổng lợi nhuận từ các hóa đơn
     double totalProfit = 0.0;
 
     const auto& history = m_store->getBillHistory();
@@ -431,16 +397,13 @@ double ThongKe::calculateTotalProfit()
 
         const auto& items = bill->getItems();
         double tierDiscount = bill->getTierDiscountPercent();
-        
+
         for (const BillItem& item : items)
         {
             Product* p = item.getProduct();
             if (p)
             {
-                // Giá thực tế khách trả = giá gốc * (1 - tier discount%)
                 double actualUnitPrice = item.getUnitPrice() * (1.0 - tierDiscount / 100.0);
-                
-                // Lợi nhuận = (Giá thực tế - Giá nhập lúc mua) * Số lượng
                 double profit = (actualUnitPrice - item.getImportPrice()) * item.getQuantity();
                 totalProfit += profit;
             }
@@ -457,20 +420,19 @@ double ThongKe::calculateTotalCost()
     for (const Bill* bill : history)
     {
         if (!bill) continue;
-        
+
         const auto& items = bill->getItems();
         for (const BillItem& item : items)
         {
             Product* p = item.getProduct();
             if (p)
             {
-                // Dùng giá gốc lịch sử
                 double cost = item.getImportPrice() * item.getQuantity();
                 totalCost += cost;
             }
         }
     }
-    
+
     return totalCost;
 }
 

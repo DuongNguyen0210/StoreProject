@@ -30,14 +30,14 @@ public:
 
 private slots:
     void onBillDoubleClicked(const QModelIndex &index);
-    void onRevenueTimeframeChanged(int index);
+    void onRevenueTimeframeChanged();
 
 private:
     Ui::ThongKe *ui;
     Store* m_store;
     QStandardItemModel* m_model;
 
-    // Hàm thiết lập giao diện cũ (Table)
+    // Hàm thiết lập giao diện billHistory
     void setupTable();
     void loadBillHistory();
 
@@ -49,7 +49,7 @@ private:
     void createRevenueChart();
     void createTop5ProductsChart();
     void createWarningsChart();
-    void showStockDetails();  // Show detailed product list
+    void showStockDetails();
 
     // Hàm tính toán
     double calculateTotalProfit();
