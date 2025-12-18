@@ -225,10 +225,7 @@ void MainWindow::setupHoaDonTable()
 
     QHeaderView* header = ui->tableViewOrder->horizontalHeader();
     header->setStretchLastSection(false);
-    header->setSectionResizeMode(0, QHeaderView::Interactive);
-    header->setMinimumSectionSize(150);
-    header->setMaximumSectionSize(300);
-    header->resizeSection(0, 200);
+    header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(2, QHeaderView::Stretch);
 }
@@ -732,8 +729,6 @@ void MainWindow::onAddSanPham(const QModelIndex &index)
     {
         if(currentBill == nullptr)
             currentBill = new Bill(nullptr, "", currentUser);
-
-        // Không còn logic dùng điểm
 
         currentBill->addItem(p, quantityToAdd);
         ui->stackedWidgeOrder->setCurrentIndex(0);

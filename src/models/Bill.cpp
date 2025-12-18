@@ -115,7 +115,7 @@ void Bill::addItem(Product* p, int quantity)
         }
     }
 
-    items.emplace_back(p, quantity, p->calcFinalPrice());
+    items.emplace_back(p, quantity, p->calcFinalPrice(), p->getImportPrice());
 }
 
 void Bill::removeItem(Product* p)

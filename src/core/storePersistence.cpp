@@ -130,12 +130,13 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
             out << "ITEM|" << billId << '|'
                 << productId << '|'
                 << it.getQuantity() << '|'
-                << QString::number(it.getUnitPrice(), 'f', 2) << '\n';
+                << QString::number(it.getUnitPrice(), 'f', 2) << '|'
+                << QString::number(it.getImportPrice(), 'f', 2) << '\n';
         }
     }
     out << "\n";
 
-    file.close();  // ✅ CRITICAL: Flush buffer to disk
+    file.close();
     return true;
 }
 
@@ -351,15 +352,17 @@ bool StorePersistence::load(Store &store, const QString &filePath)
                 Bill* b = billMap.value(billId, nullptr);
                 Product* p = store.findProductById(productId);
 
-                if (!b || !p)
+                if (parts.size() < 6)
                 {
-                    qDebug() << "Warning: Cannot find Bill" << billId << "or Product" << productId;
-                    break;
+                    QMessageBox::warning(nullptr, "Lỗi", "Dữ liệu ITEM không đầy đủ");
+                    exit(0);
                 }
+
+                double importPrice = parts[5].toDouble();
 
                 const std::vector<BillItem>& constItems = b->getItems();
                 auto& items = const_cast<std::vector<BillItem>&>(constItems);
-                items.emplace_back(p, quantity, unitPrice);
+                items.emplace_back(p, quantity, unitPrice, importPrice);
             }
             break;
         }
@@ -369,13 +372,9 @@ bool StorePersistence::load(Store &store, const QString &filePath)
         }
     }
 
-    // Calculate revenue from bills
     for (const Bill* bill : store.getBillHistory())
-    {
-        if (bill) {
+        if (bill)
             store.addRevenue(bill->getTotal());
-        }
-    }
 
     return true;
 }
