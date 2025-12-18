@@ -440,8 +440,8 @@ double ThongKe::calculateTotalProfit()
                 // Giá thực tế khách trả = giá gốc * (1 - tier discount%)
                 double actualUnitPrice = item.getUnitPrice() * (1.0 - tierDiscount / 100.0);
                 
-                // Lợi nhuận = (Giá thực tế - Giá nhập) * Số lượng
-                double profit = (actualUnitPrice - p->getImportPrice()) * item.getQuantity();
+                // Lợi nhuận = (Giá thực tế - Giá nhập lúc mua) * Số lượng
+                double profit = (actualUnitPrice - item.getImportPrice()) * item.getQuantity();
                 totalProfit += profit;
             }
         }
@@ -464,7 +464,8 @@ double ThongKe::calculateTotalCost()
             Product* p = item.getProduct();
             if (p)
             {
-                double cost = p->getImportPrice() * item.getQuantity();
+                // Dùng giá gốc lịch sử
+                double cost = item.getImportPrice() * item.getQuantity();
                 totalCost += cost;
             }
         }

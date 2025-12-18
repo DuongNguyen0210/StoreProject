@@ -11,7 +11,7 @@ private:
     double unitPrice;
 
 public:
-    BillItem(Product* p = nullptr, int quantity = 0, double unitPrice = 0.0);
+    BillItem(Product* p = nullptr, int quantity = 0, double unitPrice = 0.0, double importPrice = 0.0);
 
     Product* getProduct() const;
     int getQuantity() const;
@@ -20,6 +20,12 @@ public:
     double getLineTotal() const;
 
     void setQuantity(int x);
+
+    double getImportPrice() const;
+    void setImportPrice(double price);
+
+private:
+    double importPrice;
 };
 
 #endif
