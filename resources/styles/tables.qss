@@ -1,3 +1,6 @@
+/* ==================== TABLEVIEW ==================== */
+
+/* Base table style */
 QTableView
 {
     background-color: #FFFFFF;
@@ -20,19 +23,25 @@ QTableView::item:hover
     background-color: #E0F2FE;
 }
 
+/* ==================== TABLE HEADERS ==================== */
+
+/* Horizontal header (column names) */
 QHeaderView::section:horizontal
 {
     background-color: #00A8E8;
     color: white;
-    padding: 8px 4px;
+    padding: 8px 4px;  /* Reduced padding */
     font-weight: bold;
     font-size: 11pt;
     border: none;
-    border-right: 1px solid white;
+    border-right: 1px solid white;  /* Thinner separator */
+}
 
 QHeaderView::section:horizontal:last {
-    border-right: none;
+    border-right: none;  /* No border on last column */
+}
 
+/* Rounded corners for horizontal header */
 QHeaderView::section:horizontal:first
 {
     border-top-left-radius: 18px;
@@ -43,6 +52,7 @@ QHeaderView::section:horizontal:last
     border-top-right-radius: 18px;
 }
 
+/* Vertical header (row numbers) */
 QHeaderView::section:vertical
 {
     background-color: #F0F9FF;

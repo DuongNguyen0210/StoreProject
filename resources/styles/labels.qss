@@ -1,3 +1,6 @@
+/* ==================== LABELS ==================== */
+
+/* Base label style */
 QLabel
 {
     color: #64748B;
@@ -5,6 +8,7 @@ QLabel
     font-weight: 500;
 }
 
+/* Store name label */
 QLabel#lblStoreName
 {
     color: #0EA5E9;
@@ -13,6 +17,7 @@ QLabel#lblStoreName
     padding: 10px;
 }
 
+/* Order title label */
 QLabel#lblOrderTitle
 {
     color: #0284C7;
@@ -20,6 +25,7 @@ QLabel#lblOrderTitle
     font-weight: 700;
 }
 
+/* Total before discount labels */
 QLabel#TotalBefore,
 QLabel#TotalBefore_2
 {
@@ -29,6 +35,7 @@ QLabel#TotalBefore_2
     padding: 8px;
 }
 
+/* Total after discount labels */
 QLabel#TotalAfter,
 QLabel#TotalAfter_2
 {
@@ -38,6 +45,9 @@ QLabel#TotalAfter_2
     padding: 8px;
 }
 
+/* ==================== CUSTOMER LABELS ==================== */
+
+/* Customer name label */
 QLabel#lblTenKhach
 {
     color: #0284C7;
@@ -45,6 +55,7 @@ QLabel#lblTenKhach
     font-weight: 600;
 }
 
+/* Customer points label */
 QLabel#lblDiemKhach
 {
     color: #F59E0B;
@@ -52,6 +63,9 @@ QLabel#lblDiemKhach
     font-weight: 600;
 }
 
+/* ==================== NOTIFICATION LABELS ==================== */
+
+/* Error and message labels */
 QLabel#label_Message,
 QLabel#lblError
 {
@@ -64,6 +78,9 @@ QLabel#lblError
     font-weight: 600;
 }
 
+/* ==================== DIALOG LABELS ==================== */
+
+/* Add customer dialog labels */
 QLabel#labelAddCustomeName,
 QLabel#labelAddCustomePhone
 {
@@ -74,11 +91,13 @@ QLabel#labelAddCustomePhone
     padding: 0 2px 6px 2px;
 }
 
+/* Login dialog background */
 QDialog#LoginDialog
 {
     background-color: #FFFFFF;
 }
 
+/* Login title label */
 QLabel#lblTitle
 {
     font-size: 26px;
@@ -88,6 +107,7 @@ QLabel#lblTitle
     qproperty-alignment: AlignCenter;
 }
 
+/* Login username and password labels */
 QLabel#labeUsername,
 QLabel#labePassword
 {
@@ -98,6 +118,9 @@ QLabel#labePassword
     padding: 0 2px 6px 2px;
 }
 
+/* ==================== PAGE & DIALOG TITLES ==================== */
+
+/* Page title labels (Dashboard, Customer Management, etc.) */
 QLabel#lblPageTitle
 {
     color: #64748B;
@@ -124,6 +147,9 @@ QLabel#lblCustomerTitle
     color: #0EA5E9;
 }
 
+/* ==================== STATISTIC CARDS ==================== */
+
+/* Card title labels */
 QLabel#lblRevenueTit,
 QLabel#lblProfitTitle,
 QLabel#lblBillsTitle
@@ -133,7 +159,7 @@ QLabel#lblBillsTitle
     font-weight: 700;
     qproperty-alignment: AlignCenter;
 }
-
+/* Card value labels */
 QLabel#lblRevenue,
 QLabel#lblProfit,
 QLabel#lblBillCount

@@ -1,3 +1,6 @@
+/* ==================== SCROLLBAR STYLES ==================== */
+
+/* Vertical scrollbar */
 QScrollBar:vertical
 {
     background-color: transparent;
@@ -22,6 +25,7 @@ QScrollBar::sub-line:vertical
     height: 0;
 }
 
+/* Horizontal scrollbar */
 QScrollBar:horizontal
 {
     background-color: transparent;

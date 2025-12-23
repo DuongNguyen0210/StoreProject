@@ -1,3 +1,5 @@
+/* ==================== GROUPBOX ==================== */
+
 QGroupBox
 {
     background-color: #FFFFFF;
@@ -20,6 +22,9 @@ QGroupBox::title
     font-size: 14px;
 }
 
+/* ==================== CHECKBOX ==================== */
+
+/* Show password checkbox */
 QCheckBox#chkShowPassword
 {
     color: #475569;
@@ -48,6 +53,9 @@ QCheckBox#chkShowPassword::indicator:checked
     border-color: #0EA5E9;
 }
 
+/* ==================== MENUS & BARS ==================== */
+
+/* Status bar */
 QStatusBar
 {
     background-color: #FFFFFF;
@@ -55,6 +63,7 @@ QStatusBar
     border-top: 1px solid #E0F2FE;
 }
 
+/* Menu bar */
 QMenuBar
 {
     background-color: #FFFFFF;
@@ -72,6 +81,7 @@ QMenuBar::item:selected
     background-color: #E0F2FE;
 }
 
+/* Menu dropdown */
 QMenu
 {
     background-color: #FFFFFF;
@@ -89,6 +99,7 @@ QMenu::item:selected
     background-color: #E0F2FE;
 }
 
+/* Tooltip */
 QToolTip
 {
     background-color: #FFFFFF;
@@ -99,6 +110,8 @@ QToolTip
     font-size: 12px;
 }
 
+/* ==================== BILL DETAIL DIALOG ==================== */
+
 QDialog#BillDetailDialog
 {
     background-color: #FFFFFF;
@@ -106,6 +119,7 @@ QDialog#BillDetailDialog
     border-radius: 20px;
 }
 
+/* Dialog title */
 QDialog#BillDetailDialog QLabel#label
 {
     font-family: "Urbanist";
@@ -115,6 +129,7 @@ QDialog#BillDetailDialog QLabel#label
     padding: 8px 0 14px 0;
 }
 
+/* GroupBox in dialog */
 QDialog#BillDetailDialog QGroupBox#groupBox
 {
     background-color: #F8FCFF;
@@ -136,6 +151,7 @@ QDialog#BillDetailDialog QGroupBox#groupBox::title
     font-weight: 600;
 }
 
+/* Info labels */
 QDialog#BillDetailDialog QLabel#lblBillId,
 QDialog#BillDetailDialog QLabel#lblCustomer,
 QDialog#BillDetailDialog QLabel#lblDateTime,
@@ -146,6 +162,7 @@ QDialog#BillDetailDialog QLabel#lblPaymentMethod
     font-size: 13px;
 }
 
+/* Items table */
 QDialog#BillDetailDialog QTableView#tableItems
 {
     background-color: #FFFFFF;
@@ -153,6 +170,7 @@ QDialog#BillDetailDialog QTableView#tableItems
     border: 1px solid #BAE6FD;
 }
 
+/* Section label */
 QDialog#BillDetailDialog QLabel#label_2
 {
     color: #334155;
@@ -160,6 +178,7 @@ QDialog#BillDetailDialog QLabel#label_2
     margin-top: 4px;
 }
 
+/* Total labels */
 QDialog#BillDetailDialog QLabel#lblSubTotal
 {
     color: #64748B;
@@ -181,6 +200,7 @@ QDialog#BillDetailDialog QLabel#lblTotal
     font-size: 15px;
 }
 
+/* Note label */
 QDialog#BillDetailDialog QLabel#lblNote
 {
     color: #10B981;
@@ -189,11 +209,14 @@ QDialog#BillDetailDialog QLabel#lblNote
     padding-top: 4px;
 }
 
+/* Separator line */
 QDialog#BillDetailDialog QFrame#line
 {
     background-color: #BFDBFE;
     max-height: 1px;
 }
+
+/* ==================== MANAGE INVENTORY DIALOG ==================== */
 
 QDialog#ManageInventory {
     background-color: #FFFFFF;

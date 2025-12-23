@@ -1,3 +1,11 @@
+/* ========================================
+   LOGIN DIALOG STYLESHEET
+   Matched to Main App Theme (Light Blue)
+   ======================================== */
+
+/* ========================================
+   MAIN DIALOG - WHITE/LIGHT BLUE GRADIENT
+   ======================================== */
 QDialog#LoginDialog {
     background: qlineargradient(
         x1:0, y1:0, x2:1, y2:1,
@@ -6,6 +14,11 @@ QDialog#LoginDialog {
     );
 }
 
+/* ========================================
+   LEFT PANEL - PROJECT INFO SECTION
+   ======================================== */
+
+/* Logo Container */
 QLabel#lblLogo {
     background: white;
     border: 2px solid #BAE6FD;
@@ -13,6 +26,7 @@ QLabel#lblLogo {
     padding: 15px;
 }
 
+/* University Info Labels */
 QLabel#lblUniversity,
 QLabel#lblFaculty,
 QLabel#lblDepartment {
@@ -22,6 +36,7 @@ QLabel#lblDepartment {
     font-size: 15px;
 }
 
+/* Project Title */
 QLabel#lblProjectTitle {
     color: #0EA5E9;
     font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
@@ -29,6 +44,7 @@ QLabel#lblProjectTitle {
     font-size: 22px;
 }
 
+/* Subtitle */
 QLabel#lblSubtitle {
     color: #64748B;
     font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
@@ -36,6 +52,7 @@ QLabel#lblSubtitle {
     font-weight: 500;
 }
 
+/* Project Info Box - Enhanced and Prominent */
 QLabel#lblProjectInfo {
     color: #1E293B;
     font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
@@ -51,6 +68,11 @@ QLabel#lblProjectInfo {
     padding: 20px 18px;
 }
 
+/* ========================================
+   RIGHT PANEL - LOGIN FORM
+   ======================================== */
+
+/* Login Form Container */
 QFrame#loginFrame {
     background: rgba(255, 255, 255, 0.98);
     border: 2px solid #BAE6FD;
@@ -58,6 +80,7 @@ QFrame#loginFrame {
     padding: 30px;
 }
 
+/* Login Title */
 QLabel#lblLoginTitle {
     color: #0EA5E9;
     font-family: "Urbanist", "Segoe UI", "Roboto", sans-serif;
@@ -65,6 +88,7 @@ QLabel#lblLoginTitle {
     font-weight: 700;
 }
 
+/* Field Labels */
 QLabel#labeUsername,
 QLabel#labePassword {
     color: #475569;
@@ -73,6 +97,7 @@ QLabel#labePassword {
     font-weight: 600;
 }
 
+/* Error Message Label */
 QLabel#lblError {
     color: #DC2626;
     background-color: #FEE2E2;
@@ -84,6 +109,11 @@ QLabel#lblError {
     font-weight: 600;
 }
 
+/* ========================================
+   INPUT FIELDS
+   ======================================== */
+
+/* Text Input Fields - Normal State */
 QLineEdit#txtUsername,
 QLineEdit#txtPassword {
     background-color: #F0F9FF;
@@ -95,20 +125,27 @@ QLineEdit#txtPassword {
     font-size: 14px;
 }
 
+/* Text Input Fields - Focus State */
 QLineEdit#txtUsername:focus,
 QLineEdit#txtPassword:focus {
     background-color: #FFFFFF;
     border: 2px solid #38BDF8;
 }
 
+/* Text Input Fields - Hover State */
 QLineEdit#txtUsername:hover,
 QLineEdit#txtPassword:hover {
     border-color: #7DD3FC;
 }
 
+/* Placeholder text */
 QLineEdit::placeholder {
     color: #94A3B8;
 }
+
+/* ========================================
+   CHECKBOX - SHOW PASSWORD
+   ======================================== */
 
 QCheckBox#chkShowPassword {
     color: #475569;
@@ -135,6 +172,11 @@ QCheckBox#chkShowPassword::indicator:checked {
     border-color: #0EA5E9;
 }
 
+/* ========================================
+   LOGIN BUTTON
+   ======================================== */
+
+/* Login Button - Normal State */
 QPushButton#btnLogin {
     background: qlineargradient(
         x1:0, y1:0, x2:1, y2:0,
@@ -150,6 +192,7 @@ QPushButton#btnLogin {
     padding: 14px;
 }
 
+/* Login Button - Hover State */
 QPushButton#btnLogin:hover {
     background: qlineargradient(
         x1:0, y1:0, x2:1, y2:0,
@@ -158,6 +201,11 @@ QPushButton#btnLogin:hover {
     );
 }
 
+/* Login Button - Pressed State */
 QPushButton#btnLogin:pressed {
     background: #0369A1;
 }
+
+/* ========================================
+   END OF STYLESHEET
+   ======================================== */

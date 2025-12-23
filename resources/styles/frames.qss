@@ -1,3 +1,6 @@
+/* ==================== MAIN FRAMES ==================== */
+
+/* Menu frame */
 QFrame#frameMenu
 {
     background-color: #F0F9FF;
@@ -5,6 +8,7 @@ QFrame#frameMenu
     border-radius: 24px;
 }
 
+/* Center frame */
 QFrame#frameCenter
 {
     background-color: #FFFFFF;
@@ -12,6 +16,7 @@ QFrame#frameCenter
     border-radius: 24px;
 }
 
+/* Order frame */
 QFrame#frameOrder
 {
     background-color: #F8FCFF;

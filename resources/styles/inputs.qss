@@ -1,3 +1,6 @@
+/* ==================== INPUT FIELDS - LINE EDIT ==================== */
+
+/* Base line edit style */
 QLineEdit
 {
     background-color: #F0F9FF;
@@ -23,6 +26,7 @@ QLineEdit::placeholder
     color: #94A3B8;
 }
 
+/* Large search fields */
 QLineEdit#SearchText,
 QLineEdit#txtSearchCustomer
 {
@@ -32,6 +36,7 @@ QLineEdit#txtSearchCustomer
     font-size: 15px;
 }
 
+/* Customer search fields */
 QLineEdit#txtSearchCustomer,
 QLineEdit#txtSearchPhoneCustomer
 {
@@ -40,12 +45,16 @@ QLineEdit#txtSearchPhoneCustomer
     border-radius: 16px;
 }
 
+/* Login dialog line edit override */
 QDialog#LoginDialog QLineEdit:focus
 {
     background-color: #FFFFFF;
     border: 2px solid #0EA5E9;
 }
 
+/* ==================== COMBOBOX ==================== */
+
+/* Base combobox style */
 QComboBox
 {
     background-color: #F0F9FF;
@@ -74,6 +83,7 @@ QComboBox::drop-down
     width: 24px;
 }
 
+/* Combobox dropdown popup */
 QComboBox QAbstractItemView
 {
     background-color: #FFFFFF;
@@ -95,12 +105,16 @@ QComboBox QAbstractItemView::item:selected
     color: #0284C7;
 }
 
+/* Type combobox variant */
 QComboBox#Type
 {
     background-color: #FFFFFF;
     border-color: #7DD3FC;
 }
 
+/* ==================== SPINBOX / DOUBLESPINBOX ==================== */
+
+/* Base spinbox style */
 QSpinBox,
 QDoubleSpinBox
 {
@@ -135,11 +149,15 @@ QDoubleSpinBox::down-button
     width: 18px;
 }
 
+/* Selection color for spinboxes */
 QAbstractSpinBox {
     selection-background-color: #0EA5E9;
     selection-color: #FFFFFF;
 }
 
+/* ==================== DATE EDIT & CALENDAR ==================== */
+
+/* Date edit field */
 QDateEdit {
     background-color: #F0F9FF;
     color: #1E293B;
@@ -158,6 +176,7 @@ QDateEdit:hover {
     border-color: #7DD3FC;
 }
 
+/* Hide up/down buttons */
 QDateEdit::up-button,
 QDateEdit::down-button {
     width: 0px;
@@ -166,17 +185,20 @@ QDateEdit::down-button {
     background: transparent;
 }
 
+/* Hide arrow icons */
 QDateEdit::up-arrow,
 QDateEdit::down-arrow {
     image: none;
 }
 
+/* Hide dropdown button */
 QDateEdit::drop-down {
     width: 0px;
     border: none;
     background: transparent;
 }
 
+/* Calendar widget popup */
 QCalendarWidget {
     background-color: #FFFFFF;
     border: 1px solid #7DD3FC;

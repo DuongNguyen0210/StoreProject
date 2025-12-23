@@ -1,3 +1,6 @@
+/* ==================== PUSH BUTTON STYLES ==================== */
+
+/* Base button style */
 QPushButton
 {
     background-color: #FFFFFF;
@@ -8,6 +11,7 @@ QPushButton
     font-weight: 500;
 }
 
+/* Disable outline for buttons */
 QPushButton:focus,
 QPushButton:default,
 QPushButton:default:focus
@@ -15,6 +19,7 @@ QPushButton:default:focus
     outline: none;
 }
 
+/* Button hover state */
 QPushButton:hover
 {
     background-color: #F0F9FF;
@@ -22,12 +27,14 @@ QPushButton:hover
     color: #0EA5E9;
 }
 
+/* Button pressed state */
 QPushButton:pressed
 {
     background-color: #E0F2FE;
     border-color: #0284C7;
 }
 
+/* Button disabled state */
 QPushButton:disabled
 {
     background-color: #F8FAFC;
@@ -35,6 +42,9 @@ QPushButton:disabled
     border-color: #E2E8F0;
 }
 
+/* ==================== FILTER BUTTONS ==================== */
+
+/* Filter buttons (Toàn bộ / Đồ ăn / Thức uống / Đồ gia dụng) */
 QPushButton#ToanBo,
 QPushButton#DoAn,
 QPushButton#ThucUong,
@@ -69,6 +79,9 @@ QPushButton#DoGiaDung:checked
     font-weight: 700;
 }
 
+/* ==================== UTILITY BUTTONS ==================== */
+
+/* Back and Use Points buttons */
 QPushButton#btnBack,
 QPushButton#btnDungDiem
 {
@@ -86,6 +99,9 @@ QPushButton#btnDungDiem:hover
     color: #0369A1;
 }
 
+/* ==================== PAYMENT BUTTONS ==================== */
+
+/* Cash payment button */
 QPushButton#btnCash
 {
     background-color: #10B981;
@@ -99,6 +115,7 @@ QPushButton#btnCash:hover
     background-color: #059669;
 }
 
+/* Card payment button */
 QPushButton#btnCard {
     background-color: #EF4444;
     color: #FFFFFF;
@@ -111,6 +128,9 @@ QPushButton#btnCard:hover
     background-color: #DC2626;
 }
 
+/* ==================== SPECIAL BUTTONS ==================== */
+
+/* Toggle menu button */
 QPushButton#btnToggleMenu
 {
     background-color: #FFFFFF;
@@ -134,6 +154,7 @@ QPushButton#btnToggleMenu:pressed
     background-color: #BAE6FD;
 }
 
+/* Cancel order button */
 QPushButton#btnCancelOrder
 {
     background-color: #FEF2F2;
@@ -157,6 +178,9 @@ QPushButton#btnCancelOrder:pressed
     background-color: #FECACA;
 }
 
+/* ==================== DIALOG BUTTONS ==================== */
+
+/* Dialog button box buttons */
 QDialogButtonBox QPushButton
 {
     min-width: 80px;
