@@ -154,10 +154,6 @@ QAbstractSpinBox {
     selection-background-color: #0EA5E9;
     selection-color: #FFFFFF;
 }
-
-/* ==================== DATE EDIT & CALENDAR ==================== */
-
-/* Date edit field */
 QDateEdit {
     background-color: #F0F9FF;
     color: #1E293B;
@@ -176,7 +172,6 @@ QDateEdit:hover {
     border-color: #7DD3FC;
 }
 
-/* Hide up/down buttons */
 QDateEdit::up-button,
 QDateEdit::down-button {
     width: 0px;
@@ -185,20 +180,19 @@ QDateEdit::down-button {
     background: transparent;
 }
 
-/* Hide arrow icons */
+
 QDateEdit::up-arrow,
 QDateEdit::down-arrow {
     image: none;
 }
 
-/* Hide dropdown button */
+
 QDateEdit::drop-down {
     width: 0px;
     border: none;
     background: transparent;
 }
 
-/* Calendar widget popup */
 QCalendarWidget {
     background-color: #FFFFFF;
     border: 1px solid #7DD3FC;

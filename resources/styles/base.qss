@@ -1,18 +1,13 @@
-/* ==================== BASE STYLES ==================== */
-
-/* Universal font and size */
 * {
     font-family: "Urbanist", "Segoe UI", "Roboto", "Arial", sans-serif;
     font-size: 14px;
 }
 
-/* Disable all focus outlines */
 *:focus
 {
     outline: none;
 }
 
-/* Main window background - Light blue gradient */
 QMainWindow
 {
     background: qlineargradient(
@@ -22,14 +17,12 @@ QMainWindow
     );
 }
 
-/* Default widget background */
 QWidget
 {
     background-color: #FFFFFF;
     color: #1E293B;
 }
 
-/* Dialog background */
 QDialog
 {
     background-color: #FFFFFF;

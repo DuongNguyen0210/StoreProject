@@ -1,31 +1,20 @@
-/* ==================== DIALOG-SPECIFIC STYLES ==================== */
-
-/* ==================== EDIT PRODUCT DIALOG ==================== */
-
-/* Dialog title */
 QLabel#lblTitle {
     color: #2D71F8;
 }
 
-/* Product ID label */
 QLabel#lblProductId {
     color: #6C757D;
 }
 
-/* Product type label */
 QLabel#lblType {
     color: #1C8370;
 }
 
-/* ==================== MANAGE INVENTORY DIALOG ==================== */
-
-/* Instruction label */
 QLabel#lblInstruction {
     color: #6C757D;
     font-style: italic;
 }
 
-/* Delete button */
 QPushButton#btnDelete {
     background-color: #DC3545;
     color: white;
@@ -42,18 +31,14 @@ QPushButton#btnDelete:pressed {
     background-color: #BD2130;
 }
 
-/* ==================== BILL DETAIL DIALOG ==================== */
 
-/* Note label - success/completed */
 QLabel#lblNote {
     color: #28a745;
     font-weight: 500;
     font-style: italic;
 }
 
-/* ==================== ADD CUSTOMER DIALOG ==================== */
 
-/* Add new member button */
 QPushButton#btnAddNewMember {
     background-color: #4A90E2;
     color: white;
