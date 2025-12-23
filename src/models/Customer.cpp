@@ -67,13 +67,7 @@ void Customer::updateTierBasedOnPoints()
         newTier = "Gold";
     else if (points >= 5000)
         newTier = "Silver";
-    
-    if (tier == "Bronze")
-        tier = newTier;
-    else if (tier == "Silver" && (newTier == "Gold" || newTier == "Diamond"))
-        tier = newTier;
-    else if (tier == "Gold" && newTier == "Diamond")
-        tier = newTier;
+    tier = newTier;
 }
 
 double Customer::getTierDiscountPercent() const

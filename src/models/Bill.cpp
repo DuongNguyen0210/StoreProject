@@ -82,6 +82,7 @@ void Bill::addItem(Product* p, int quantity)
         if (items[i].getProduct()->getId() == p->getId())
         {
             items[i].setQuantity(items[i].getQuantity() + quantity);
+            items[i].setUnitPrice(p->calcFinalPrice());
             return;
         }
 

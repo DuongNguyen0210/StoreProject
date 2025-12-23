@@ -264,7 +264,15 @@ void CustomerDialog::onCustomerItemChanged(QStandardItem* item)
     
     if (column == 1)
     {
-        if (newValue.isEmpty() || newValue.length() < 2)
+        if (newValue.isEmpty())
+        {
+            QMessageBox::warning(this, "Lỗi", "Tên khách hàng không được để trống!");
+            loadCustomers();
+            connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
+            return;
+        }
+
+        if (newValue.length() < 2)
         {
             QMessageBox::warning(this, "Lỗi", "Tên khách hàng phải có ít nhất 2 ký tự!");
             loadCustomers();
@@ -273,6 +281,7 @@ void CustomerDialog::onCustomerItemChanged(QStandardItem* item)
         }
         
         for (QChar c : std::as_const(newValue))
+        {
             if (c.isDigit())
             {
                 QMessageBox::warning(this, "Lỗi", "Tên khách hàng không được chứa số!");
@@ -280,12 +289,36 @@ void CustomerDialog::onCustomerItemChanged(QStandardItem* item)
                 connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
                 return;
             }
-        
-        customer->setName(newValue);
-        QMessageBox::information(this, "Thành công", QString("Đã cập nhật tên thành '%1'").arg(newValue));
+            if (!c.isLetter() && !c.isSpace())
+            {
+                QMessageBox::warning(this, "Lỗi", "Tên khách hàng không được chứa ký tự đặc biệt!");
+                loadCustomers();
+                connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
+                return;
+            }
+        }
+
+        QString currentPhone = customer->getPhone();
+        if (!m_store->updateCustomer(customerId, newValue, currentPhone))
+        {
+             QMessageBox::warning(this, "Lỗi", "Cập nhật tên thất bại!");
+             loadCustomers();
+        }
+        else
+        {
+             QMessageBox::information(this, "Thành công", QString("Đã cập nhật tên thành '%1'").arg(newValue));
+        }
     }
     else if (column == 2)
     {
+        if (newValue.isEmpty())
+        {
+            QMessageBox::warning(this, "Lỗi", "Số điện thoại không được để trống!");
+            loadCustomers();
+            connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
+            return;
+        }
+
         for (QChar c : std::as_const(newValue))
             if (!c.isDigit())
             {
@@ -310,18 +343,17 @@ void CustomerDialog::onCustomerItemChanged(QStandardItem* item)
             connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
             return;
         }
-        
-        Customer* existingCustomer = m_store->findCustomerByPhone(newValue);
-        if (existingCustomer && existingCustomer->getId() != customerId)
+
+        QString currentName = customer->getName();
+        if (!m_store->updateCustomer(customerId, currentName, newValue))
         {
-            QMessageBox::warning(this, "Lỗi", "Số điện thoại này đã tồn tại!");
-            loadCustomers();
-            connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);
-            return;
+             QMessageBox::warning(this, "Lỗi", "Cập nhật thất bại! (SĐT có thể đã trùng)");
+             loadCustomers();
         }
-        
-        customer->setPhone(newValue);
-        QMessageBox::information(this, "Thành công", QString("Đã cập nhật SĐT thành '%1'").arg(newValue));
+        else
+        {
+             QMessageBox::information(this, "Thành công", QString("Đã cập nhật SĐT thành '%1'").arg(newValue));
+        }
     }
 
     connect(m_model, &QStandardItemModel::itemChanged, this, &CustomerDialog::onCustomerItemChanged);

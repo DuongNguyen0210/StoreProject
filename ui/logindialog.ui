@@ -190,7 +190,7 @@
         <item>
          <widget class="QLabel" name="lblSubtitle">
           <property name="text">
-           <string>Đề tài X: QUẢN LÝ QUẦY TẠP HÓA</string>
+           <string>Đề tài: QUẢN LÝ QUẦY TẠP HÓA</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignmentFlag::AlignCenter</set>

@@ -47,6 +47,7 @@ public:
         productByName.forEachInKeyGroup(name, f);
     }
     void addCustomer(Customer* c);
+    bool updateCustomer(const QString& id, const QString& newName, const QString& newPhone);
     Customer* findCustomerByName(const QString& name) const;
     Customer* findCustomerById(const QString& id) const;
     Customer* findCustomerByPhone(const QString& phone) const;

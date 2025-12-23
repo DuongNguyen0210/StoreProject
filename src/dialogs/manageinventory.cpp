@@ -141,9 +141,7 @@ void ManageInventory::onProductDoubleClicked(const QModelIndex &index)
         double newPrice = dialog.getPrice();
         int newQuantity = dialog.getQuantity();
 
-        if (!newName.isEmpty())
-            p->setName(newName);
-
+        p->setName(newName);
         p->setImportPrice(dialog.getImportPrice());
         p->setProfitMargin(dialog.getProfitMargin());
         p->setBasePrice(newPrice);

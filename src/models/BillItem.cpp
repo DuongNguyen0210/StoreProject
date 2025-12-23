@@ -39,3 +39,8 @@ void BillItem::setQuantity(int x)
 {
     quantity = x;
 }
+
+void BillItem::setUnitPrice(double price)
+{
+    unitPrice = price;
+}

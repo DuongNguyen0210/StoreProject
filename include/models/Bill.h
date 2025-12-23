@@ -54,7 +54,7 @@ public:
 
     double getTierDiscountPercent() const { return tierDiscountPercent; }
     void setTierDiscountPercent(double t) { tierDiscountPercent = t; }
-    
+
     void clear();
 };
 

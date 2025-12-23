@@ -150,6 +150,46 @@ void Store::addCustomer(Customer* c)
     }
 }
 
+bool Store::updateCustomer(const QString& id, const QString& newName, const QString& newPhone)
+{
+    Customer* c = findCustomerById(id);
+    if (!c)
+        return false;
+
+    QString oldPhone = c->getPhone();
+    if (newPhone != oldPhone)
+    {
+        if (!newPhone.isEmpty())
+        {
+            Customer* exist = findCustomerByPhone(newPhone);
+            if (exist && exist->getId() != id)
+                return false; 
+        }
+
+        if (!oldPhone.isEmpty())
+            customerByPhone.remove(oldPhone, c);
+        
+        c->setPhone(newPhone);
+        
+        if (!newPhone.isEmpty())
+            customerByPhone.insert(newPhone, c);
+    }
+
+    QString oldName = c->getName();
+    if (newName != oldName)
+    {
+        if (!oldName.isEmpty())
+            customerByName.remove(oldName, c);
+
+        c->setName(newName);
+        
+        if (!newName.isEmpty())
+            customerByName.insert(newName, c);
+    }
+
+    return true;
+}
+
 Customer* Store::findCustomerByName(const QString& name) const
 {
     return customerByName.getFirst(name);

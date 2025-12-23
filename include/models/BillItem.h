@@ -20,6 +20,7 @@ public:
     double getLineTotal() const;
 
     void setQuantity(int x);
+    void setUnitPrice(double price);
 
     double getImportPrice() const;
     void setImportPrice(double price);

@@ -120,6 +120,11 @@ public:
 
     bool remove(const QString& key)
     {
+        return remove(key, V());
+    }
+
+    bool remove(const QString& key, const V& expectedValue)
+    {
         QString norm = normalizeKey(key);
         int idx = indexForKey(key);
         Node* cur = buckets[idx];
@@ -129,11 +134,21 @@ public:
         {
             if (normalizeKey(cur->key) == norm)
             {
-                if (prev) prev->next = cur->next;
-                else buckets[idx] = cur->next;
-                delete cur;
-                --count;
-                return true;
+                bool shouldDelete = true;
+                if (expectedValue != V())
+                {
+                    if (cur->value != expectedValue)
+                        shouldDelete = false;
+                }
+
+                if (shouldDelete)
+                {
+                    if (prev) prev->next = cur->next;
+                    else buckets[idx] = cur->next;
+                    delete cur;
+                    --count;
+                    return true;
+                }
             }
             prev = cur;
             cur = cur->next;
@@ -165,19 +180,6 @@ public:
         ++count;
     }
 
-    template<typename Func>
-    void forEach(Func func)
-    {
-        for (int i = 0; i < bucketCount; ++i)
-        {
-            Node* cur = buckets[i];
-            while (cur)
-            {
-                func(cur->key, cur->value);
-                cur = cur->next;
-            }
-        }
-    }
 
     template<typename Func>
     void forEach(Func func) const
