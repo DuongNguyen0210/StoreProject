@@ -1,6 +1,3 @@
-/* ==================== THONGKE DIALOG STYLES ==================== */
-
-/* KPI Frames - Revenue, Profit, Bills */
 QFrame#frameRevenue,
 QFrame#frameProfit,
 QFrame#frameBills {
@@ -9,42 +6,34 @@ QFrame#frameBills {
     background-color: #F9FAFB;
 }
 
-/* Profit Margin Label */
 QLabel#lblProfitMargin {
     color: #059669;
 }
 
-/* Legend Frame */
 QFrame#frameLegend {
     border: 1px solid #E5E7EB;
     border-radius: 5px;
     background-color: white;
 }
 
-/* ==================== STOCK STATUS INDICATORS ==================== */
-
-/* Green - In Stock */
 QLabel#lblColorGreen {
     background-color: #10B981;
     border: 1px solid #059669;
     border-radius: 3px;
 }
 
-/* Yellow - Running Low */
 QLabel#lblColorYellow {
     background-color: #EAB308;
     border: 1px solid #CA8A04;
     border-radius: 3px;
 }
 
-/* Orange - Very Low */
 QLabel#lblColorOrange {
     background-color: #F59E0B;
     border: 1px solid #D97706;
     border-radius: 3px;
 }
 
-/* Red - Out of Stock */
 QLabel#lblColorRed {
     background-color: #EF4444;
     border: 1px solid #DC2626;
