@@ -45,11 +45,18 @@ bool AddCustomerDialog::validateInput()
     }
     
     for (QChar c : std::as_const(name))
+    {
         if (c.isDigit())
         {
             showError("Tên khách hàng không được chứa số!");
             return false;
         }
+        if (!c.isLetter() && !c.isSpace())
+        {
+            showError("Tên khách hàng không được chứa ký tự đặc biệt!");
+            return false;
+        }
+    }
     
     for (QChar c : std::as_const(phone))
         if (!c.isDigit())

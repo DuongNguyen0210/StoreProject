@@ -44,7 +44,8 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
              << QString::number(f->getImportPrice(), 'f', 2) << '|'     // Giá gốc
              << QString::number(f->getProfitMargin(), 'f', 2) << '|'    // % Lợi nhuận
              << f->getQuantity() << '|'
-             << f->getExpiryDate() << '\n';
+             << f->getExpiryDate() << '|'
+             << (f->getIsActive() ? 1 : 0) << '\n';
         }
         else if (auto b = dynamic_cast<Beverage*>(p))
         {
@@ -56,7 +57,8 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
              << QString::number(b->getProfitMargin(), 'f', 2) << '|'    // % Lợi nhuận
              << b->getQuantity() << '|'
              << b->getExpiryDate() << '|'
-             << QString::number(b->getVolume(), 'f', 2) << '\n';
+             << QString::number(b->getVolume(), 'f', 2) << '|'
+             << (b->getIsActive() ? 1 : 0) << '\n';
         }
         else if (auto h = dynamic_cast<HouseholdItem*>(p))
         {
@@ -67,7 +69,8 @@ bool StorePersistence::save(const Store &store, const QString &filePath)
              << QString::number(h->getImportPrice(), 'f', 2) << '|'     // Giá gốc
              << QString::number(h->getProfitMargin(), 'f', 2) << '|'    // % Lợi nhuận
              << h->getQuantity() << '|'
-             << h->getWarrantyMonths() << '\n';
+             << h->getWarrantyMonths() << '|'
+             << (h->getIsActive() ? 1 : 0) << '\n';
         }
     });
     out << "\n";
@@ -192,11 +195,13 @@ bool StorePersistence::load(Store &store, const QString &filePath)
                 Product* p = new Food(id, name, price, quantity, expiry);
                 p->setImportPrice(importPrice);
                 p->setProfitMargin(profitMargin);
+                if (parts.size() > 8)
+                    p->setActive(parts[8].toInt() != 0);
                 store.addProduct(p);
             }
             else if (type == "Beverage")
             {
-                // Format: Beverage|id|name|price|importPrice|profitMargin|quantity|expiry|volume
+                // Format: Beverage|id|name|price|importPrice|profitMargin|quantity|expiry|volume|isActive
                 if (parts.size() < 9) {
                     QMessageBox::warning(nullptr, "Lỗi", "Beverage không đúng định dạng");
                     exit(0);
@@ -214,6 +219,8 @@ bool StorePersistence::load(Store &store, const QString &filePath)
                 Product* p = new Beverage(id, name, price, quantity, expiry, volume);
                 p->setImportPrice(importPrice);
                 p->setProfitMargin(profitMargin);
+                if (parts.size() > 9)
+                    p->setActive(parts[9].toInt() != 0);
                 store.addProduct(p);
             }
             else if (type == "Household")
@@ -235,6 +242,8 @@ bool StorePersistence::load(Store &store, const QString &filePath)
                 Product* p = new HouseholdItem(id, name, price, quantity, warranty);
                 p->setImportPrice(importPrice);
                 p->setProfitMargin(profitMargin);
+                if (parts.size() > 8)
+                    p->setActive(parts[8].toInt() != 0);
                 store.addProduct(p);
             }
             break;
