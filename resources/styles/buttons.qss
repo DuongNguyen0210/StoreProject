@@ -1,0 +1,167 @@
+QPushButton
+{
+    background-color: #FFFFFF;
+    color: #475569;
+    border: 2px solid #CBD5E1;
+    border-radius: 18px;
+    padding: 10px 18px;
+    font-weight: 500;
+}
+
+QPushButton:focus,
+QPushButton:default,
+QPushButton:default:focus
+{
+    outline: none;
+}
+
+QPushButton:hover
+{
+    background-color: #F0F9FF;
+    border-color: #38BDF8;
+    color: #0EA5E9;
+}
+
+
+QPushButton:pressed
+{
+    background-color: #E0F2FE;
+    border-color: #0284C7;
+}
+
+QPushButton:disabled
+{
+    background-color: #F8FAFC;
+    color: #CBD5E1;
+    border-color: #E2E8F0;
+}
+
+QPushButton#ToanBo,
+QPushButton#DoAn,
+QPushButton#ThucUong,
+QPushButton#DoGiaDung
+{
+    background-color: #E0F2FE;
+    border: 2px solid #7DD3FC;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-weight: 600;
+    color: #0284C7;
+}
+
+QPushButton#ToanBo:hover,
+QPushButton#DoAn:hover,
+QPushButton#ThucUong:hover,
+QPushButton#DoGiaDung:hover
+{
+    background-color: #BAE6FD;
+    border-color: #38BDF8;
+    color: #0369A1;
+}
+
+QPushButton#ToanBo:checked,
+QPushButton#DoAn:checked,
+QPushButton#ThucUong:checked,
+QPushButton#DoGiaDung:checked
+{
+    background-color: #0EA5E9;
+    border-color: #0EA5E9;
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+QPushButton#btnBack,
+QPushButton#btnDungDiem
+{
+    background-color: #FFFFFF;
+    border: 2px solid #7DD3FC;
+    color: #0284C7;
+    border-radius: 18px;
+}
+
+QPushButton#btnBack:hover,
+QPushButton#btnDungDiem:hover
+{
+    background-color: #E0F2FE;
+    border-color: #38BDF8;
+    color: #0369A1;
+}
+
+QPushButton#btnCash
+{
+    background-color: #10B981;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 20px;
+}
+
+QPushButton#btnCash:hover
+{
+    background-color: #059669;
+}
+
+QPushButton#btnCard {
+    background-color: #EF4444;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 20px;
+}
+
+QPushButton#btnCard:hover
+{
+    background-color: #DC2626;
+}
+
+QPushButton#btnToggleMenu
+{
+    background-color: #FFFFFF;
+    color: #0EA5E9;
+    border: 2px solid #7DD3FC;
+    border-radius: 16px;
+    font-size: 22px;
+    font-weight: 600;
+    padding: 0;
+}
+
+QPushButton#btnToggleMenu:hover
+{
+    background-color: #E0F2FE;
+    border-color: #38BDF8;
+    color: #0284C7;
+}
+
+QPushButton#btnToggleMenu:pressed
+{
+    background-color: #BAE6FD;
+}
+
+QPushButton#btnCancelOrder
+{
+    background-color: #FEF2F2;
+    color: #EF4444;
+    border: 2px solid #FECACA;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 6px 20px;
+}
+
+QPushButton#btnCancelOrder:hover
+{
+    background-color: #FEE2E2;
+    border-color: #F87171;
+    color: #DC2626;
+}
+
+QPushButton#btnCancelOrder:pressed
+{
+    background-color: #FECACA;
+}
+
+QDialogButtonBox QPushButton
+{
+    min-width: 80px;
+    min-height: 35px;
+    font-family: "Urbanist";
+    font-weight: 500;
+}

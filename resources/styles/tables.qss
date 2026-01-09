@@ -1,0 +1,58 @@
+QTableView
+{
+    background-color: #FFFFFF;
+    border-radius: 22px;
+    border: 1px solid #BAE6FD;
+    gridline-color: #E0F2FE;
+    selection-background-color: rgba(14, 165, 233, 0.12);
+    selection-color: #0284C7;
+    alternate-background-color: #F0F9FF;
+}
+
+QTableView::item
+{
+    padding: 8px;
+    border: none;
+}
+
+QTableView::item:hover
+{
+    background-color: #E0F2FE;
+}
+
+QHeaderView::section:horizontal
+{
+    background-color: #00A8E8;
+    color: white;
+    padding: 8px 4px;
+    font-weight: bold;
+    font-size: 11pt;
+    border: none;
+    border-right: 1px solid white;
+}
+
+QHeaderView::section:horizontal:last {
+    border-right: none;
+}
+
+QHeaderView::section:horizontal:first
+{
+    border-top-left-radius: 18px;
+}
+
+QHeaderView::section:horizontal:last
+{
+    border-top-right-radius: 18px;
+}
+
+QHeaderView::section:vertical
+{
+    background-color: #F0F9FF;
+    color: #64748B;
+    padding: 6px 4px;
+    border: none;
+    border-right: 1px solid #E0F2FE;
+    border-bottom: 1px solid #E0F2FE;
+    font-weight: 500;
+    font-size: 12px;
+}

@@ -1,0 +1,41 @@
+QFrame#frameRevenue,
+QFrame#frameProfit,
+QFrame#frameBills {
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    background-color: #F9FAFB;
+}
+
+QLabel#lblProfitMargin {
+    color: #059669;
+}
+
+QFrame#frameLegend {
+    border: 1px solid #E5E7EB;
+    border-radius: 5px;
+    background-color: white;
+}
+
+QLabel#lblColorGreen {
+    background-color: #10B981;
+    border: 1px solid #059669;
+    border-radius: 3px;
+}
+
+QLabel#lblColorYellow {
+    background-color: #EAB308;
+    border: 1px solid #CA8A04;
+    border-radius: 3px;
+}
+
+QLabel#lblColorOrange {
+    background-color: #F59E0B;
+    border: 1px solid #D97706;
+    border-radius: 3px;
+}
+
+QLabel#lblColorRed {
+    background-color: #EF4444;
+    border: 1px solid #DC2626;
+    border-radius: 3px;
+}

@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/store.png</file>
+        <file>icons/bag.png</file>
+        <file>icons/loupe.png</file>
+        <file>icons/report.png</file>
+        <file>icons/add-product.png</file>
+        <file>icons/logoitf.jpg</file>
+        <file>icons/edit-product.png</file>
+        <file>icons/bill-details.png</file>
+        <file>icons/customer.png</file>
+    </qresource>
+    <qresource prefix="/styles">
+        <file>styles/base.qss</file>
+        <file>styles/frames.qss</file>
+        <file>styles/buttons.qss</file>
+        <file>styles/inputs.qss</file>
+        <file>styles/tables.qss</file>
+        <file>styles/labels.qss</file>
+        <file>styles/scrollbars.qss</file>
+        <file>styles/misc.qss</file>
+        <file>styles/login.qss</file>
+        <file>styles/thongke.qss</file>
+        <file>styles/dialogs.qss</file>
+    </qresource>
+</RCC>

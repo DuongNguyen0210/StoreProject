@@ -1,0 +1,55 @@
+QLabel#lblTitle {
+    color: #2D71F8;
+}
+
+QLabel#lblProductId {
+    color: #6C757D;
+}
+
+QLabel#lblType {
+    color: #1C8370;
+}
+
+QLabel#lblInstruction {
+    color: #6C757D;
+    font-style: italic;
+}
+
+QPushButton#btnDelete {
+    background-color: #DC3545;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+QPushButton#btnDelete:hover {
+    background-color: #C82333;
+}
+
+QPushButton#btnDelete:pressed {
+    background-color: #BD2130;
+}
+
+
+QLabel#lblNote {
+    color: #28a745;
+    font-weight: 500;
+    font-style: italic;
+}
+
+
+QPushButton#btnAddNewMember {
+    background-color: #4A90E2;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+QPushButton#btnAddNewMember:hover {
+    background-color: #3A80D2;
+}
+
+QPushButton#btnAddNewMember:pressed {
+    background-color: #2A70C2;
+}

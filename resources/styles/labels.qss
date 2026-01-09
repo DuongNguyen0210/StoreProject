@@ -1,0 +1,154 @@
+
+QLabel
+{
+    color: #64748B;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+QLabel#lblStoreName
+{
+    color: #0EA5E9;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 10px;
+}
+
+QLabel#lblOrderTitle
+{
+    color: #0284C7;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+QLabel#TotalBefore,
+QLabel#TotalBefore_2
+{
+    color: #64748B;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 8px;
+}
+
+QLabel#TotalAfter,
+QLabel#TotalAfter_2
+{
+    color: #10B981;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 8px;
+}
+
+QLabel#lblTenKhach
+{
+    color: #0284C7;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+QLabel#lblDiemKhach
+{
+    color: #F59E0B;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+QLabel#label_Message,
+QLabel#lblError
+{
+    background-color: #FEE2E2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+QLabel#labelAddCustomeName,
+QLabel#labelAddCustomePhone
+{
+    color: #475569;
+    background-color: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0 2px 6px 2px;
+}
+
+QDialog#LoginDialog
+{
+    background-color: #FFFFFF;
+}
+
+
+QLabel#lblTitle
+{
+    font-size: 26px;
+    font-weight: 700;
+    color: #0F172A;
+    padding: 16px;
+    qproperty-alignment: AlignCenter;
+}
+
+QLabel#labeUsername,
+QLabel#labePassword
+{
+    color: #475569;
+    background-color: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0 2px 6px 2px;
+}
+
+QLabel#lblPageTitle
+{
+    color: #64748B;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    background-color: transparent;
+}
+
+QLabel#lblDashboardTitlel
+{
+    font-size: 18px;
+    font-weight: bold;
+    color: #0EA5E9;
+    qproperty-alignment: AlignCenter;
+}
+
+QLabel#lblCustomerTitle
+{
+    font-size: 18px;
+    font-weight: bold;
+    color: #0EA5E9;
+}
+
+QLabel#lblRevenueTit,
+QLabel#lblProfitTitle,
+QLabel#lblBillsTitle
+{
+    color: #94A3B8;
+    font-size: 10px;
+    font-weight: 700;
+    qproperty-alignment: AlignCenter;
+}
+/* Card value labels */
+QLabel#lblRevenue,
+QLabel#lblProfit,
+QLabel#lblBillCount
+{
+    color: #1E293B;
+    font-size: 10px;
+    font-weight: 700;
+    qproperty-alignment: AlignCenter;
+}
+QLabel#lblProfitMargin
+{
+    color: #10B981;
+    font-size: 10px;
+    font-weight: 700;
+    qproperty-alignment: AlignCenter;
+}
